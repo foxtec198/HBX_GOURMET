@@ -1,0 +1,271 @@
+{% extends 'gourmet/base.html' %}
+{% block cont %}
+
+<!-- Modal Novo Produto -->
+<div class="modal fade" id="modalNewProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Novo Produto</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="/add_prod/" enctype="multipart/form-data" method="post">
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="nomeInput" name="nome_prod" placeholder="Nome" required>
+                <label>Nome</label>
+            </div>
+            <div class="input-group mb-2">
+                <label class="input-group-text" for="inputGroupSelect01">Categoria</label>
+                <select class="form-select" id="categInput" name="categoria_prod">
+                {% for categ in get_categorias(cr) %}
+                    <option>{{categ[1]}}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class="input-group mb-2">
+                <label class="input-group-text" for="inputGroupSelect01">R$</label>
+                <div class="form-floating">
+                    <input type="" class="form-control" id="custoInput" placeholder="Nome" name="custo_prod" required>
+                    <label>Custo</label>
+                </div>
+                <div class="form-floating">
+                    <input type="" class="form-control" id="valorInput" placeholder="Nome" name="valor_prod" required>
+                    <label>Valor</label>
+                </div>
+            </div>
+            <div class="input-group mb-2">
+                <label class="input-group-text" for="inputGroupSelect01">R$</label>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="quantidadeInput" placeholder="Nome" name="quant_prod" required>
+                    <label>Quantidade</label>
+                </div>
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="alertaInput" placeholder="Nome" name="alerta_prod" required>
+                    <label>Alerta</label>
+                </div>
+            </div>
+                <div class="input-group mb-2">  
+                    <input type="file" accept=".png,.jpg,.jpeg" class="form-control" name="imagem"  id="imgUpload">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-success" >Salvar</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Nova Categoria -->
+<div class="modal fade" id="modalNewCateg" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nova Categoria</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="categIn" class="form-control" placeholder="Categoria" aria-label="Categoria" aria-describedby="basic-addon1">
+                    <button class="input-group-text" id="basic-addon1" onclick="add_categ()">
+                        <i class="bi bi-plus-circle-dotted"></i>
+                    </button>
+                </div>
+                <ul class="list-group">
+                    {% for categ in get_categorias(cr) %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">{{categ[1]}}</div>
+                            Para excluir a categoria, clique ao lado 
+                        </div>
+                        <button class="btn btn-danger" onclick="remove_categ({{categ[0]}})"><i class="bi bi-trash3-fill"></i></button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-column p-2">
+    <div class="d-flex justify-content-between align-items-center p-3">
+        <h1>Estoque</h1>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalNewProd"><i class="bi bi-plus-circle-dotted"></i> Cadastrar</button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="visually-hidden"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalNewCateg">Categorias</button></li>
+              <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalNewProd">Produtos</button></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item" disabled>Fornecedores</button></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card p-2">
+        <input type="text" class="form-control" placeholder="Busque por elementos da tabela!" id="buscaProd">
+
+        <div class="table-responsive">
+            <table class="table align-middle" id="tableProd">
+                <thead>
+                    <td>Id</td>
+                    <td>Nome</td>
+                    <td>Categoria</td>
+                    <td>Quantidade</td>
+                    <td>Alerta</td>
+                    <td>Cadastro</td>
+                    <td>Custo</td>
+                    <td>Valor</td>
+                    <td>Imagem</td>
+                    <td>Ações</td>
+                </thead>
+                {% for item in get_produtos(cr)%}
+                <!-- Modal Editar Prod-->
+                <div class="modal fade" id="{{item[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Produto: {{item[1]}}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/atualizar_prod/" enctype="multipart/form-data" method="post">
+                                <input value="{{item[0]}}" name="edit_prod_id" hidden>
+                                <div class="form-floating mb-2">
+                                    <input type="text" class="form-control" id="nome_prod{{item[0]}}" placeholder="Nome" value="{{item[1]}}" name="edit_prod_nome" required>
+                                    <label>Nome</label>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <label class="input-group-text" for="inputGroupSelect01">Categoria</label>
+                                    <select class="form-select" id="categ_prod{{item[0]}}" name="edit_prod_categ">
+                                    {% for categ in get_categorias(cr) %}
+                                        {% if categ[1] == item[12] %}
+                                        <option selected>{{categ[1]}}</option>
+                                        {% else %}
+                                        <option>{{categ[1]}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <label class="input-group-text" for="inputGroupSelect01">R$</label>
+                                    <div class="form-floating">
+                                        <input type="" name="edit_prod_custo" class="form-control" id="custo_prod{{item[0]}}" placeholder="Nome" value="{{item[3]}}" required>
+                                        <label>Custo</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="" name="edit_prod_valor" class="form-control" id="valor{{item[0]}}" placeholder="Nome" value="{{item[4]}}" required>
+                                        <label>Valor</label>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <label class="input-group-text" for="inputGroupSelect01">R$</label>
+                                    <div class="form-floating">
+                                        <input type="number" name="edit_prod_quant" class="form-control" id="quantidade{{item[0]}}" placeholder="Nome" value="{{item[5]}}" required>
+                                        <label>Quantidade</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="number" name="edit_prod_alerta" class="form-control" id="alerta{{item[0]}}" placeholder="Nome" value="{{item[6]}}" required>
+                                        <label>Alerta</label>
+                                    </div>
+                                </div>
+                                <div class="input-group mb-2">  
+                                    <input type="file" name="edit_prod_img" accept=".png,.jpg,.jpeg" class="form-control">
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-success" >Salvar</button>
+                            </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                <tbody>
+                    <td>{{item[0]}}</td>
+                    <td>{{item[1]}}</td>
+                    <td>{{item[12]}}</td>
+                    <td>{{item[5]}}</td>
+                    <td>{{item[6]}}</td>
+                    <td>{{item[7].strftime('%d/%m/%Y %H:%M')}}</td>
+                    <td>R$ {{item[3]}}</td>
+                    <td>R$ {{item[4]}}</td>
+                    <td class="align-middle">
+                        <a href="{{item[8]}}">
+                            <img class="img-fluid" src="{{item[8]}}" alt="imgProd" width="30" height="30">
+                        </a>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#{{item[0]}}"><i class="bi bi-box-arrow-up-right"></i></button>
+                            <button class="btn btn-danger" onclick="remove_prod({{item[0]}})"><i class="bi bi-trash3-fill"></i></button>
+                        </div>
+                    </td>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function editProd(id){
+        const idCategoria = 0
+        const nome = document.getElementById('nome_prod'+id).value
+        const categ = document.getElementById('categ_prod'+id).value
+        const custo = document.getElementById('custo_prod'+id).value
+        const valor = document.getElementById('valor'+id).value
+        const quantidade = document.getElementById('quantidade'+id).value
+        const alerta = document.getElementById('alerta'+id).value
+        const img = document.getElementById('img'+id)
+        const js = [id, nome, idCategoria, categ, custo, valor, quantidade, alerta, img, sessionStorage.getItem('cr')]
+        if(nome, categ, custo, valor, quantidade){
+            fetch('/atualizar_prod/'+js,{'method':'POST'})
+            .then((res)=>{
+                if(res.ok){
+                    toasthbx('Salvo com sucesso')
+                    document.location = '/gourmet/estoque/'+sessionStorage.getItem('cr')
+                }
+            })
+        }else{
+            toasthbx('Dados invalidos, tente novamente!')
+        }
+    }
+    function add_prod(){
+        const nome = document.getElementById('nomeInput').value
+        const categ = document.getElementById('categInput').value
+        const custo = document.getElementById('custoInput').value
+        const valor = document.getElementById('valorInput').value
+        const quantidade = document.getElementById('quantidadeInput').value
+        const alerta = document.getElementById('alertaInput').value
+        const img = document.getElementById('imgInput')
+        const infos = [nome, categ, custo, valor, quantidade, alerta, img, sessionStorage.getItem('gc'), sessionStorage.getItem('cr')]
+        if(nome, categ, custo, valor, quantidade, alerta){
+            fetch('/add_prod/'+infos,{'method':'POST'})
+            .then((res)=>{
+                if(res.ok){
+                    toasthbx('Cadastrado com sucesso!')
+                    document.location = '/gourmet/estoque/'+sessionStorage.getItem('cr')
+                }
+            }).catch((error)=>{
+                toasthbx(error.errorMessage)
+            })
+        }else{
+            toasthbx('Dados invalidos, tente novamente!')
+        }
+    }
+    $(document).ready(function(){
+    $("#buscaProd").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#tableProd tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'gourmet/base.html' %}
+{% block cont %}
+
+<div class="frameDash">
+    <h1>Dashboard</h1>
+    <div class="d-flex w-100 flex-row" style="gap: 10px; flex-wrap: wrap;">
+        <div class="card text-bg-success p-2">
+            <p><i class="bi bi-bag-fill"></i> Vendas Mes</p>
+            <p class="fs-4" id="vendasMes"><b>R$ {{vendasMes(cr)}}</b></p>
+        </div>
+        <div class="card text-bg-danger p-2">
+            <p><i class="bi bi-x-circle-fill"></i> Canceladas Mes</p>
+            <p class="fs-4" id="canceladasMes"><b>R$ {{canceladas_mes(cr)}}</b></p>
+        </div>
+        <div class="card text-bg-primary p-2">
+            <p><i class="bi bi-ticket-perforated-fill"></i> Ticket p/ Cupom</p>
+            <p class="fs-4" id="vendasMes"><b>{{ticket(cr)}} Un.</b></p>
+        </div>
+        <div class="card p-2 purple">
+            <p><i class="bi bi-wallet2"></i> Ticket Médio</p>
+            <p class="fs-4" id="vendasMes"><b>R$ {{ticket_medio(cr)}}</b></p>
+        </div>
+    </div>
+
+    <div class="d-flex" style="flex-wrap: wrap; gap: 10px;">
+        <div class="graphD"> 
+            <canvas id="chartVendas"></canvas'>
+        </div>
+        <div class="graphD">
+            <canvas id="vendasPorDia"></canvas>
+        </div>
+    </div>
+
+    <div class="d-flex flex-row" style="gap: 10px; flex-wrap: wrap;">
+        <div class="Dms d-flex flex-column">
+            <p class="fs-5"><i class="bi bi-calendar"></i> Saida de Produtos <b>Mensal</b></p>
+            <ul class="list-group">
+                {% for prod, quant in saidas(cr) %}
+                <li class="list-group-item d-flex justify-content-between">
+                <span>{{prod}}</span>   
+                <span>{{quant}}</span>   
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="Dms d-flex flex-column">
+            <p class="fs-5"><i class="bi bi-truck"></i> Saida de Produtos <b>Diária</b></p>
+            <ul class="list-group">
+                {% for prod, quant in saidas_dia(cr) %}
+                <li class="list-group-item d-flex justify-content-between">
+                <span>{{prod}}</span>   
+                <span>{{quant}}</span>   
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="Dms d-flex flex-column">
+            <p class="fs-5">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Exportação de Planilhas
+            </p>
+            <div class="d-flex flex-column">
+                <p><i class="bi bi-cart-x-fill"></i> Vendas</p>
+                <div class="btn-group">
+                    <a class="btn btn-outline-light" href="/exportar_vendas_dia">Dia</a>
+                    <a class="btn btn-outline-light" href="/exportar_vendas_mes">Mes</a>
+                    <a class="btn btn-outline-light" href="/exportar_vendas_ano">Ano</a>
+                </div>
+            </div>
+            <br>
+            <div class="d-flex flex-column">
+                <p><i class="bi bi-archive-fill"></i> Estoque</p>
+                <div class="btn-group">
+                    <a class="btn btn-outline-light" href="/exportar_prod">Produtos</a>
+                    <a class="btn btn-outline-light" href="/exportar_saidas">Saidas</a>
+                    <a class="btn btn-outline-light" href="/exportar_maiores_saidas">Maiores Saidas</a>
+                </div>
+                <br>
+                <div class="btn-group">
+                    <a class="btn btn-outline-light" href="/exportar_limite">Em limite</a>
+                    <a class="btn btn-outline-light" href="/exportar_zerados">Zerados</a>
+                </div>
+            </div>
+            <br>
+            <div class="d-flex flex-column">
+                <p><i class="bi bi-people-fill"></i> Funcionarios</p>
+                <div class="btn-group">
+                    <a class="btn btn-outline-light" href="/exportar_funcs">Exportar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex flex-row" style="gap: 10px; flex-wrap: wrap;">
+        <div class="Dms d-flex flex-column">
+            <p class="fs-5">
+                <i class="bi bi-trophy-fill"></i> Ranking por Colaborador
+            </p>
+            <ul class="list-group">
+            {% for nome, quantidade in ranking_func(cr) %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <p class="fs-6">{{nome}}</p>
+                    <p class="fs-6">{{quantidade}}</p>
+                </li>
+            {% endfor%}
+            </ul>
+        </div>
+        <!-- <div class="graphD">
+            <p class="fs-5"><i class="bi bi-menu-button-fill"></i> Vendas por Categoria</p>
+            <canvas id="cartCateg"></canvas>
+        </div> -->
+    </div>
+</div>
+
+{% endblock %}

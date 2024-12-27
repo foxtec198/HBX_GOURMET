@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt=br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta theme-color="#282729">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hubbix - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="../../static/img/favicon.ico">
+    <link rel="stylesheet" href="../../static/css/base.css">
+    <script src="../../static/js/base.js"></script>
+    <script type="module" src="../../static/js/login.js"></script>
+</head>
+<body >
+    <!-- TOAST -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="tstHbx" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <img src="../../static/img/favicon.ico" class="rounded me-2" alt="..." width="35" height="35">
+            <strong class="me-auto">Hubbix Gourmet</strong>
+            <small>Agora</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            <p id="msgToast">tstHbx</p>
+          </div>
+        </div>
+    </div>
+    <!-- TOAST -->
+     
+    <!-- Navbar -->
+    <nav>
+        <img src="../../static/img/logo.png" alt="logo" class="logo">
+    </nav>
+
+    <div class="d-flex flex-column align-items-center justify-content-center" style="height: 80%;">
+        <div class="d-flex flex-column p-3 contLogin">
+            <p id="lbl" class="fs-5">Login</p>
+            <form>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-envelope"></i></span>
+                    <input id="email" type="email" class="form-control" placeholder="Email" autocomplete="email">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-key"></i></span>
+                    <input id="pwd" type="password" class="form-control" placeholder="Senha" autocomplete="current-password">
+                </div>
+            </form>
+            <div class="btn-group">
+                <button id="btnLogin" class="btn btn-dark "><b><i class="bi bi-toggle-on"></i> Login </b></button>
+                <button id="btnGoogle" class="btn btn-outline-dark "><b><i class="bi bi-google"></i> Google </b></button>
+            </div>
+            <a href="/gourmet/login/">Logar com <b>Matricula</b><i class="bi bi-check2-circle"></i></a>
+        </div>
+    </div>
+    
+    <!-- Footer  -->
+    <hr>
+    <div class="footer">
+        <div>
+            <p>© 2024 Tecnobreve</p>
+        </div>
+        <div>
+            <a href="https://www.instagram.com/hubbix.sys"><i class="bi bi-instagram"></i></a>
+            <a href="https://api.whatsapp.com/send?phone=5543996617904"><i class="bi bi-whatsapp"></i></a>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <!-- <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth,  signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+      
+        const firebaseConfig = {
+          apiKey: "AIzaSyB7Y_AYN7FPbhDaPHhdWMuwPhWK7yYlHH0",
+          authDomain: "hubbix-95183.firebaseapp.com",
+          projectId: "hubbix-95183",
+          storageBucket: "hubbix-95183.appspot.com",
+          messagingSenderId: "24681152125",
+          appId: "1:24681152125:web:77b8f2f0db36291d143b14"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app)
+        const provider = new GoogleAuthProvider()
+
+        document.getElementById('btnLogin').onclick = function(){
+            const email = document.getElementById('email').value
+            const pwd = document.getElementById('pwd').value
+
+            signInWithEmailAndPassword(auth, email, pwd)
+            .then((userC) => {
+                const user = userC.user
+                
+                fetch('/confer_user/'+user.uid).then((res) => {
+                    if (res.ok) {
+                        res.json().then((js) => {
+                            sessionStorage.setItem('cr', js.ids[0][0])
+                            sessionStorage.setItem('gc', js.ids[0][1])
+                            sessionStorage.setItem('mat', js.ids[0][2])
+
+                            document.location = '/gourmet/pedidos/' + sessionStorage.getItem('cr')
+                        })
+                    }else{
+                        alert(user.uid + ' ' + res.statusText)
+                    }
+                }).catch((error) => {
+                    toasthbx(error.errorMessage)
+                })
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                toasthbx(errorMessage)
+            })
+        }
+
+        document.getElementById('btnGoogle').onclick = function(){
+            signInWithPopup(auth, provider)
+            .then((result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+                
+                fetch('/confer_user/' + user.uid)
+                .then((res) => {
+                    if(res.ok){ 
+                        res.json().then((js) => {
+                            sessionStorage.setItem('cr', js.ids[0][0])
+                            sessionStorage.setItem('gc', js.ids[0][1])
+                            sessionStorage.setItem('mat', js.ids[0][2])
+
+                            document.location = '/gourmet/pedidos/' + sessionStorage.getItem('cr')
+                        })
+                    }else{
+                        toasthbx(res.statusText)
+                    }
+                })
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                toasthbx(errorMessage)
+            });
+        }
+    </script> -->
+</body>
+</html>
