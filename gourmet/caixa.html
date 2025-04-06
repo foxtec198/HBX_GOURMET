@@ -1,255 +1,42 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-bs-theme="dark">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hubbix - Nova Venda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <title>Pedidos</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" href="../../../static/img/favicon.ico">
-    <link rel="stylesheet" href="../../../static/css/base.css">
-    <script src="../../../static/js/base.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
-<body >
-    <!-- TOAST -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="tstHbx" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <img src="../../../static/img/favicon.ico" class="rounded me-2" alt="..." width="35" height="35">
-            <strong class="me-auto">Hubbix Gourmet</strong>
-            <small>Agora</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-          <div class="toast-body">
-            <p id="msgToast">tstHbx</p>
-          </div>
-        </div>
-    </div>
 
-    <!-- Navbar -->
-    <nav>
-        <a href="/gourmet/vendas/{{cr}}">
-            <i class="bi bi-caret-left-square"></i>
-            <!-- <img src="../../../static/img/logo.png" alt="logo" class="logo"> -->
-        </a>
-    </nav>
-
-    <div class="d-flex flex-column p-2">
-        <div class="alert alert-success" role="alert" hidden>
-            <p>Info</p>
-        </div>
-    </div>
-
-    <!-- VENDA -->
-    <div class="d-flex flex-column p-2 contG" style="height: 100%;">
-        <!-- Dados da Venda -->
-        <p class="fs-3">Nova Venda Direta</p>
-        <div class="d-inline">
-            <p class="fs-5" id="atendente1">
-                <span class="badge rounded-pill text-bg-light" id="at1"><i class="bi bi-person-bounding-box"></i>
-                    Atendente: {{get_atendente(matricula, cr)[0][0] }}
-                </span>
-            </p>
-        </div>
-
-        <!-- Opções da Venda -->
-        <div class="d-flex flex-column p-2">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
-                <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
-            </div>
-            <div class="d-flex" style="gap: 10px;">
-                <p>Valor a cobrar: R$</p>
-                <p id="valor" value="0">0</p>
-            </div>
-            <div class="d-flex gap-1">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-cash"></i></span>
-                    <input id="valorA" type="number" class="form-control" value="0" placeholder="Valor Pago" >
+<body data-bs-theme="dark">
+    <div class="p-4">
+        <span class="fs-4 fw-bold">Caixa</span>
+        <hr>
+        <div class="d-flex flex-wrap flex-column gap-2 w-100">
+            <div class="d-flex justify-content-  gap-2">
+                <div class="d-flex p-4 w-100 border rounded">
+                    a
                 </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-wallet-fill"></i></span>
-                    <select class="form-select" id="slpag">
-                        <option selected>PIX</option>
-                        <option>DINHEIRO</option>
-                        <option>CREDITO</option>
-                        <option>DEBITO</option>
-                    </select>
+                <div class="d-flex p-4 w-100 border rounded">
+                    b
+                </div>
+                <div class="d-flex p-4 w-100 border rounded">
+                    c
                 </div>
             </div>
-        </div>
-
-        <!-- style="overflow-y: auto; gap: 10px;" -->
-        <div class="d-flex flex-column p-1" >
-            <p>Produtos</p>
-            <ul class="list-group">
-                {% for item in get_categorias(cr) %}
-                <li class="list-group-item d-flex flex-column justify-content-between align-item-center">
-                    <a style="text-decoration: none; color: #fff;" class="d-flex justify-content-between" data-bs-toggle="collapse" href="#categ{{item[0]}}" role="button" aria-expanded="false" aria-controls="collapseExample">
-                        <b>{{item[1]}}</b>
-                        <i class="bi bi-caret-down-fill"></i>
-                    </a>
-                    <div class="collapse h-100" style="overflow: auto;" id="categ{{item[0]}}">
-                        {% for items in prod_categ(item[1], cr) %}
-                        <div class="d-flex justify-content-between align-item-center p-4">
-                            <div>
-                                <p id="nome{{items[4]}}"><b>{{items[0]}}</b></p>
-                                <p>R${{items[1]}}</p>
-                            </div>
-                            <div class="d-flex flex-column gap-1 h-100 justify-content-center align-item-center">
-                                <div class="btn-group">
-                                    <button class="btn btn-success" onclick="add({{items[4]}},{{items[1]}})" id="btnAdd2{{items[4]}}"><i class="bi bi-plus-circle"></i></button>
-                                    <input class="in" type="number" value="0" id="quant{{items[4]}}" readonly>
-                                    <button class="btn btn-danger" onclick="minus({{items[4]}}, {{items[1]}})" id="btnMinus2{{items[4]}}"><i class="bi bi-dash-circle"></i></button>
-                                </div>
-                                {% if confer_zero(items[4], cr) %}
-                                    <span class="badge text-bg-danger">Estoque Vazio!</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-            <!-- <ul class="list-group">
-                {% for item in get_categorias(cr) %}
-                <li class="list-group-item">
-                    <b><i class="bi bi-menu-button-wide"></i> - {{item[1]}}</b>
-                </li>
-                {% for items in prod_categ(item[1], cr) %}
-                <li class="list-group-item d-flex flex-column justify-content-between align-item-center">                    
-                    <div>
-                        <p><b>{{items[0]}}</b></p>
-                        <p>R${{items[1]}}</p>
-                    </div>
-                    <div class="d-flex flex-column gap-1 h-100 justify-content-center align-item-center">
-                        <div class="btn-group">
-                            <button class="btn btn-success" onclick="add({{items[4]}},{{items[1]}})" id="btnAdd2{{items[4]}}"><i class="bi bi-plus-circle"></i></button>
-                            <input class="in" type="number" value="0" id="quant{{items[4]}}" readonly>
-                            <button class="btn btn-danger" onclick="minus({{items[4]}}, {{items[1]}})" id="btnMinus2{{items[4]}}"><i class="bi bi-dash-circle"></i></button>
-                        </div>
-                        {% if confer_zero(items[4], cr) %}
-                        <span class="badge text-bg-danger">Estoque Vazio!</span>
-                        {% endif %}
-                    </div>
-                </li>
-                {% endfor %}
-                {% endfor %}
-            </ul> -->
-        </div>    
-        <br>
-        <div class="d-flex justify-content-center">
-            <button class="btn btn-success w-75" onclick="newSell()">
-                <span class="spinner-border spinner-border-sm" id="spinnerBtn" hidden></span>
-                <span class="role" id="btnText">Nova Venda</span>
-            </button>
-        </div>
-    <!-- Footer  -->
-    <hr>
-    <div class="footer">
-        <div>
-            <p>© 2024 Tecnobreve</p>
-        </div>
-        <div>
-            <a href="https://www.instagram.com/hubbix.sys"><i class="bi bi-instagram"></i></a>
-            <a href="https://api.whatsapp.com/send?phone=5543996617904"><i class="bi bi-whatsapp"></i></a>
+            <div class="d-flex p-4 w-100 border rounded">
+                d
+            </div>
         </div>
     </div>
-
-    <!-- JS -->
-    <script>
-        function add(item, vl){
-            const valorAntigo = document.getElementById('quant'+item).value
-            document.getElementById('quant'+item).value = parseInt(valorAntigo) + 1
-            const valor = parseInt(valorAntigo)
-            const realA = document.getElementById('valor').textContent
-            document.getElementById('valor').textContent = parseInt(realA) + parseInt(vl)
-            document.getElementById('valorA').value = parseInt(realA) + parseInt(vl)
-            document.getElementById('btnAdd2'+item).hidden = 'none'
-            
-            fetch('/minus_prod?id=' + item, {method:'POST'}).then(res=>{
-                if(res.ok){
-                    res.json().then(res=>{
-                        if(res['res'] == true){
-                            toasthbx('Estoque vazio! Adicione mais produtos!')
-                            document.getElementById('quant'+item).value = valorAntigo
-                        }
-                        else if(res['alerta'] === true){
-                            toasthbx('Estoque com quantidade no limite!')
-                        }
-                        document.getElementById('btnAdd2'+item).hidden = ''
-
-                    })
-                }
-            })
-        }
-        
-        function minus(item, vl){
-            const valorAntigo = document.getElementById('quant'+item).value
-            const valor = parseInt(valorAntigo)
-            document.getElementById('btnMinus2'+item).hidden = 'none'
-            
-            if(valor > 0){
-                const realA = document.getElementById('valor').textContent
-                document.getElementById('valor').textContent = parseInt(realA) - parseInt(vl)
-                document.getElementById('valorA').value = parseInt(realA) - parseInt(vl)
-                document.getElementById('quant'+item).value = valor - 1 
-                fetch('/add_prod?id='+item, {method:'POST'}).then(res=>{
-                    if(res.ok){
-                        document.getElementById('btnMinus2'+item).hidden = ''
-                    }
-                })
-            }else{document.getElementById('btnMinus2'+item).hidden = ''}
-
-        }
-        
-        function newSell(){
-            document.getElementById('spinnerBtn').hidden = ''
-            document.getElementById('btnText').textContent = 'Carregando'
-            
-            fetch('/getids/'+sessionStorage.getItem('cr'))
-            .then((res)=>{
-                if(res.ok){
-                    const cmd = "CAIXA"
-                    const cliente = document.getElementById('cliIn').value
-                    const pag = document.getElementById('slpag').value
-                    var pedidos = []
-
-                    if(cmd){
-                        if(cliente === '' || cliente === null){const cliente = "Não informado"}
-                        res.json().then((js)=>{
-                            const ids = js['ids']
-                            for( cont of ids){
-                                const quant = document.getElementById('quant'+ cont).value
-                                if (quant > 0){
-                                    const id = cont
-                                    const infos = id + '_' + quant + '_' + cmd + '_' + cliente + '_' + '{{get_atendente(matricula, cr)[0][0]}}' + '_' + pag
-                                    pedidos.push(infos)
-                                }
-                            }
-                            fetch('/nova_venda/' + sessionStorage.getItem('gc') +'/' + sessionStorage.getItem('cr') + '/' + pedidos)
-                            .then((res) => {
-                                if(res.ok){
-                                    document.location = '/gourmet/vendas/' + sessionStorage.getItem('cr')
-                                    toasthbx('Venda realizada com Sucesso!')
-                                }else{
-                                    toasthbx('Erro encontrado: ' + res.statusText)
-                                    document.getElementById('spinnerBtn').hidden = 'none'
-                                    document.getElementById('btnText').textContent = 'Novo Pedido'
-                                }
-                            })
-                        })
-                    }else{
-                        document.getElementById('spinnerBtn').hidden = 'none'
-                        document.getElementById('btnText').textContent = 'Novo Pedido'
-                    }
-                }
-            })
-        }            
-        
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 </html>
