@@ -1,6 +1,6 @@
 // Vars
-api = 'http://localhost:9560/gourmet/api/v1/'
-// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+// api = 'http://localhost:9560/gourmet/api/v1/'
+api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 mat = sessionStorage.getItem('mat')
 cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
