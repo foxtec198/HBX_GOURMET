@@ -9,7 +9,7 @@ nome = sessionStorage.getItem('display_name')
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
 if(window.location.pathname !== '/' && !mat){window.location = '/'}
-if(nome){document.getElementById('lbl_nome_usuario').textContent = nome}
+// if(nome){document.getElementById('lbl_nome_usuario').textContent = nome}
 if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
 
 // Funções 
