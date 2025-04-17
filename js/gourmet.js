@@ -8,12 +8,10 @@ cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
-if(nome){
-    document.getElementById('lbl_nome_usuario').textContent = nome
-}
-if(!cmd){
-    cmd = sessionStorage.setItem('cmd', false)
-}
+if(window.location.pathname !== '/' && !mat){window.location = '/'}
+if(nome){document.getElementById('lbl_nome_usuario').textContent = nome}
+if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
+
 // Funções 
 
 async function login(){
@@ -140,6 +138,6 @@ async function abrir_caixa(t){
         console.log(res)
         t.textContent = 'Abrir Caixa'
     }else{
-        toast('Valor inicial vazio!', 'erro')
+        toast('Valor inicial vazio!', 'info')
     }
 }
