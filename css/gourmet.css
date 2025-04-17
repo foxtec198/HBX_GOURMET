@@ -10,6 +10,7 @@ html, body{
     --green2: #3a5a40;
     --cinza: #282729;
     --cinza2: #2B3035;
+    --black-alt: #202020;
     --blue: #023047;
     --violet: #8338ec;
     --orange: #fb8500;
@@ -91,7 +92,7 @@ html, body{
     position: fixed;
     bottom: 0px;
     left: 0px;
-    background-color: #333;
+    background-color: var(--black-alt);
 }
 
 .dropdown-item:hover, .dropdown-item:active{

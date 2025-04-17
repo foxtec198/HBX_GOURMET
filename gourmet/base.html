@@ -16,38 +16,44 @@
             <img src="https://hubbix.com.br/img/logo.svg" class="img-fluid object-fit-contain" alt="logo loja" style="width: 100px; height: 50px;">
             <hr style="color: white;">
             <ul class="nav nav-pills flex-column mb-auto menu_desktop">
-              <li class="nav-item">
-                <a onclick="change_screen('caixa', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_caixa">
+                <a onclick="change_screen('caixa', this)" id="menu_caixa" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-wallet"></i>
                     Caixa
                 </a>
               </li>
-              <li>
-                <a onclick="change_screen('pedidos', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_pedidos">
+                <a onclick="change_screen('pedidos', this)" id="menu_pedidos" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-person-raised-hand"></i> 
                     Pedidos
                 </a>
               </li>
-              <li>
-                <a onclick="change_screen('comandas', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_comandas">
+                <a onclick="change_screen('comandas', this)" id="menu_comandas" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-card-checklist"></i>
                     Comandas
                 </a>
               </li>
-              <li>
-                <a onclick="change_screen('vendas', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_vendas">
+                <a onclick="change_screen('vendas', this)" id="menu_vendas" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-cart4"></i> 
                     Vendas
                 </a>
               </li>
-              <li>
-                <a onclick="change_screen('estoque', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_estoque">
+                <a onclick="change_screen('estoque', this)" id="menu_estoque" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-archive-fill"></i>
                     Estoque
                 </a>
               </li>
-              <li>
-                <a onclick="change_screen('relatorios', this)" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+              <li class="nav-item" id="link_estoque">
+                <a onclick="change_screen('combos', this)" id="menu_estoque" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+                    <i class="bi bi-collection-fill"></i>
+                    Combos
+                </a>
+              </li>
+              <li class="nav-item" id="link_relatorios">
+                <a onclick="change_screen('relatorios', this)" id="menu_relatorios" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-pie-chart-fill"></i>
                     Relatórios
                 </a>
@@ -60,7 +66,7 @@
                 <strong id="lbl_nome_usuario">[nome de usuario]</strong>
               </a>
               <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li onclick="change_screen('config')" style="cursor: pointer;"><a class="dropdown-item">Configurações</a></li>
+                <li onclick="change_screen('config')" id="link_config" style="cursor: pointer;"><a class="dropdown-item">Configurações</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li onclick="logout()" style="cursor: pointer;"><a class="dropdown-item dp-exit">Sair</a></li>
               </ul>
@@ -77,40 +83,40 @@
     <br class="mobile">
     <div class="mobilebar mobile">
         <div class="d-flex flex-row justify-content-around gap-2 text-center">
-            <div class="btn d-flex flex-column w-100" onclick="change_screen('caixa')">
+            <div class="btn d-flex flex-column" onclick="change_screen('caixa')" id="mobile_caixa">
                 <i class="bi bi-wallet display-6"></i>
                 <span class="fs-6">Caixa</span>
             </div>
-            <div class="btn d-flex flex-column w-100" onclick="change_screen('pedidos')">
+            <div class="btn d-flex flex-column" onclick="change_screen('pedidos')" id="mobile_pedidos" >
                 <i class="bi bi-person-raised-hand display-6"></i>
                 <span class="fs-6">Pedidos</span>
             </div>
-            <div class="btn d-flex flex-column w-100" onclick="change_screen('comandas')">
+            <div class="btn d-flex flex-column" onclick="change_screen('comandas')" id="mobile_comandas" >
                 <i class="bi bi-card-checklist display-6"></i>
                 <span class="fs-6">Comandas</span>
             </div>
             <div class="dropdown">
-                <div class="btn d-flex flex-column w-100" data-bs-toggle="dropdown">
+                <div class="btn d-flex flex-column" data-bs-toggle="dropdown">
                     <i class="bi bi-list display-6"></i>
                     <span class="fs-6">Outros</span>
                 </div>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" style="background: #202020;">
                     <li>
-                        <button class="dropdown-item" onclick="change_screen('vendas')"><i class="bi bi-cart4"></i> Vendas</button>
-                        <button class="dropdown-item" onclick="change_screen('estoque')"><i class="bi bi-archive-fill"></i> Estoque</button>
-                        <button class="dropdown-item" onclick="change_screen('relatorios')"><i class="bi bi-pie-chart-fill"></i> Relatórios</button>
-                        <button class="dropdown-item dp-exit" onclick="logout()"><i class="bi bi-x-octagon-fill"></i> Sair</button>
+                        <button class="dropdown-item" id="mobile_vendas" onclick="change_screen('vendas')"><i class="bi bi-cart4"></i> Vendas</button>
+                        <button class="dropdown-item" id="mobile_estoque" onclick="change_screen('estoque')"><i class="bi bi-archive-fill"></i> Estoque</button>
+                        <button class="dropdown-item" id="mobile_combos" onclick="change_screen('combos')"><i class="bi bi-collection-fill"></i> Combos</button>
+                        <button class="dropdown-item" id="mobile_relatorios" onclick="change_screen('relatorios')"><i class="bi bi-pie-chart-fill"></i> Relatórios</button>
+                        <li><hr class="dropdown-divider"></li>
+                        
+                        <button class="dropdown-item" id="mobile_config" onclick="change_screen('config')">Configurações</button>
+                        <button class="dropdown-item dp-exit" onclick="logout()">Sair</button>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
     <script src="/js/gourmet.js"></script>
+    <script>restore_screen()</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-        // Função Responsavel por restaurar a ultima tela a ser utilizada! Não contabilizando Modals e Notifys!
-        
-        restore_screen()
-    </script>
 </body>
 </html>

@@ -1,21 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
-<head>
+<head> <!-- Metas -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos</title>
+    <!-- Titulo -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- CSS Local -->
+    <link rel="stylesheet" href="/css/gourmet.css">
 </head>
-
 <body data-bs-theme="dark">
     <div class="p-4">
-        <span class="fs-4 fw-bold">Vendas</span>
+        <div class="d-flex w-100 justify-content-between">
+            <span class="fs-4 fw-bold">Vendas.</span>
+            <button class="btn btn-success mobile-hide"><i class="bi bi-plus-circle-fill"></i> Nova Venda</button>
+            <button class="btn btn-success mobile"><i class="bi bi-plus-circle-fill"></i></button>
+        </div>
         <hr>
+        <div class="d-flex flex-colmn overflow-auto">
+            <table class="table table-hover table-striped overflow-auto">
+                <thead>
+                    <th>Comanda/Mesa</th>
+                    <th>Atendente</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>Pagamento</th>
+                    <th>Ações</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>15</td>
+                        <td>Guilherme</td>
+                        <td>00/00/0000 00:00</td>
+                        <td class="text-truncate">R$ 20</td>
+                        <td>Debito</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-danger btn-sm"><i class="bi bi-trash2-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    
+    <!-- Toast -->
+    <div id="snackbar"></div>
+    <!-- Scripts -->
+    <script src="/js/gourmet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
