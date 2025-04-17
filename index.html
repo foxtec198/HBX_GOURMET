@@ -8,92 +8,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="icon" href="img/newFav.png">
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Local Arch -->
-    <style>
-        body{
-            width: 100%;
-            height: 100%;
-        }
-        .form {
-        --bg-light: #efefef;
-        --bg-dark: #707070;
-        --clr: #58bc82;
-        --clr-alpha: #9c9c9c60;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        width: 100%;
-        max-width: 250px;
-        }
-
-        .form .input-span {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        }
-
-        .form input[type="number"],
-        .form input[type="password"] {
-        border-radius: 0.5rem;
-        padding: 1rem 0.75rem;
-        width: 100%;
-        height: 40px;
-        border: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: var(--clr-alpha);
-        outline: 2px solid var(--bg-dark);
-        }
-
-        .form input[type="number"]:focus,
-        .form input[type="password"]:focus {
-        outline: 2px solid var(--clr);
-        }
-
-        .label {
-        align-self: flex-start;
-        color: var(--clr);
-        font-weight: 600;
-        }
-
-        .form .submit {
-        padding: 1rem 0.75rem;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-radius: 3rem;
-        background-color: var(--bg-dark);
-        color: var(--bg-light);
-        border: none;
-        cursor: pointer;
-        transition: all 300ms;
-        font-weight: 600;
-        font-size: 0.9rem;
-        }
-
-        .form .submit:hover {
-        background-color: var(--clr);
-        /* color: var(--bg-dark); */
-        color: white;
-        }
-
-        .span {
-        text-decoration: none;
-        color: var(--bg-dark);
-        }
-
-        .span a {
-        color: var(--clr);
-        }
-    </style>
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
+    <div id="snackbar"></div>
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="toastHbx" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-header">
@@ -110,8 +29,7 @@
         <img alt="logo" src="https://Hubbix.com.br/img/logo.svg" height="20vh">
     </nav>
 
-    <script src="js/manager.js"></script>
-    <div class="d-flex justify-content-center mt-5 align-items-center h-100">
+    <div class="d-flex justify-content-center align-items-center h-100">
         <form class="form">
             <span class="input-span">
                 <label for="email" class="label">Matrícula</label>
@@ -129,10 +47,6 @@
 
     
     </div>
-    <script>
-        function login(){
-            window.location = 'gourmet/base.html'
-        }
-    </script>
+    <script src="/js/gourmet.js"></script>
 </body>
 </html>

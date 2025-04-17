@@ -1,39 +1,90 @@
 // Vars
-api = 'https://effective-doodle-q6q569pqw75fx5pg-9560.app.github.dev/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
 // api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 mat = sessionStorage.getItem('mat')
 cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
+cmd = sessionStorage.getItem('cmd')
+nome = sessionStorage.getItem('display_name')
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 
+if(nome){
+    document.getElementById('lbl_nome_usuario').textContent = nome
+}
+if(!cmd){
+    cmd = sessionStorage.setItem('cmd', false)
+}
 // Funções 
+
+async function login(){
+    mat = document.getElementById('mat').value
+    pwd = document.getElementById('pwd').value
+    if(mat){
+        if(pwd){
+            dd = `{'matricula': ${mat},'password': ${pwd}}`
+            js = await fetch(api + 'login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'matricula': `${mat}`,
+                    'password': `${pwd}`
+                }
+            })
+            res = await js.json()
+            if(js.ok){
+                sessionStorage.setItem('display_name', res['nome'])
+                sessionStorage.setItem('cr', res['cr'])
+                sessionStorage.setItem('gc', res['gc'])
+                sessionStorage.setItem('permissao', res['permissao'])
+                sessionStorage.setItem('mat', res['matricula'])
+                window.location = '/gourmet/base.html'
+            }else{toast(res)}
+
+        }else{toast('Senha obrigatória!')}
+    }else{toast('Matricula obrigatória!')}
+}
+
 function logout(){
     sessionStorage.clear()
     location = '/'
 }
 
-function change_screen(screnn){
+function change_screen(screnn, t){
+    others = document.querySelectorAll('.menu-item')
+    others.forEach(element => {
+        element.style.background = null
+    });
+    t.style.background = '#5E8B60'
     frame = document.getElementById('frame_screen')
     sessionStorage.setItem('frame', `/gourmet/${screnn}.html`)
     frame.src = `/gourmet/${screnn}.html`
 }
 
-function toast(msg, type='info'){
-    tst = document.getElementById('toast_html')
-    if(type==='info'){
-        tst.classList.add('text-bg-info')
-    }else if(type==='erro'){
-        tst.classList.add('text-bg-danger')
-    }else if(type==='sucesso'){
-        tst.classList.add('text-bg-success')
+function restore_screen(){
+    frame = sessionStorage.getItem('frame')
+    frameWidget = document.getElementById('frame_screen')
+
+    if(frame){
+        frameWidget.src = frame
+    }else{
+        frameWidget.src = `/gourmet/caixa.html`
+        sessionStorage.setItem('frame', 'caixa.html')
+    }
+}
+
+function toast(msg, type=null){
+    tst = document.getElementById("snackbar");
+    tst.textContent = msg
+    tst.className = "show";
+    if(type==='erro'){
+        tst.style.background = '#c1121f'
+    }else if(type='info'){
+        tst.style.background = '#333'
+    }else{
+        tst.style.background = '#3a5a40'
     }
 
-    title = document.getElementById('title_toast')
-    title.textContent = msg
-
-    $(document).ready(function(){
-        $('.toast').toast('show');
-    });
+    setTimeout(function(){ tst.className = tst.className.replace("show", ""); }, 3000);
 }
 
 // Callbacks API
