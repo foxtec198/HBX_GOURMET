@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 
@@ -10,10 +10,6 @@ cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
 cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
-
-if(window.location.pathname !== '/' && !mat){window.location = '/'}
-if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
-
 
 // Funções ------------------------------------------------------------------------------------------------------- 
 // Realiza o Logout limpando os caches e voltando para o login
@@ -108,6 +104,7 @@ function send_form(url, form){
 }
 
 // Callbacks API ---------------------------------------------------------------------------------------------
+// Caixa
 async function abrir_caixa(t){
     valor = document.getElementById('vl_ab_caixa').value
     if(valor){
@@ -115,7 +112,7 @@ async function abrir_caixa(t){
         dados = `{
             "valor": ${valor}
         }`
-        req = await request('abrir_caixa', 'POST', dados)
+        req = await request('caixa', 'POST', dados)
         res = await req.json()
         
         if(req.ok){
@@ -128,7 +125,7 @@ async function abrir_caixa(t){
 }
 
 async function status_caixa(){
-    req = await request('conferir_caixa', 'POST')
+    req = await request('caixa', 'GET')
     res = await req.json()
     st = document.getElementById('caixa_status')
     st.classList.remove('placeholder')
@@ -143,6 +140,140 @@ async function status_caixa(){
     }
 }
 
+async function aplicar_caixa(t){
+    valor = document.getElementById('valor_ap_caixa').value
+    t.innerHTML = spinner
+    req = await request('caixa?valor=' + valor, 'PATCH')
+    res = await req.json()
+    if(req.ok){location.reload()}
+    else{toast(res, 'erro'); t.textContent = 'Aplicar Valor'}
+}
+
+async function fechar_caixa(t){
+    req = await request('caixa', 'DELETE')
+    res = await req.json()
+    if(req.ok){location.reload()}
+    else{toast(res, 'erro')}
+
+}
+
+// Despesas
+async function add_despesa(t){
+    valor = document.getElementById('input_valor_despesa').value
+    motivo = document.getElementById('input_motivo_despesa').value
+    if(valor){
+        if(motivo){
+            data = `{
+                "motivo": "${motivo}",
+                "valor": ${valor}
+            }`
+            t.innerHTML = spinner
+            req = await request('despesas', 'POST', data)
+            res = await req.json()
+            if(req.status === 200){location.reload()}
+            else{
+                toast(res, 'erro')
+                t.textContent = 'Criar Despesa'
+            }
+        }else{toast('Motivo Obrigatório!', 'erro')}
+    }else{toast('Valor Obrigatório!', 'erro')}
+}
+
+async function get_despesas(){
+    req = await request('despesas')
+    res = await req.json()
+    if(res[0]){
+        cont = 0
+        res.forEach(item => {
+            const id = item['id']
+            const nome = item['motivo']
+            const valor = item['valor']
+            const data = item['data']
+            const hora = item['hora']
+            const dataAtual = new Date()
+            const dataStr = dataAtual.toLocaleDateString('pt-br')
+
+            if(dataStr === data){
+                td = document.createElement('tr')
+    
+                trMotivo = document.createElement('td')
+                trMotivo.textContent = nome
+                trMotivo.classList.add('text-truncate')
+    
+                trValor = document.createElement('td')
+                trValor.textContent = `R$ ${valor}`
+                trValor.classList.add('text-truncate')
+
+                trData = document.createElement('td')
+                trData.textContent = data
+                trData.classList.add('text-truncate')
+    
+                trHora = document.createElement('td')
+                trHora.textContent = hora
+                trHora.classList.add('text-truncate')
+    
+                // Remove Button
+                trBtn = document.createElement('td')
+    
+                const btnRemove = document.createElement('btn')
+                btnGp = document.createElement('div')
+                btnGp.classList.add('btn-group')
+    
+                btnRemove.innerHTML = '<i class="bi bi-trash2-fill"></i>'
+                btnRemove.classList.add('btn')
+                btnRemove.classList.add('btn-sm')
+                btnRemove.classList.add('btn-danger')
+                btnRemove.addEventListener('click', async function(){
+                    if(confirm('Deseja excluir essa despesa?')){
+                        req = await request('despesas?id=' + id, 'DELETE')
+                        if(req.status === 200){location.reload()}
+                        else{toast(req.json(), 'erro')}
+                    }
+                })
+                
+                btnGp.appendChild(btnRemove)
+                trBtn.appendChild(btnGp)
+    
+                td.appendChild(trMotivo)
+                td.appendChild(trValor)
+                td.appendChild(trData)
+                td.appendChild(trHora)
+                td.appendChild(trBtn)
+    
+                document.getElementById('tb_despesas').appendChild(td)
+                cont += 1
+            }
+        })
+        if(cont === 0){
+            tr = document.createElement('tr')
+
+            td = document.createElement('td')
+            td.colSpan = 5
+            td.classList.add('text-center')
+            td.classList.add('fw-bold')
+            td.classList.add('py-5')
+            td.textContent = 'Nenhuma despesa cadastrada!'
+    
+            tr.appendChild(td)
+            document.getElementById('tb_despesas').appendChild(td)
+        }
+    }else{
+        tr = document.createElement('tr')
+
+        td = document.createElement('td')
+        td.colSpan = 5
+        td.classList.add('text-center')
+        td.classList.add('fw-bold')
+        td.classList.add('py-5')
+        td.textContent = 'Nenhuma despesa cadastrada!'
+
+        tr.appendChild(td)
+        document.getElementById('tb_despesas').appendChild(td)
+    }
+
+}
+
+// Login
 async function login(){
     mat = document.getElementById('mat').value
     pwd = document.getElementById('pwd').value
@@ -171,6 +302,84 @@ async function login(){
     }else{toast('Matricula obrigatória!')}
 }
 
+// Pedidos
+async function get_pedidos(){
+    req = await request('pedidos')
+    res = await req.json()
+    const tb_pedidos = document.getElementById('tb_pedidos')
+
+    if(res[0]){
+        res.forEach(item => {
+            cmd = item['cmd']
+            horario = item['data']
+            func = item['func']
+
+            const tr = document.createElement('tr')
+        
+            const tdCmd = document.createElement('td')
+            tdCmd.textContent = cmd
+
+            const tdHora = document.createElement('td')
+            tdHora.textContent = horario
+
+            const tdFunc = document.createElement('td')
+            tdFunc.textContent = func
+            
+            tdGp = document.createElement('td')
+            btnGp = document.createElement('div')
+            btnGp.classList.add('btn-group')
+
+            // Botao de Entregar
+            btnEntrega = document.createElement('button')
+            btnEntrega.classList.add('btn')
+            btnEntrega.classList.add('btn-sm')
+            btnEntrega.classList.add('btn-success')
+            btnEntrega.innerHTML = '<i class="bi bi-plus-circle"></i>'
+
+            // Botao de Visualizar
+            btnView = document.createElement('button')
+            btnView.classList.add('btn')
+            btnView.classList.add('btn-sm')
+            btnView.classList.add('btn-secondary')
+            btnView.innerHTML = '<i class="bi bi-eye-fill"></i>'
+
+            // Botao de Remover
+            btnRemove = document.createElement('button')
+            btnRemove.classList.add('btn')
+            btnRemove.classList.add('btn-sm')
+            btnRemove.classList.add('btn-danger')
+            btnRemove.innerHTML = '<i class="bi bi-trash2-fill"></i>'
+
+            btnGp.appendChild(btnEntrega)
+            btnGp.appendChild(btnView)
+            btnGp.appendChild(btnRemove)
+            tdGp.appendChild(btnGp)
+            
+            
+            tr.appendChild(tdCmd)
+            tr.appendChild(tdHora)
+            tr.appendChild(tdFunc)
+            tr.appendChild(tdGp)
+            tb_pedidos.appendChild(tr)
+
+        })
+    }else{
+        const tr = document.createElement('tr')
+        
+        const td = document.createElement('td')
+        td.textContent = 'Sem pedidos ainda!'
+        td.colSpan = 4
+        td.classList.add('text-center')
+        td.classList.add('py-5')
+        td.classList.add('fw-bold')
+
+        tr.appendChild(td)
+        tb_pedidos.appendChild(tr)
+    }
+}
+
+
+
 // Controle de Permissao ----------------------------------------------------------------------------------------------
 perm = sessionStorage.getItem('permissao')
 if(perm){
@@ -187,3 +396,5 @@ if(perm){
     }
 }
 if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
+if(window.location.pathname !== '/' && !mat){window.location = '/'}
+if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
