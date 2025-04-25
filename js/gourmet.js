@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 
@@ -378,7 +378,43 @@ async function get_pedidos(){
     }
 }
 
+// Produtos
+async function get_prods(){
+    req = await request('produtos')
+    res = await req.json()
 
+    if(res[0]){
+        res.forEach(item => {
+            const id = item['id']
+            const nome = item['nome']
+            const ctg = item['categoria']
+            const quant = item['quantidade']
+            const valor = item['valor']
+
+            li_example = `
+                <div class=" d-flex justify-content-between align-item-center">
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold text-truncate">${nome}</span>
+                        <span>R$ ${valor} - ${ctg}</span>
+                    </div>
+                    <div class="btn-group flex-shrink-1">
+                        <button class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
+                        <input type="number" value="0" style="width: 50px;" class="btn border form-control text-center">
+                        <button class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                    </div>
+                </div>`
+
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+
+            li.innerHTML = li_example
+
+            document.getElementById('list_prods').appendChild(li)
+        })
+    }else{
+
+    }
+}
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------
 perm = sessionStorage.getItem('permissao')

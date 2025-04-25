@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Metas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- CSS Local -->
+    <link rel="stylesheet" href="/css/gourmet.css">
+</head>
+<body data-bs-theme="dark">
+    <div class="d-flex flex-column p-2 contG">
+        <span class="fs-4 fw-bold">Iniciar Atendimento!</span>
+        <span>Selecione seus items e clique no botão Novo Pedido!</span>
+        <div class="d-inline">
+            <p class="fs-5" id="atendente1">
+                <span class="badge rounded-pill text-bg-light">
+                    <i class="bi bi-person-bounding-box"></i>
+                    <span id="lbl_at">Atendente</span>
+                </span>
+            </p>
+        </div>
+    </div> 
+    <div class="d-flex flex-row flex-wrap gap-2 p-2">
+        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 200px;">
+            <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
+            <input id="cmdIn" type="number" class="form-control" placeholder="Comanda ou Mesa" >
+        </div>
+        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 200px;">
+            <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
+            <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
+        </div>
+    </div>
+
+    <div class="d-flex flex-column p-2" style="height: 75%; overflow-y: auto;">
+        <div class="input-group mb-4">
+            <span class="input-group-text">@</span>
+            <input id="search_prods" type="text" placeholder="Busque por produtos, categorias ou preços!!" class="form-control" autocapitalize="off" autocomplete="off" autofocus>
+        </div>
+
+        <ul class="list-group w-100" id="list_prods"></ul>
+    </div>
+
+    <div class="d-flex mt-5 justify-content-center align-item-center">
+        <button class="btn btn-success w-75 fw-bold">Novo Pedido</button>
+    </div>
+    
+    <!-- Toast -->
+    <div id="snackbar"></div>
+
+    <!-- Scripts -->
+    <script src="/js/gourmet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function(){
+        $("#search_prods").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#list_prods li").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+        });
+
+        document.getElementById('lbl_at').textContent = sessionStorage.getItem('display_name').toUpperCase()
+        get_prods()
+    </script>
+</body>
+</html>

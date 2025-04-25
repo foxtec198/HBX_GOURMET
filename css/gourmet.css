@@ -164,3 +164,7 @@ html, body{
     from {bottom: 100px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
+
+input[type=number]::-webkit-inner-spin-button{
+    appearance: none; 
+}
