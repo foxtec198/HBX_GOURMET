@@ -397,10 +397,12 @@ async function get_prods(){
                         <span class="fw-bold text-wrap">${nome}</span>
                         <span>R$ ${valor} - ${ctg}</span>
                     </div>
-                    <div class="btn-group flex-shrink-1">
+                    <div class="d-flex justify-content-center align-item-center text-center">
+                      <div class="btn-group flex-shrink-1">
                         <button class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
                         <input type="number" value="0" style="width: 50px;" class="btn border form-control text-center">
                         <button class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                      </div>
                     </div>
                 </div>`
 
