@@ -394,7 +394,7 @@ async function get_prods(){
             li_example = `
                 <div class=" d-flex justify-content-between align-item-center">
                     <div class="d-flex flex-column">
-                        <span class="fw-bold text-truncate">${nome}</span>
+                        <span class="fw-bold text-wrap">${nome}</span>
                         <span>R$ ${valor} - ${ctg}</span>
                     </div>
                     <div class="btn-group flex-shrink-1">
@@ -415,6 +415,9 @@ async function get_prods(){
 
     }
 }
+
+
+
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------
 perm = sessionStorage.getItem('permissao')

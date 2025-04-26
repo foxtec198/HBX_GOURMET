@@ -168,3 +168,18 @@ html, body{
 input[type=number]::-webkit-inner-spin-button{
     appearance: none; 
 }
+
+#goToTheButton{
+    position: fixed;
+    background-color: var(--green);
+    font-size: 3vh;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    top: 1px;
+    right: 5px;
+    border-radius: 50%;
+    color: #fff;
+}
