@@ -420,7 +420,7 @@ function enviar_prods(){
     res = document.querySelectorAll(".prods")
     alert("Teste")
     res.forEach(item=>{
-        alert(item)
+        alert(item.name)
     })
 }
 
