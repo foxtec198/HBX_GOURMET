@@ -416,7 +416,12 @@ async function get_prods(){
     }
 }
 
-
+function enviar_prods(){
+  const items = document.getElementByClassName("prods")
+  items.forEach(item{
+    alert(item)
+  })
+}
 
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------
