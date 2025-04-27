@@ -399,7 +399,7 @@ async function get_prods(){
                     </div>
                     <div class="d-flex justify-content-center align-item-center text-center mb-auto">
                         <button class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
-                        <input type="number" value="0" style="width: 50px;" class="btn border form-control text-center">
+                        <input class="prods" name="${id}" type="number" value="0" style="width: 50px;" class="btn border form-control text-center">
                         <button class="btn btn-danger"><i class="bi bi-dash"></i></button>
                     </div>
                 </div>`
