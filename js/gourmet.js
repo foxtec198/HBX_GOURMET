@@ -416,6 +416,10 @@ async function get_prods(){
     }
 }
 
+function enviar_prods(){
+    res = document.querySelectorAll(".prods")
+    console.log(res)
+}
 
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------
