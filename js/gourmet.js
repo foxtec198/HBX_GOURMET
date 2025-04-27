@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 
@@ -312,6 +312,7 @@ async function get_pedidos(){
         res.forEach(item => {
             cmd = item['cmd']
             horario = item['data']
+            cli = item['cli']
             func = item['func']
 
             const tr = document.createElement('tr')
@@ -321,6 +322,9 @@ async function get_pedidos(){
 
             const tdHora = document.createElement('td')
             tdHora.textContent = horario
+
+            const tdCli = document.createElement('td')
+            tdCli.textContent = cli
 
             const tdFunc = document.createElement('td')
             tdFunc.textContent = func
@@ -342,6 +346,53 @@ async function get_pedidos(){
             btnView.classList.add('btn-sm')
             btnView.classList.add('btn-secondary')
             btnView.innerHTML = '<i class="bi bi-eye-fill"></i>'
+            btnView.addEventListener('click', async function(){
+                document.getElementById('label_modal_pedidos').textContent = `Pedidos Comanda: ${cmd}.`
+                const lp = document.getElementById('list_pedidos')
+                lp.innerHTML = ''
+                data = {'cmd': cmd}
+                req = await request('prods_pedidos', 'POST', JSON.stringify(data))
+                res = await req.json()
+                
+                if(req.ok){
+                    res.forEach(item => {
+                        id = item['id']
+                        idp = item['idp']
+                        prod = item['prod']
+                        quant = item['quant']
+                        st = item['status']
+
+                        li = document.createElement('li')
+                        li.classList.add('list-group-item')
+    
+                        dv = document.createElement('div')
+                        dv.classList.add('d-flex')
+                        dv.classList.add('justify-content-between')
+                        dv.classList.add('align-items-center')
+    
+                        sp = document.createElement('span')
+                        sp.innerHTML = `${prod} - ${quant}Un.`
+
+                        badge = document.createElement('span')
+                        badge.textContent = st
+                        badge.classList.add('badge')
+
+                        if(st === 'SOLICITADO'){badge.classList.add('text-bg-success')}
+                        else if(sp === 'ENTREGUE'){badge.classList.add('text-bg-primary')}
+                        else{badge.classList.add('text-bg-danger')}
+
+                        dv.appendChild(sp)
+                        dv.appendChild(badge)
+                        
+                        li.appendChild(dv)
+
+                        lp.appendChild(li)
+                    })
+                }
+
+                const modal = new bootstrap.Modal('#modal_view')
+                modal.show()
+            })
 
             // Botao de Remover
             btnRemove = document.createElement('button')
@@ -349,6 +400,16 @@ async function get_pedidos(){
             btnRemove.classList.add('btn-sm')
             btnRemove.classList.add('btn-danger')
             btnRemove.innerHTML = '<i class="bi bi-trash2-fill"></i>'
+            btnRemove.addEventListener('click', async function(){
+                if(confirm('Deseja realmente Cancelar este pedido?')){
+                    btnRemove.innerHTML = spinner
+                    data = {"cmd": cmd}
+                    req = await request('pedidos', 'DELETE', JSON.stringify(data))
+                    res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                }
+            })
 
             btnGp.appendChild(btnEntrega)
             btnGp.appendChild(btnView)
@@ -358,6 +419,7 @@ async function get_pedidos(){
             
             tr.appendChild(tdCmd)
             tr.appendChild(tdHora)
+            tr.appendChild(tdCli)
             tr.appendChild(tdFunc)
             tr.appendChild(tdGp)
             tb_pedidos.appendChild(tr)
@@ -368,10 +430,11 @@ async function get_pedidos(){
         
         const td = document.createElement('td')
         td.textContent = 'Sem pedidos ainda!'
-        td.colSpan = 4
+        td.colSpan = 5
         td.classList.add('text-center')
-        td.classList.add('py-5')
         td.classList.add('fw-bold')
+        td.style.paddingBottom = '100px'
+        td.style.paddingTop = '100px'
 
         tr.appendChild(td)
         tb_pedidos.appendChild(tr)
@@ -391,19 +454,31 @@ async function get_prods(){
             const quant = item['quantidade']
             const valor = item['valor']
 
-            li_example = `
+            if(quant > 0){
+                li_example = `
+                    <div class=" d-flex justify-content-between align-item-center">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-wrap">${nome}</span>
+                            <span>R$${parseFloat(valor)} - Categoria: ${ctg} - Quantidade: ${quant}</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-item-center text-center mb-auto">
+                            <button onclick="add_prod(this, ${id})" id="btnAdd${id}" class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
+                            <input class="prods" name="${id}" id="input_prod${id}" type="number" readonly value="0" style="width: 50px;" class="btn border form-control text-center">
+                            <button onclick="rmv_prod(this, ${id})" class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                        </div>
+                    </div>`
+            }else if(quant <= 0){
+                li_example = `
                 <div class=" d-flex justify-content-between align-item-center">
-                    <div class="d-flex flex-column">
+                    <div class="d-flex flex-column flex-grow-1">
                         <span class="fw-bold text-wrap">${nome}</span>
-                        <span>R$ ${valor} - ${ctg}</span>
+                        <span>R$${parseFloat(valor)} - Categoria: ${ctg} - Quantidade: ${quant}</span>
                     </div>
                     <div class="d-flex justify-content-center align-item-center text-center mb-auto">
-                        <button class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
-                        <input class="prods" name="${id}" type="number" value="0" style="width: 50px;" class="btn border form-control text-center">
-                        <button class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                        <span class="badge w-100 text-bg-danger rounded-pill">Estoque Vazio!</span>
                     </div>
                 </div>`
-
+            }
             const li = document.createElement('li')
             li.classList.add('list-group-item')
 
@@ -416,15 +491,119 @@ async function get_prods(){
     }
 }
 
-function enviar_prods(){
-    res = document.querySelectorAll(".prods")
-    prods = {}
-    res.forEach(item=>{
-        prods[item.name] = {"quantidade": item.value}
-    })
-    console.log(prods)
+async function add_prod(t, id){
+    t.innerHTML = spinner
+    input = document.getElementById('input_prod' + id)
+    input.value = parseInt(input.value) + 1
+
+    data = {"id": id}
+    req = await request('rmv_prod', 'POST', JSON.stringify(data))
+    res = await req.json()
+    if(req.ok){
+        t.innerHTML = '<i class="bi bi-plus fw-bold"></i>'
+        if(res - parseInt(input.value) === 0){
+            t.disabled = true
+            toast('Estoque excedido')
+        }
+    }
 }
 
+async function rmv_prod(t, id){
+    input = document.getElementById('input_prod' + id)
+    document.getElementById('btnAdd' + id).disabled = false
+    if(input.value > 0){
+        t.innerHTML = spinner
+        input.value = parseInt(input.value) - 1
+    
+        data = {"id": id}
+        req = await request('add_prod', 'POST', JSON.stringify(data))
+        res = await req.json()
+        if(req.ok){
+            t.innerHTML = '<i class="bi bi-dash" disable></i>'
+        }
+    }else{input.value = 0}
+ }
+
+async function enviar_prods(t=null){
+    cmd = document.getElementById('cmdIn').value
+    cli = document.getElementById('cliIn').value
+    objs = document.querySelectorAll(".prods")
+    data = {"cmd": cmd, "cliente":cli}
+    prods = {}
+
+    objs.forEach(item=>{
+        if(item.value > 0){
+            prods[item.name] = {"quantidade": parseInt(item.value)}
+        }
+    })
+
+    data["items"] = prods
+
+    if(cmd){
+        if(Object.keys(prods).length > 0){
+            if(t){t.innerHTML = spinner}
+            req = await request("pedidos", "POST", JSON.stringify(data))
+            res = await req.json()
+            if(req.ok){
+                window.location = '/gourmet/pedidos.html'
+            }
+            else{toast(res)}
+        }else{toast('Selecione algum produto!')}
+    }else{toast('Comanda ou Mesa obrigatoria!')}
+
+    
+}
+
+// Comandas
+async function get_cmds(){
+    req = await request('comandas')
+    res = await req.json()
+    const tb_cmds = document.getElementById('tb_comandas')
+
+    if(Object.keys(res).length > 0){
+        res.forEach(item => {
+            cliente = item['cliente']
+            cmd = item['cmd']
+            func = item['func']
+            valor = item['valor']
+
+            const tr = document.createElement('tr')
+
+            const tdCmd = document.createElement('td')
+            tdCmd.textContent = cmd
+            tr.appendChild(tdCmd)
+
+            const tdCliente = document.createElement('td')
+            tdCliente.textContent = cliente
+            tr.appendChild(tdCliente)
+
+            
+            const tdValor = document.createElement('td')
+            tdValor.textContent = parseFloat(valor).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+            tr.appendChild(tdValor)
+
+            const tdFunc = document.createElement('td')
+            tdFunc.textContent = func
+            tr.appendChild(tdFunc)
+
+            tb_cmds.appendChild(tr)
+        })
+    }else{
+        const tr = document.createElement('tr')
+        
+        const td = document.createElement('td')
+        td.textContent = 'Sem comandas!'
+        td.colSpan = 5
+        td.classList.add('text-center')
+        td.classList.add('fw-bold')
+        td.style.paddingBottom = '100px'
+        td.style.paddingTop = '100px'
+
+        tr.appendChild(td)
+        tb_cmds.appendChild(tr)
+    }
+    
+}
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------
 perm = sessionStorage.getItem('permissao')

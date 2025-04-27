@@ -11,7 +11,7 @@
     
 </head>
 <body data-bs-theme='dark'>
-    <div class="d-flex flex-row h-100 overflow-x-auto">
+    <div class="d-flex h-100 flex-row">
         <div class="d-flex flex-column flex-shrink-0 p-3 text-dark mobile-hide" style="width: 250px; background: #202020;">
             <img src="https://hubbix.com.br/img/logo.svg" class="img-fluid object-fit-contain" alt="logo loja" style="width: 100px; height: 50px;">
             <hr style="color: white;">
@@ -77,11 +77,8 @@
             <iframe src="boasvindas.html" id="frame_screen" id="mainFrameMob" frameborder="0" width="100%"></iframe>
         </div>
     </div>
-    <!-- Breaks para que o BottomBar nao sobreponha totalmente a pagina! - Aparecem somente no Mobile -->
-    <br class="mobile">
-    <br class="mobile">
-    <br class="mobile">
-    <div class="mobilebar mobile">
+    <br class="mobile"><br class="mobile"><br class="mobile">
+    <div class="mobile mobilebar">
         <div class="d-flex flex-row justify-content-around gap-2 text-center">
             <div class="btn d-flex flex-column" onclick="change_screen('caixa')" id="mobile_caixa">
                 <i class="bi bi-wallet display-6"></i>
@@ -118,8 +115,5 @@
     <script src="/js/gourmet.js"></script>
     <script>restore_screen()</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
 </body>
 </html>
