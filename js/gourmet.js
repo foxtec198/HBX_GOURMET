@@ -417,9 +417,10 @@ async function get_prods(){
 }
 
 function enviar_prods(){
-    // res = document.querySelectorAll(".prods")
+    res = document.querySelectorAll(".prods")
     console.log("Teste")
     alert("Teste")
+    alert(res)
 }
 
 
