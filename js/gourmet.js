@@ -418,10 +418,12 @@ async function get_prods(){
 
 function enviar_prods(){
     res = document.querySelectorAll(".prods")
-    alert("Teste")
+    prods = []
     res.forEach(item=>{
-        alert(item.name)
+        prods.join(item.name)
+        // alert(item.name)
     })
+    alerta(prods)
 }
 
 
