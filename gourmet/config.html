@@ -1,150 +1,136 @@
-{% extends 'gourmet/base.html' %}
-{% block cont %}
-<div id="frameConfig">
-    <h1>Configurações</h1>
-    <div class="d-flex flex-column gap-2">
-        <hr>
-        <div class="d-flex flex-row justify-content-between">
-            <p>Imprimir Pedidos Automático?</p>
-            <label class="switch">
-                <input type="checkbox" id="imp">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <hr>
-        {% if get_perm(mat) == "ADMIN" %}
-        <div class="d-flex justify-content-between">
-            <p>Deseja controle de Pedidos ?</p>
-            <label class="switch">  
-                <input type="checkbox" id="ped">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <hr>
-        <div class="d-flex justify-content-between">
-            <p>Deseja controle de Comandas ?</p>
-            <label class="switch">  
-                <input type="checkbox" id="cmds">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <hr>
-        <div class="d-flex justify-content-between">
-            <p>Deseja controle de Estoque ?</p>
-            <label class="switch">  
-                <input type="checkbox" id="es">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <br>
-        <div class="card p-4 d-flex flex-column justify-content-between">
-            <p class="fs-5">Funcionarios:</p>
-            <div class="d-flex gap-5 justify-content-around flex-wrap">
-                <form class="d-flex flex-column gap-2" action="/criar_funcionario" method="post">
-                    <p>
-                        <i class="bi bi-person-add"></i>
-                        Cadastrar
-                    </p>
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <label for="nome">Nome</label>
-                        <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="off">
-                    </div>
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <label for="pwd">Senha</label>
-                        <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="off">
-                    </div>
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <label for="pwd">Permissão</label>
-                        <select name="permissao" class="form-select">
-                            <option value="FUNC">
-                                🙍🏻‍♂️ Funcionario
-                            </option>
-                            <option value="ADMIN">
-                                🔓 Administrador
-                            </option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-success">Adicionar</button>
-                </form>
-                <ul class="list-group">
-                    <p>
-                        <i class="bi bi-file-person-fill"></i>
-                        Cadastrados
-                    </p>
-                    {% for mat, nome, perm in atendentes(cr)%}
-                    <li class="list-group-item d-flex gap-5 justify-content-between">
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Metas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Titulo -->
+    <title>Combos</title>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- CSS Local -->
+    <link rel="stylesheet" href="/css/gourmet.css">
+</head>
+<body data-bs-theme="dark">
+    <div class="d-flex mb-4">
+        <span class="fs-4 fw-bold">Configurações.</span>
+    </div>
+    <div id="frameConfig">
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex flex-row justify-content-between">
+                <p>Imprimir Pedidos Automático?</p>
+                <label class="switch">
+                    <input type="checkbox" id="imp">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <p>Deseja controle de Pedidos ?</p>
+                <label class="switch">  
+                    <input type="checkbox" id="ped">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <p>Deseja controle de Comandas ?</p>
+                <label class="switch">  
+                    <input type="checkbox" id="cmds">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <p>Deseja controle de Estoque ?</p>
+                <label class="switch">  
+                    <input type="checkbox" id="es">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <br>
+            <div class="card p-4 d-flex flex-column justify-content-between">
+                <p class="fs-5">Funcionarios:</p>
+                <div class="d-flex gap-5 justify-content-around flex-wrap">
+                    <form class="d-flex flex-column gap-2" action="" method="">
                         <p>
-                            {% if perm == "ADMIN" %}
-                            <i class="bi bi-unlock-fill"></i>
-                            {% elif perm == "FUNC" %}
-                            <i class="bi bi-person-fill-check"></i>
-                            {% endif %} - 
-                            {{mat}} - {{nome.capitalize()}}
+                            <i class="bi bi-person-add"></i>
+                            Cadastrar
                         </p>
-                        <div class="btn-group">
-                            {% if perm == "FUNC" %}
-                            <button class="btn btn-light" onclick="adminFunc({{mat}})">
-                                <i class="bi bi-unlock-fill"></i>
-                            </button>
-                            {% endif %}
-                            <button class="btn btn-danger" onclick="removeFunc({{mat}})">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label for="nome">Nome</label>
+                            <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="off">
                         </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label for="pwd">Senha</label>
+                            <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="off">
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label for="pwd">Permissão</label>
+                            <select name="permissao" class="form-select">
+                                <option value="FUNC">
+                                    🙍🏻‍♂️ Funcionario
+                                </option>
+                                <option value="ADMIN">
+                                    🔓 Administrador
+                                </option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Adicionar</button>
+                    </form>
+                    <ul class="list-group">
+                        <p>
+                            <i class="bi bi-file-person-fill"></i>
+                            Cadastrados
+                        </p>
+                        <li class="list-group-item d-flex gap-5 justify-content-between">
+                            <p>
+                                <i class="bi bi-unlock-fill"></i>
+                                <i class="bi bi-person-fill-check"></i>
+                            </p>
+                            <div class="btn-group">
+                                <button class="btn btn-light" onclick="adminFunc({{mat}})">
+                                    <i class="bi bi-unlock-fill"></i>
+                                </button>
+                                <button class="btn btn-danger" onclick="removeFunc({{mat}})">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <hr>
-        {% endif %}
-        <div class="d-flex justify-content-between">
-            <div>
-                <p class="fs-5">Bot do Whatsapp</p>
-                <p class="fs-6">Editar Informações</p>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <p class="fs-5">Bot do Whatsapp</p>
+                    <p class="fs-6">Editar Informações</p>
+                </div>
+                <div class="d-flex flex-column">
+                    <img src="" alt="qrcode">
+                    <a style="cursor: wait;">Versão Paga</a>
+                </div>
             </div>
-            <div class="d-flex flex-column">
-                <img src="" alt="qrcode">
-                <a style="cursor: wait;">Versão Paga</a>
+            <hr><br>
+            <div class="d-flex justify-content-between">
+                <p class="fs-6">Cardapio Digital</p>
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                    <img src="../../static/qrs/qrCard{{cr}}.png" alt="qrcode" height="100" width="100">
+                    <a href="/gourmet/cardapio/{{cr}}">Acesse aqui</a>
+                </div>
             </div>
-        </div>
-        <hr><br>
-        <div class="d-flex justify-content-between">
-            <p class="fs-6">Cardapio Digital</p>
-            <div class="d-flex flex-column align-items-center justify-content-center">
-                <img src="../../static/qrs/qrCard{{cr}}.png" alt="qrcode" height="100" width="100">
-                <a href="/gourmet/cardapio/{{cr}}">Acesse aqui</a>
-            </div>
-        </div>
-        
-        <hr>
-        <div class="d-flex justify-content-end">
-            <button class="btn btn-success" onclick="salvar_configs()">Salvar Alterações</button>
         </div>
     </div>
-</div>
-<script>
-    fetch('/get_config/').then(res=>{
-    if(res.ok){
-        res.json().then(res=>{
-            var imp = res[0][1]
-            var ped = res[0][2]
-            var cmds = res[0][3]
-            var es = res[0][4]
-            if(imp){
-                document.getElementById('imp').checked = true
-            }
-            if(ped){
-                document.getElementById('ped').checked = true
-            }
-            if(cmds){
-                document.getElementById('cmds').checked = true
-            }
-            if(es){
-                document.getElementById('es').checked = true
-            }
-        })
-    }
-})
-</script>
-{% endblock %}
+    
+    <!-- Toast -->
+    <div id="snackbar"></div>
+    <!-- Scripts -->
+    <script src="/js/gourmet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
