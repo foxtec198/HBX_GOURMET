@@ -21,7 +21,7 @@
     </div>
     <div id="frameConfig">
         <div class="d-flex flex-column gap-2">
-            <div class="d-flex flex-row justify-content-between">
+            <div class="d-flex px-4 justify-content-between">
                 <p>Imprimir Pedidos Automático?</p>
                 <label class="switch">
                     <input type="checkbox" id="imp">
@@ -29,7 +29,7 @@
                 </label>
             </div>
             <hr>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex px-4 justify-content-between">
                 <p>Deseja controle de Pedidos ?</p>
                 <label class="switch">  
                     <input type="checkbox" id="ped">
@@ -37,7 +37,7 @@
                 </label>
             </div>
             <hr>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex px-4 justify-content-between">
                 <p>Deseja controle de Comandas ?</p>
                 <label class="switch">  
                     <input type="checkbox" id="cmds">
@@ -45,16 +45,16 @@
                 </label>
             </div>
             <hr>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex px-4 justify-content-between">
                 <p>Deseja controle de Estoque ?</p>
                 <label class="switch">  
                     <input type="checkbox" id="es">
                     <span class="slider round"></span>
                 </label>
             </div>
-            <br>
-            <div class="card p-4 d-flex flex-column justify-content-between">
-                <p class="fs-5">Funcionarios:</p>
+            <hr>
+            <div class="px-4 d-flex flex-column justify-content-between">
+                <p class="fs-5 fw-bold">Funcionarios:</p>
                 <div class="d-flex gap-5 justify-content-around flex-wrap">
                     <form class="d-flex flex-column gap-2" action="" method="">
                         <p>
@@ -63,11 +63,11 @@
                         </p>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <label for="nome">Nome</label>
-                            <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="off">
+                            <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="name">
                         </div>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <label for="pwd">Senha</label>
-                            <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="off">
+                            <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="new-password">
                         </div>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <label for="pwd">Permissão</label>
@@ -93,10 +93,10 @@
                                 <i class="bi bi-person-fill-check"></i>
                             </p>
                             <div class="btn-group">
-                                <button class="btn btn-light" onclick="adminFunc({{mat}})">
+                                <button class="btn btn-light">
                                     <i class="bi bi-unlock-fill"></i>
                                 </button>
-                                <button class="btn btn-danger" onclick="removeFunc({{mat}})">
+                                <button class="btn btn-danger">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </div>
@@ -105,9 +105,9 @@
                 </div>
             </div>
             <hr>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex px-4 justify-content-between">
                 <div>
-                    <p class="fs-5">Bot do Whatsapp</p>
+                    <p class="fs-5 fw-bold">Bot do Whatsapp</p>
                     <p class="fs-6">Editar Informações</p>
                 </div>
                 <div class="d-flex flex-column">
@@ -115,14 +115,15 @@
                     <a style="cursor: wait;">Versão Paga</a>
                 </div>
             </div>
-            <hr><br>
-            <div class="d-flex justify-content-between">
-                <p class="fs-6">Cardapio Digital</p>
+            <hr>
+            <div class="d-flex px-4 justify-content-between">
+                <p class="fs-5 fw-bold">Cardapio Digital</p>
                 <div class="d-flex flex-column align-items-center justify-content-center">
                     <img src="../../static/qrs/qrCard{{cr}}.png" alt="qrcode" height="100" width="100">
                     <a href="/gourmet/cardapio/{{cr}}">Acesse aqui</a>
                 </div>
             </div>
+            <hr>
         </div>
     </div>
     
