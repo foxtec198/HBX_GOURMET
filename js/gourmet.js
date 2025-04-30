@@ -1,8 +1,9 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
+lixeira = '<i class="bi bi-trash2-fill"></i>'
 
 // Variaveis de Usuario
 mat = sessionStorage.getItem('mat') 
@@ -219,7 +220,7 @@ async function get_despesas(){
                 btnGp = document.createElement('div')
                 btnGp.classList.add('btn-group')
     
-                btnRemove.innerHTML = '<i class="bi bi-trash2-fill"></i>'
+                btnRemove.innerHTML = lixeira
                 btnRemove.classList.add('btn')
                 btnRemove.classList.add('btn-sm')
                 btnRemove.classList.add('btn-danger')
@@ -399,7 +400,7 @@ async function get_pedidos(){
             btnRemove.classList.add('btn')
             btnRemove.classList.add('btn-sm')
             btnRemove.classList.add('btn-danger')
-            btnRemove.innerHTML = '<i class="bi bi-trash2-fill"></i>'
+            btnRemove.innerHTML = lixeira
             btnRemove.addEventListener('click', async function(){
                 if(confirm('Deseja realmente Cancelar este pedido?')){
                     btnRemove.innerHTML = spinner
@@ -410,7 +411,7 @@ async function get_pedidos(){
                     else{toast(res)}
                 }
             })
-
+            console.log()
             btnGp.appendChild(btnEntrega)
             btnGp.appendChild(btnView)
             btnGp.appendChild(btnRemove)
@@ -585,6 +586,30 @@ async function get_cmds(){
             const tdFunc = document.createElement('td')
             tdFunc.textContent = func
             tr.appendChild(tdFunc)
+
+            const tdBtn = document.createElement('td')
+            const divBtn = document.createElement('div')
+            divBtn.classList.add('btn-group')
+
+            // Bota de Cancelamento
+            const btnCancelarCmd = document.createElement('button')
+            btnCancelarCmd.classList.add('btn')
+            btnCancelarCmd.classList.add('btn-sm')
+            btnCancelarCmd.classList.add('btn-danger')
+            btnCancelarCmd.innerHTML = lixeira
+            divBtn.appendChild(btnCancelarCmd)
+
+            // Bota de Cancelamento
+            const btnAbrirCmd = document.createElement('button')
+            btnAbrirCmd.classList.add('btn')
+            btnAbrirCmd.classList.add('btn-sm')
+            btnAbrirCmd.classList.add('btn-success')
+            btnAbrirCmd.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>'
+            divBtn.appendChild(btnAbrirCmd)
+
+            tdBtn.appendChild(divBtn)
+            tr.appendChild(tdBtn)
+
 
             tb_cmds.appendChild(tr)
         })
