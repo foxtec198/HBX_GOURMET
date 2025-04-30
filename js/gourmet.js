@@ -1,6 +1,6 @@
 // Vars
 api = 'http://localhost:9560/gourmet/api/v1/'
-// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
