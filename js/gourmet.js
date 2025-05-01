@@ -312,7 +312,6 @@ async function get_pedidos(){
     if(res[0]){
         res.forEach(item => {
             cmd = item['cmd']
-            horario = item['data']
             cli = item['cli']
             func = item['func']
 
@@ -320,9 +319,6 @@ async function get_pedidos(){
         
             const tdCmd = document.createElement('td')
             tdCmd.textContent = cmd
-
-            const tdHora = document.createElement('td')
-            tdHora.textContent = horario
 
             const tdCli = document.createElement('td')
             tdCli.textContent = cli
@@ -419,7 +415,6 @@ async function get_pedidos(){
             
             
             tr.appendChild(tdCmd)
-            tr.appendChild(tdHora)
             tr.appendChild(tdCli)
             tr.appendChild(tdFunc)
             tr.appendChild(tdGp)
