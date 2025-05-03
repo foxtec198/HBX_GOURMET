@@ -1,6 +1,6 @@
 // Vars
 api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -105,6 +105,7 @@ function send_form(url, form){
 }
 
 // Callbacks API ---------------------------------------------------------------------------------------------
+
 // Caixa
 async function abrir_caixa(t){
     valor = document.getElementById('vl_ab_caixa').value
@@ -125,9 +126,15 @@ async function abrir_caixa(t){
     }
 }
 
-async function status_caixa(){
+async function get_caixa(){
     req = await request('caixa', 'GET')
     res = await req.json()
+
+    return res
+}
+
+async function status_caixa(){
+    res = await get_caixa()
     st = document.getElementById('caixa_status')
     st.classList.remove('placeholder')
 
@@ -156,6 +163,16 @@ async function fechar_caixa(t){
     if(req.ok){location.reload()}
     else{toast(res, 'erro')}
 
+}
+
+async function last_value(){
+    req = await request('last_value', 'POST')
+    res = await req.json()
+    if(Object.keys(res).length > 0){
+        document.getElementById('vl_ab_caixa').value = res[0]
+    }else{
+        document.getElementById('vl_ab_caixa').value = ''
+    }
 }
 
 // Despesas

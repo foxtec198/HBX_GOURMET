@@ -23,15 +23,18 @@
                     <i class="bi bi-person-bounding-box"></i>
                     <span id="lbl_at">Atendente</span>
                 </span>
+                <span class="badge rounded-pill placeholder" id="lbl_cx">
+                    Status Caixa
+                </span>
             </p>
         </div>
     </div> 
     <div class="d-flex flex-row flex-wrap gap-2 p-2">
-        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 150px;">
+        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 100px;">
             <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
             <input id="cmdIn" type="number" class="form-control" placeholder="Comanda ou Mesa" >
         </div>
-        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 150px;">
+        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 100px;">
             <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
             <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
         </div>
@@ -73,6 +76,21 @@
         });
 
         document.getElementById('lbl_at').textContent = sessionStorage.getItem('display_name').toUpperCase()
+        async function cx(){
+            res = await get_caixa()
+            bd = document.getElementById('lbl_cx')
+            if(res){
+                bd.classList.remove('placeholder')
+                bd.classList.add('text-bg-success')
+                bd.textContent = `Aberto - ${res.toLocaleString('pt-br', {style: 'currency', currency:'BRL'})}`
+            }else{
+                bd.classList.remove('placeholder')
+                bd.classList.add('text-bg-danger')
+                bd.textContent = 'Caixa Fechado'
+            }
+        }
+
+        cx()
         get_prods()
     </script>
 </body>
