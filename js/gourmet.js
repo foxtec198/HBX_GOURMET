@@ -1,6 +1,6 @@
 // Vars
 api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -12,12 +12,18 @@ cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
 cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
-const lds = document.createElement('div')
+lds = document.createElement('div')
+
+
 // Funções ------------------------------------------------------------------------------------------------------- 
 // Realiza o Logout limpando os caches e voltando para o login
 function logout(){
     sessionStorage.clear()
     location = '/'
+}
+
+function real(str){
+    return str.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
 }
 
 function show_ldg(){
@@ -30,6 +36,7 @@ function show_ldg(){
     lds.style.top = 0
     document.body.appendChild(lds)
 }
+
 function close_ldg(){
     lds.hidden = 'none'
 }
@@ -373,18 +380,12 @@ async function get_pedidos(){
             btnEntrega.classList.add('btn-success')
             btnEntrega.innerHTML = '<i class="bi bi-plus-circle"></i>'
             btnEntrega.addEventListener('click',async function(){
-                dd = {
-                    'cmd':cmd,
-                    'mat': mat
-                }
+                dd = {'cmd':cmd, 'mat': mat}
                 req = await request('pedidos', 'PATCH', JSON.stringify(dd))
+                res = await req.json()
                 
-                if(req.ok){
-                    location.reload()
-                }else{
-                    res = await req.json()
-                    toast(res)
-                }
+                if(req.ok){location.reload()}
+                else{toast(res)}
             })
 
             // Botao de Visualizar
@@ -423,13 +424,27 @@ async function get_pedidos(){
                         badge = document.createElement('span')
                         badge.textContent = st
                         badge.classList.add('badge')
+                        badge.classList.add('text-bg-success')
 
-                        if(st === 'SOLICITADO'){badge.classList.add('text-bg-success')}
-                        else if(sp === 'ENTREGUE'){badge.classList.add('text-bg-primary')}
-                        else{badge.classList.add('text-bg-danger')}
+                        // Botao Cancelamento de Produto e nao do pedido do todo
+                        btn = document.createElement('button')
+                        btn.classList.add('btn')
+                        btn.classList.add('btn-sm')
+                        btn.classList.add('btn-danger')
+                        btn.innerHTML = lixeira
+                        btn.addEventListener('click', async function(){
+                            if(confirm('Deseja realmente cancelar este produto?')){
+                                dd = {'id':id, 'cmd':cmd, 'idp':idp}
+                                req = await request('rm_order_only', 'DELETE', JSON.stringify(dd))
+                                res = await req.json()
+                                if(req.ok){location.reload()}
+                                else{toast(res, 'erro')}
+                            }
+                        })
 
                         dv.appendChild(sp)
                         dv.appendChild(badge)
+                        dv.appendChild(btn)
                         
                         li.appendChild(dv)
 
@@ -648,6 +663,9 @@ async function get_cmds(){
             btnAbrirCmd.classList.add('btn-success')
             btnAbrirCmd.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>'
             divBtn.appendChild(btnAbrirCmd)
+            btnAbrirCmd.addEventListener('click', async function(){
+                location = '/gourmet/cmd.html?cmd='+cmd
+            })
 
             // Btn de Cancelamento
             const btnCancelarCmd = document.createElement('button')
@@ -656,13 +674,12 @@ async function get_cmds(){
             btnCancelarCmd.classList.add('btn-danger')
             btnCancelarCmd.innerHTML = lixeira
             btnCancelarCmd.addEventListener('click', async function(){
-                dd = {'cmd':cmd}
-                req = await request('comandas', 'DELETE', JSON.stringify(dd))
-                if(req.ok){
-                    location.reload()
-                }else{
+                if(confirm('Deseja realmente cancelar esta comanda?')){
+                    dd = {'cmd':cmd}
+                    req = await request('comandas', 'DELETE', JSON.stringify(dd))
                     res = await req.json()
-                    toast(res)
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
                 }
             })
 
@@ -691,6 +708,102 @@ async function get_cmds(){
     
 }
 
+async function mount_cmd_panel(dd){
+    req = await request('get_cmd', 'POST', dd)
+    res = await req.json()
+    if(req.ok){
+        cmd = res['cmd']
+        cli = res['cli']
+        func = res['func']
+        data = new Date(res['data']) 
+        total = res['total']
+        prods = res['prods']
+
+        lblCmd = document.getElementById('lbl_cmd')
+        lblCmd.classList.remove('placeholder')
+        lblCmd.textContent = 'Comanda ' + cmd
+
+        bdCli = document.getElementById('bdCli')
+        bdCli.innerHTML = `${bdCli.innerHTML} ${cli}`
+
+        bdFunc = document.getElementById('bdFunc')
+        bdFunc.innerHTML = `${bdFunc.innerHTML} ${func}`
+
+        bdVl = document.getElementById('bdVl')
+        bdVl.innerHTML = `${bdVl.innerHTML} ${total.toLocaleString('pt-br', {style:'currency', currency: 'BRL'})}`
+
+        bdDt = document.getElementById('bdDt')
+        bdDt.innerHTML = `${bdDt.innerHTML} ${data.toLocaleDateString('pt-br', {month: 'long', day: 'numeric'})}`
+
+        list_itens = document.getElementById('list_itens')
+        prods.forEach(item=>{
+            prod = item['nome']
+            func = item['func']
+            valor = item['valor']
+            quant = item['quant']
+            data = new Date(item['data'])
+            st = item['status']
+
+            li = document.createElement('li')
+            li.classList.add('list-group-item')
+
+            dvM = document.createElement('div')
+            dvM.classList.add('d-flex')
+            dvM.classList.add('flex-row')
+            dvM.classList.add('justify-content-between')
+            dvM.classList.add('aling-items-center')
+
+            dv = document.createElement('div')
+            dv.classList.add('d-flex')
+            dv.classList.add('flex-column')
+            dv.classList.add('gap-1')
+
+            sp = document.createElement('span')
+            sp.textContent = `${quant} ${prod} - ${real(valor)}`
+            sp.style.fontSize = '14px'
+
+            sp2 = document.createElement('span')
+            sp2.innerHTML = `
+                <i class="bi bi-person"></i> ${nome}  -  
+                <i class="bi bi-calendar-fill"></i> ${data.toLocaleDateString('pt-br', {})}
+                `
+            sp2.style.fontSize = '12px'
+
+            dv.appendChild(sp)
+            dv.appendChild(sp2)
+            dvM.appendChild(dv)
+
+            dv2 = document.createElement('div')
+            sp3 = document.createElement('span')
+            sp3.classList.add('badge')
+            sp3.classList.add('rounded-pill')
+
+            if(st === 'ENTREGUE'){sp3.classList.add('text-bg-success')}
+            else if(st === 'SOLICITADO'){sp3.classList.add('text-bg-info')}
+            else if(st === 'CANCELADO'){sp3.classList.add('text-bg-danger')}
+
+            sp3.innerHTML = `<i class="bi bi-clipboard2-check-fill"></i> ${st}`
+            dv2.appendChild(sp3)
+            dvM.appendChild(dv2)
+
+            li.appendChild(dvM)
+            list_itens.appendChild(li)
+
+            document.getElementById('btn_close').addEventListener('click', async function(){
+                const modal = new bootstrap.Modal('#modal_close')
+                modal.show()
+            })
+            
+            document.getElementById('btn_cancel').addEventListener('click', async function(){
+            })
+        })
+
+        document.getElementById('label_modal').textContent = 'Valor Total: ' + real(valor)
+        mb = document.getElementById('modal-body')
+        
+    }else{toast(res, 'erro')}
+}
+
 // Controle de Permissao ----------------------------------------------------------------------------------------------
 perm = sessionStorage.getItem('permissao')
 if(perm){
@@ -709,3 +822,14 @@ if(perm){
 if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
 if(window.location.pathname !== '/' && !mat){window.location = '/'}
 if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
+
+
+// JQuery ----------------------------------------------------------------------------
+
+$(document).ready(function(){
+    $(".tel-mask").inputmask("(99) 99999-9999");
+});
+
+$(document).ready(function(){
+    $(".money-mask").inputmask("R$ 9{1,900},99|0");
+});
