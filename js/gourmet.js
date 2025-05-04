@@ -624,6 +624,7 @@ async function get_cmds(){
 
             const tdCliente = document.createElement('td')
             tdCliente.textContent = cliente
+            tdCliente.classList.add('text-truncate')
             tr.appendChild(tdCliente)
 
             
