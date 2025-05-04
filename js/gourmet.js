@@ -4,6 +4,7 @@ api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
+loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
 
 // Variaveis de Usuario
 mat = sessionStorage.getItem('mat') 
@@ -11,7 +12,7 @@ cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
 cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
-
+const lds = document.createElement('div')
 // Funções ------------------------------------------------------------------------------------------------------- 
 // Realiza o Logout limpando os caches e voltando para o login
 function logout(){
@@ -19,6 +20,19 @@ function logout(){
     location = '/'
 }
 
+function show_ldg(){
+    lds.hidden = ''
+    lds.style.width = '100%'
+    lds.style.height = '100%'
+    lds.style.background = '#2B3035'
+    lds.innerHTML = loader
+    lds.style.position = 'absolute'
+    lds.style.top = 0
+    document.body.appendChild(lds)
+}
+function close_ldg(){
+    lds.hidden = 'none'
+}
 // Troca de Frame e seta cor no Menu Button
 function change_screen(screnn, t=null){
     others = document.querySelectorAll('.menu-item')
@@ -297,6 +311,7 @@ async function login(){
     pwd = document.getElementById('pwd').value
     if(mat){
         if(pwd){
+            show_ldg()
             dd = `{'matricula': ${mat},'password': ${pwd}}`
             js = await fetch(api + 'login', {
                 method: 'POST',
@@ -314,7 +329,10 @@ async function login(){
                 sessionStorage.setItem('permissao', res['permissao'])
                 sessionStorage.setItem('mat', res['matricula'])
                 window.location = '/gourmet/base.html'
-            }else{toast(res)}
+            }else{
+                close_ldg()
+                toast(res)
+            }
 
         }else{toast('Senha obrigatória!')}
     }else{toast('Matricula obrigatória!')}
@@ -339,6 +357,7 @@ async function get_pedidos(){
 
             const tdCli = document.createElement('td')
             tdCli.textContent = cli
+            tdCli.classList.add("text-truncate")
 
             const tdFunc = document.createElement('td')
             tdFunc.textContent = func
@@ -353,6 +372,20 @@ async function get_pedidos(){
             btnEntrega.classList.add('btn-sm')
             btnEntrega.classList.add('btn-success')
             btnEntrega.innerHTML = '<i class="bi bi-plus-circle"></i>'
+            btnEntrega.addEventListener('click',async function(){
+                dd = {
+                    'cmd':cmd,
+                    'mat': mat
+                }
+                req = await request('pedidos', 'PATCH', JSON.stringify(dd))
+                
+                if(req.ok){
+                    location.reload()
+                }else{
+                    res = await req.json()
+                    toast(res)
+                }
+            })
 
             // Botao de Visualizar
             btnView = document.createElement('button')
@@ -560,7 +593,10 @@ async function enviar_prods(t=null){
             if(req.ok){
                 window.location = '/gourmet/pedidos.html'
             }
-            else{toast(res)}
+            else{
+                t.textContent = 'Novo Pedido'
+                toast(res)
+            }
         }else{toast('Selecione algum produto!')}
     }else{toast('Comanda ou Mesa obrigatoria!')}
 
@@ -603,21 +639,33 @@ async function get_cmds(){
             const divBtn = document.createElement('div')
             divBtn.classList.add('btn-group')
 
-            // Bota de Cancelamento
-            const btnCancelarCmd = document.createElement('button')
-            btnCancelarCmd.classList.add('btn')
-            btnCancelarCmd.classList.add('btn-sm')
-            btnCancelarCmd.classList.add('btn-danger')
-            btnCancelarCmd.innerHTML = lixeira
-            divBtn.appendChild(btnCancelarCmd)
-
-            // Bota de Cancelamento
+            
+            // Btn Abrir
             const btnAbrirCmd = document.createElement('button')
             btnAbrirCmd.classList.add('btn')
             btnAbrirCmd.classList.add('btn-sm')
             btnAbrirCmd.classList.add('btn-success')
             btnAbrirCmd.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>'
             divBtn.appendChild(btnAbrirCmd)
+
+            // Btn de Cancelamento
+            const btnCancelarCmd = document.createElement('button')
+            btnCancelarCmd.classList.add('btn')
+            btnCancelarCmd.classList.add('btn-sm')
+            btnCancelarCmd.classList.add('btn-danger')
+            btnCancelarCmd.innerHTML = lixeira
+            btnCancelarCmd.addEventListener('click', async function(){
+                dd = {'cmd':cmd}
+                req = await request('comandas', 'DELETE', JSON.stringify(dd))
+                if(req.ok){
+                    location.reload()
+                }else{
+                    res = await req.json()
+                    toast(res)
+                }
+            })
+
+            divBtn.appendChild(btnCancelarCmd)
 
             tdBtn.appendChild(divBtn)
             tr.appendChild(tdBtn)
