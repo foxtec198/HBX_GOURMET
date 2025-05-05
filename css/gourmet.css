@@ -78,6 +78,10 @@ html, body{
     color: white;
 }
 
+::-webkit-scrollbar{
+    width: 0px;
+}
+
 .span {
     text-decoration: none;
     color: var(--bg-dark);
@@ -193,35 +197,34 @@ input[type=number]::-webkit-inner-spin-button{
     right: 0;
   }
   
-  .jimu-primary-loading:before,
-  .jimu-primary-loading:after {
+.jimu-primary-loading:before,
+.jimu-primary-loading:after {
     position: absolute;
     top: 0;
     content: '';
-  }
-  
-  .jimu-primary-loading:before {
+}
+
+.jimu-primary-loading:before {
     left: -19.992px;
-  }
-  
-  .jimu-primary-loading:after {
+}
+
+.jimu-primary-loading:after {
     left: 19.992px;
     -webkit-animation-delay: 0.32s !important;
     animation-delay: 0.32s !important;
-  }
-  
-  .jimu-primary-loading:before,
-  .jimu-primary-loading:after,
-  .jimu-primary-loading {
-    background: green
-    ;
+}
+
+.jimu-primary-loading:before,
+.jimu-primary-loading:after,
+.jimu-primary-loading {
+    background: green;
     -webkit-animation: loading-keys-app-loading 0.8s infinite ease-in-out;
     animation: loading-keys-app-loading 0.8s infinite ease-in-out;
     width: 13.6px;
     height: 32px;
-  }
-  
-  .jimu-primary-loading {
+}
+
+.jimu-primary-loading {
     text-indent: -9999em;
     margin: auto;
     position: absolute;
@@ -229,40 +232,113 @@ input[type=number]::-webkit-inner-spin-button{
     top: calc(50% - 16px);
     -webkit-animation-delay: 0.16s !important;
     animation-delay: 0.16s !important;
-  }
-  
-  @-webkit-keyframes loading-keys-app-loading {
-  
+}
+
+@-webkit-keyframes loading-keys-app-loading {
     0%,
     80%,
     100% {
-      opacity: .75;
-      box-shadow: 0 0 var(--green)
-      ;
-      height: 32px;
+        opacity: .75;
+        box-shadow: 0 0 var(--green)
+        ;
+        height: 32px;
     }
-  
+
     40% {
-      opacity: 1;
-      box-shadow: 0 -8px var(--green)
-      ;
-      height: 40px;
+        opacity: 1;
+        box-shadow: 0 -8px var(--green)
+        ;
+        height: 40px;
     }
-  }
-  
-  @keyframes loading-keys-app-loading {
-  
+    }
+
+    @keyframes loading-keys-app-loading {
+
     0%,
     80%,
     100% {
-      opacity: .75;
-      box-shadow: 0 0 var(--green);
-      height: 32px;
+        opacity: .75;
+        box-shadow: 0 0 var(--green);
+        height: 32px;
     }
-  
+
     40% {
-      opacity: 1;
-      box-shadow: 0 -8px var(--green);
-      height: 40px;
+        opacity: 1;
+        box-shadow: 0 -8px var(--green);
+        height: 40px;
     }
-  }
+}
+
+
+  /* From Uiverse.io by victoryamaykin */ 
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 34px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #3C3C3C;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 15px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--green2);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--green);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(68px);
+}
+
+/*------ ADDED CSS ---------*/
+.slider:after {
+    content: 'Não';
+    color: white;
+    display: block;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    font-size: 10px;
+    font-family: Verdana, sans-serif;
+}
+
+input:checked + .slider:after {
+    content: 'Sim';
+}
+
+/*--------- END --------*/
+
+

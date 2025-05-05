@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -14,6 +14,9 @@ cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
 lds = document.createElement('div')
 
+div = document.createElement('div')
+div.id = 'snackbar'
+document.body.appendChild(div)
 
 // Funções ------------------------------------------------------------------------------------------------------- 
 // Realiza o Logout limpando os caches e voltando para o login
@@ -79,6 +82,15 @@ function toast(msg, type=null){
     }
 
     setTimeout(function(){ tst.className = tst.className.replace("show", ""); }, 3000);
+}
+
+function alertInApp(msg, type='success'){
+    const al = document.getElementById('alertInApp')
+    al.classList.add('alert-'+type)
+    document.getElementById('alertMsg').textContent = msg
+    al.hidden = ''
+    setTimeout(function(){al.hidden = 'none'}, 3000)
+
 }
 
 // Função que simplifica o fetch!
@@ -227,12 +239,12 @@ async function get_despesas(){
             const id = item['id']
             const nome = item['motivo']
             const valor = item['valor']
-            const data = item['data']
+            const data = new Date(item['data'])
             const hora = item['hora']
             const dataAtual = new Date()
             const dataStr = dataAtual.toLocaleDateString('pt-br')
 
-            if(dataStr === data){
+            if(dataStr === data.toLocaleDateString('pt-br')){
                 td = document.createElement('tr')
     
                 trMotivo = document.createElement('td')
@@ -244,7 +256,7 @@ async function get_despesas(){
                 trValor.classList.add('text-truncate')
 
                 trData = document.createElement('td')
-                trData.textContent = data
+                trData.textContent = data.toLocaleDateString('pt-br', {day:'numeric', month:'long'})
                 trData.classList.add('text-truncate')
     
                 trHora = document.createElement('td')
@@ -721,7 +733,7 @@ async function mount_cmd_panel(dd){
 
         lblCmd = document.getElementById('lbl_cmd')
         lblCmd.classList.remove('placeholder')
-        lblCmd.textContent = 'Comanda ' + cmd
+        lblCmd.innerHTML = lblCmd.innerHTML + cmd
 
         bdCli = document.getElementById('bdCli')
         bdCli.innerHTML = `${bdCli.innerHTML} ${cli}`
@@ -733,7 +745,7 @@ async function mount_cmd_panel(dd){
         bdVl.innerHTML = `${bdVl.innerHTML} ${total.toLocaleString('pt-br', {style:'currency', currency: 'BRL'})}`
 
         bdDt = document.getElementById('bdDt')
-        bdDt.innerHTML = `${bdDt.innerHTML} ${data.toLocaleDateString('pt-br', {month: 'long', day: 'numeric'})}`
+        bdDt.innerHTML = `${bdDt.innerHTML} ${data.toLocaleDateString('pt-br', {month: 'long', day: 'numeric', hour:'numeric', minute:'numeric'})}`
 
         list_itens = document.getElementById('list_itens')
         prods.forEach(item=>{
@@ -741,7 +753,7 @@ async function mount_cmd_panel(dd){
             func = item['func']
             valor = item['valor']
             quant = item['quant']
-            data = new Date(item['data'])
+            hora = item['hora']
             st = item['status']
 
             li = document.createElement('li')
@@ -764,8 +776,8 @@ async function mount_cmd_panel(dd){
 
             sp2 = document.createElement('span')
             sp2.innerHTML = `
-                <i class="bi bi-person"></i> ${nome}  -  
-                <i class="bi bi-calendar-fill"></i> ${data.toLocaleDateString('pt-br', {})}
+                <i class="bi bi-person"></i> ${nome}<br>
+                <i class="bi bi-clock"></i> ${hora}
                 `
             sp2.style.fontSize = '12px'
 
@@ -798,9 +810,75 @@ async function mount_cmd_panel(dd){
             })
         })
 
-        document.getElementById('label_modal').textContent = 'Valor Total: ' + real(valor)
+        document.getElementById('label_modal').textContent = 'Valor Total: ' + real(total)
+
         mb = document.getElementById('modal-body')
+
+        const in_desc = document.getElementById("in_desc")
+        in_desc.oninput = function(){
+            if(in_desc.value > total){
+                in_desc.value = total
+                alertInApp(
+                    'Valor de desconto nao deve ser maior que o valor!',
+                    'danger'
+                )
+            }
+        }
+
+        const ck = document.getElementById('pagPartial')
+        ck.onchange = function(){
+            const t = document.getElementById('div_pag')
+            const t2 = document.getElementById('div_pag_partial')
+
+            if(ck.checked){
+                t.hidden = 'none'
+                t2.hidden = ''
+            }else if(!ck.checked){
+                t.hidden = ''
+                t2.hidden = 'none'
+            }
+        }
+
         
+        flPg = document.getElementById('faltPag')
+        valorPago = 0
+
+        pgDeb = document.getElementById('pagPartialDeb')
+        pgDeb.onchange = function(){
+            res = total - pgDeb.value
+            if(pgDeb.value > 0){
+                flPg.textContent = 'Falta pagar: ' + real(res)
+                valorPago += pgDeb.value
+            }
+        }
+
+        pgCred = document.getElementById('pagPartialCred')
+        pgCred.onchange = function(){
+            res = total - pgCred.value
+            if(pgCred.value > 0){
+                flPg.textContent = 'Falta pagar: ' + real(res)
+                valorPago += pgCred.value
+            }
+        }
+        
+        pgPix = document.getElementById('pagPartialPix')
+        pgPix.onchange = function(){
+            res = total - pgPix.value
+            if(pgPix.value > 0){
+                flPg.textContent = 'Falta pagar: ' + real(res)
+                valorPago += pgPix.value
+            }
+        }
+
+        pdDin = document.getElementById('pagPartialDinheiro')
+        pgDin.onchange = function(){
+            res = total - pgDin.value
+            if(pgDin > 0){
+                flPg.textContent = 'Falta pagar: ' + real(res)
+                valorPago += pgDin.value
+            }
+        }
+
     }else{toast(res, 'erro')}
 }
 
@@ -831,5 +909,5 @@ $(document).ready(function(){
 });
 
 $(document).ready(function(){
-    $(".money-mask").inputmask("R$ 9{1,900},99|0");
+    $(".money-mask").inputmask("currency");
 });

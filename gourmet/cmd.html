@@ -22,28 +22,58 @@
     <div class="modal fade" id="modal_close" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="label_modal" ></h1>
+            <div class="modal-header d-flex flex-column">
+                <div class="alert w-100 alert-dismissible fade show" role="alert" id="alertInApp" hidden>
+                    <span id="alertMsg">Text</span>
+                    <button type="button" class="btn-close p-4 btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <h1 class="modal-title fs-5" id="label_modal" ></h1>
             </div>
             <div class="modal-body d-flex flex-column gap-2" id="modal-body">
-                <div class="input-group">
+                <span id="faltPag">Falta pagar:</span>
+                <div class="input-group" id="div_pag">
                     <span class="input-group-item form-control">Pagamento</span>
-                    <select class="form-select">
+                    <select class="form-select" id="in_pag">
                         <option value="debito">Débito 💳</option>
                         <option value="credito">Crédito 🏛</option>
                         <option value="pix">PIX 💠</option>
                         <option value="dinheiro">Dinheiro 💲</option>
                     </select>
                 </div>
+                <div id="div_pag_partial" hidden>
+                    <div class="d-flex flex-row gap-2 w-100">
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <label for="pagPartialDeb">Débito:</label>
+                            <input type="text" class="form-control money-mask" id="pagPartialDeb">
+                        </div>
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <label for="pagPartialCred">Crédito:</label>
+                            <input type="text" class="form-control money-mask" id="pagPartialCred">
+                        </div>
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <label for="pagPartialPix">Pix:</label>
+                            <input type="text" class="form-control money-mask" id="pagPartialPix">
+                        </div>
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <label for="pagPartialDinheiro">Dinheiro:</label>
+                            <input type="text" class="form-control money-mask" id="pagPartialDinheiro">
+                        </div>
+
+                    </div>
+                </div>
                 <div class="input-group">
                     <span class="input-group-item form-control">Desconto</span>
-                    <input type="text" class="form-control money-mask" id="in_desc">
+                    <input class="form-control money-mask" id="in_desc">
+                </div>
+                <div class="p-2">
+                    <input type="checkbox" id="pagPartial">
+                    <label for="pagPartial">Dividir Pagamento?</label>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success" onclick="teste()">Fechar</button>
-
+                <button class="btn btn-secondary" id="liveAlertBtn">Fechar</button>
+                <button class="btn btn-success">Salvar</button>
             </div>
           </div>
         </div>
@@ -52,7 +82,7 @@
     <div class="d-flex flex-column justify-content-between" style="height: 100%;">
         <div class="d-flex flex-column">
             <span class="fs-3 fw-bold placeholder" id="lbl_cmd">
-                Comanda
+                <i class="bi bi-credit-card"></i> Comanda
             </span>
             <div class="d-flex gap-2 p-3 flex-wrap">
                 <span class="badge text-bg-light flex-grow-1" id="bdCli">
@@ -73,7 +103,7 @@
     
         <div class="d-flex gap-4 h-100 overflow-y-auto flex-column px-1">
             <span class="fs-5 fw-bold">
-                Produtos <i class="bi bi-cup-hot-fill"></i>
+                <i class="bi bi-cup-hot-fill"></i> Produtos 
             </span>
             <ul class="list-group" id="list_itens"></ul>
         </div>
@@ -85,8 +115,6 @@
     </div>
 
 
-    <!-- Toast -->
-    <div id="snackbar"></div>
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
