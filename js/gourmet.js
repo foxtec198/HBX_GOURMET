@@ -43,6 +43,11 @@ function show_ldg(){
 function close_ldg(){
     lds.hidden = 'none'
 }
+
+function confer_troco(){
+
+}
+
 // Troca de Frame e seta cor no Menu Button
 function change_screen(screnn, t=null){
     others = document.querySelectorAll('.menu-item')
@@ -724,12 +729,13 @@ async function mount_cmd_panel(dd){
     req = await request('get_cmd', 'POST', dd)
     res = await req.json()
     if(req.ok){
-        cmd = res['cmd']
-        cli = res['cli']
+        const cmd = res['cmd']
+        const cli = res['cli']
         func = res['func']
-        data = new Date(res['data']) 
-        total = res['total']
+        const data = new Date(res['data'])
+        var total = res['total']
         prods = res['prods']
+        console.log(prods)
 
         lblCmd = document.getElementById('lbl_cmd')
         lblCmd.classList.remove('placeholder')
@@ -816,12 +822,33 @@ async function mount_cmd_panel(dd){
 
         const in_desc = document.getElementById("in_desc")
         in_desc.oninput = function(){
-            if(in_desc.value > total){
-                in_desc.value = total
-                alertInApp(
-                    'Valor de desconto nao deve ser maior que o valor!',
-                    'danger'
-                )
+            if(ck.checked){
+                if(in_desc.value > total){
+                    in_desc.value = total
+                    flPg.textContent = 'Pago: ' + real(total)
+                    alertInApp(
+                        'Valor de desconto nao deve ser maior que o valor!',
+                        'danger'
+                    )
+                }else{
+                    total = total - in_desc.value
+                    if(total >= valorPago){
+                        flPg.textContent = 'Pago: ' + real(valorPago)
+                    }else{
+                        flPg.textContent = 'Falta pagar: ' + real(valorPago)
+                    }
+                }
+            }else{
+                if(in_desc.value > total){
+                    in_desc.value = total
+                    flPg.textContent = 'Pago: ' + real(total)
+                    alertInApp(
+                        'Valor de desconto nao deve ser maior que o valor!',
+                        'danger'
+                    )
+                }else{
+                    flPg.textContent = 'Falta pagar: ' + real(total - in_desc.value)
+                }
             }
         }
 
@@ -838,46 +865,106 @@ async function mount_cmd_panel(dd){
                 t2.hidden = 'none'
             }
         }
-
         
         flPg = document.getElementById('faltPag')
-        valorPago = 0
+        tcLbl = document.getElementById('trocoLbl') 
+        var valorPago = 0
+        var troco = 0
 
         pgDeb = document.getElementById('pagPartialDeb')
-        pgDeb.onchange = function(){
-            res = total - pgDeb.value
-            if(pgDeb.value > 0){
-                flPg.textContent = 'Falta pagar: ' + real(res)
-                valorPago += pgDeb.value
+        pgDeb.onblur = function(){
+            if(pgDeb.value){
+                troco = total - pgDeb.value - pgCred.value - pgPix.value - pgDin.value
+    
+                if(troco <= 0){
+                    flPg.textContent = 'Pago: ' + real(total)
+                    valorPago += parseFloat(pgDeb.value)
+                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
+                }else{
+                    valorPago += parseFloat(pgDeb.value)
+                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
+                    tcLbl.textContent = 'Troco: '
+                }
             }
         }
 
-        pgCred = document.getElementById('pagPartialCred')
-        pgCred.onchange = function(){
-            res = total - pgCred.value
-            if(pgCred.value > 0){
-                flPg.textContent = 'Falta pagar: ' + real(res)
-                valorPago += pgCred.value
+        const pgCred = document.getElementById('pagPartialCred')
+        pgCred.onblur = function(){
+            if(pgCred.value){
+                troco = total - pgDeb.value - pgCred.value - pgPix.value - pgDin.value
+    
+                if(troco <= 0){
+                    flPg.textContent = 'Pago: ' + real(total)
+                    valorPago += parseFloat(pgCred.value)
+                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
+                }else{
+                    valorPago += parseFloat(pgCred.value)
+                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
+                    tcLbl.textContent = 'Troco: '
+                }
             }
+
         }
         
-        pgPix = document.getElementById('pagPartialPix')
-        pgPix.onchange = function(){
-            res = total - pgPix.value
-            if(pgPix.value > 0){
-                flPg.textContent = 'Falta pagar: ' + real(res)
-                valorPago += pgPix.value
+        const pgPix = document.getElementById('pagPartialPix')
+        pgPix.onblur = function(){
+            if(pgPix.value){
+                troco = total - pgDeb.value - pgPix.value - pgPix.value - pgDin.value
+    
+                if(troco <= 0){
+                    flPg.textContent = 'Pago: ' + real(total)
+                    valorPago += parseFloat(pgPix.value)
+                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
+                }else{
+                    valorPago += parseFloat(pgPix.value)
+                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
+                    tcLbl.textContent = 'Troco: '
+                }
             }
         }
 
-        pdDin = document.getElementById('pagPartialDinheiro')
-        pgDin.onchange = function(){
-            res = total - pgDin.value
-            if(pgDin > 0){
-                flPg.textContent = 'Falta pagar: ' + real(res)
-                valorPago += pgDin.value
+        const pgDin = document.getElementById('pagPartialDinheiro')
+        pgDin.onblur = function(){
+            if(pgDin.value){
+                troco = total - pgDeb.value - pgDin.value - pgPix.value - pgDin.value
+    
+                if(troco <= 0){
+                    flPg.textContent = 'Pago: ' + real(total)
+                    valorPago += parseFloat(pgDin.value)
+                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
+                }else{
+                    valorPago += parseFloat(pgDin.value)
+                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
+                    tcLbl.textContent = 'Troco: '
+                }
             }
         }
+
+        document.getElementById('setVenda').addEventListener('click', async function(e){
+            e.preventDefault()
+
+            dd = {
+                'cmd': cmd,
+                'valor': parseFloat(total),
+                'desconto': parseFloat(in_desc.value),
+                'debito': parseFloat(pgDeb.value),
+                'credito': parseFloat(pgCred.value),
+                'pix': parseFloat(pgPix.value),
+                'dinheiro': parseFloat(pgDin.value),
+                'cliente': cli,
+                'troco': Math.abs(troco)
+            }
+
+            if(!ck.checked){
+                dd[document.getElementById('in_pag').value] = total
+            }
+
+            const req = await request('comandas', 'POST', JSON.stringify(dd))
+            const res = await req.json()
+
+            if(req.ok){location.reload()}
+            else{toast(res, 'erro')}
+        })
 
     }else{toast(res, 'erro')}
 }

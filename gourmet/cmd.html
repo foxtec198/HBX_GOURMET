@@ -18,7 +18,6 @@
     
 </head>
 <body data-bs-theme="dark">
-
     <div class="modal fade" id="modal_close" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -30,40 +29,43 @@
                 <h1 class="modal-title fs-5" id="label_modal" ></h1>
             </div>
             <div class="modal-body d-flex flex-column gap-2" id="modal-body">
-                <span id="faltPag">Falta pagar:</span>
-                <div class="input-group" id="div_pag">
-                    <span class="input-group-item form-control">Pagamento</span>
-                    <select class="form-select" id="in_pag">
+                <div class="d-flex flex-row justify-content-around align-items-center">
+                    <span id="faltPag">Falta pagar:</span>
+                    <span id="trocoLbl">Troco:</span>
+                </div>
+                <div class="form-floating" id="div_pag">
+                    <select class="form-select" id="in_pag" aria-placeholder="Pagamento">
                         <option value="debito">Débito 💳</option>
                         <option value="credito">Crédito 🏛</option>
                         <option value="pix">PIX 💠</option>
                         <option value="dinheiro">Dinheiro 💲</option>
                     </select>
+                    <label for="in_pag">Pagamento</label>
                 </div>
                 <div id="div_pag_partial" hidden>
                     <div class="d-flex flex-row gap-2 w-100">
-                        <div class="d-flex flex-column gap-2 flex-grow-1">
-                            <label for="pagPartialDeb">Débito:</label>
-                            <input type="text" class="form-control money-mask" id="pagPartialDeb">
+                        <div class="form-floating flex-grow-1">
+                            <input type="text" class="form-control money-mask" placeholder="Débito" id="pagPartialDeb">
+                            <label for="pagPartialDeb">Débito</label>
                         </div>
-                        <div class="d-flex flex-column gap-2 flex-grow-1">
-                            <label for="pagPartialCred">Crédito:</label>
-                            <input type="text" class="form-control money-mask" id="pagPartialCred">
+                        <div class="form-floating flex-grow-1">
+                            <input placeholder="Crédito" type="text" class="form-control money-mask" id="pagPartialCred">
+                            <label for="pagPartialCred">Crédito</label>
                         </div>
-                        <div class="d-flex flex-column gap-2 flex-grow-1">
-                            <label for="pagPartialPix">Pix:</label>
-                            <input type="text" class="form-control money-mask" id="pagPartialPix">
+                        <div class="form-floating flex-grow-1">
+                            <input placeholder="PIX" type="text" class="form-control money-mask" id="pagPartialPix" onchange="">
+                            <label for="pagPartialPix">PIX</label>
                         </div>
-                        <div class="d-flex flex-column gap-2 flex-grow-1">
-                            <label for="pagPartialDinheiro">Dinheiro:</label>
-                            <input type="text" class="form-control money-mask" id="pagPartialDinheiro">
+                        <div class="form-floating flex-grow-1">
+                            <input placeholder="Dinheiro" type="text" class="form-control money-mask" id="pagPartialDinheiro">
+                            <label for="pagPartialDinheiro">Dinheiro</label>
                         </div>
 
                     </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-item form-control">Desconto</span>
-                    <input class="form-control money-mask" id="in_desc">
+                <div class="form-floating">
+                    <input placeholder="Desconto" class="form-control money-mask" id="in_desc">
+                    <label for="in_desc">Desconto</span>
                 </div>
                 <div class="p-2">
                     <input type="checkbox" id="pagPartial">
@@ -72,8 +74,8 @@
 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="liveAlertBtn">Fechar</button>
-                <button class="btn btn-success">Salvar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button class="btn btn-success" id="setVenda">Salvar</button>
             </div>
           </div>
         </div>
@@ -113,7 +115,6 @@
             <button class="btn btn-success" id="btn_close">Fechar <i class="bi bi-cart-plus-fill"></i></button>
         </div>
     </div>
-
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
