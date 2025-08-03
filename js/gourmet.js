@@ -733,7 +733,7 @@ async function mount_cmd_panel(dd){
     if(req.ok){
         const cmd = res['cmd']
         const cli = res['cli']
-        func = res['func']
+        const func = res['func']
         const data = new Date(res['data'])
         var total = res['total']
         prods = res['prods']
@@ -757,8 +757,8 @@ async function mount_cmd_panel(dd){
 
         list_itens = document.getElementById('list_itens')
         prods.forEach(item=>{
-            prod = item['nome']
-            func = item['func']
+            const prod = item['nome']
+            const nome = item['func']
             valor = item['valor']
             quant = item['quant']
             hora = item['hora']
@@ -975,6 +975,7 @@ async function mount_cmd_panel(dd){
 async function get_vendas(){
     const req = await request('vendas')
     const res = await req.json()
+    console.log(res)
     if(req.ok){
         const tb_vendas = document.getElementById('tb_vendas') 
         const tableData = []
