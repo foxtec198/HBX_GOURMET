@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
+// api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -50,12 +50,11 @@ function confer_troco(){
 
 // Troca de Frame e seta cor no Menu Button
 function change_screen(screnn, t=null){
-    others = document.querySelectorAll('.menu-item')
-    others.forEach(element => {
-        element.style.background = null
-    });
+    others = parent.document.querySelectorAll('.menu-item')
+    others.forEach(element => {element.style.background = null});
     if(t){t.style.background = green}
-    frame = document.getElementById('frame_screen')
+    
+    const frame = parent.document.getElementById('frame_screen')
     sessionStorage.setItem('frame', `/gourmet/${screnn}.html`)
     frame.src = `/gourmet/${screnn}.html`
 }
@@ -235,20 +234,24 @@ async function add_despesa(t){
     }else{toast('Valor Obrigatório!', 'erro')}
 }
 
-async function get_despesas(){
+async function get_despesas(filter=null){
     req = await request('despesas')
     res = await req.json()
+
     if(res[0]){
         cont = 0
         res.forEach(item => {
             const id = item['id']
             const nome = item['motivo']
             const valor = item['valor']
-            const data = new Date(item['data'])
+            date = `${item['data']}`
+            const data = new Date(date)
+            
             const hora = item['hora']
             const dataAtual = new Date()
-            const dataStr = dataAtual.toLocaleDateString('pt-br')
-
+            const dataStr = dataAtual.toLocaleDateString('pt-br', {month: 'numeric'})
+            console.log(data, dataStr)
+            
             if(dataStr === data.toLocaleDateString('pt-br')){
                 td = document.createElement('tr')
     
@@ -370,9 +373,9 @@ async function get_pedidos(){
 
     if(res[0]){
         res.forEach(item => {
-            cmd = item['cmd']
-            cli = item['cli']
-            func = item['func']
+            const cmd = item['cmd']
+            const cli = item['cli']
+            const func = item['func']
 
             const tr = document.createElement('tr')
         
@@ -421,8 +424,8 @@ async function get_pedidos(){
                 
                 if(req.ok){
                     res.forEach(item => {
-                        id = item['id']
-                        idp = item['idp']
+                        const id = item['id']
+                        const idp = item['idp']
                         prod = item['prod']
                         quant = item['quant']
                         st = item['status']
@@ -602,6 +605,7 @@ async function rmv_prod(t, id){
     }else{input.value = 0}
  }
 
+//  Nova Comanda/Pedido
 async function enviar_prods(t=null){
     cmd = document.getElementById('cmdIn').value
     cli = document.getElementById('cliIn').value
@@ -622,9 +626,7 @@ async function enviar_prods(t=null){
             if(t){t.innerHTML = spinner}
             req = await request("pedidos", "POST", JSON.stringify(data))
             res = await req.json()
-            if(req.ok){
-                window.location = '/gourmet/pedidos.html'
-            }
+            if(req.ok){change_screen('pedidos', parent.document.getElementById('menu_pedidos'))}
             else{
                 t.textContent = 'Novo Pedido'
                 toast(res)
@@ -643,9 +645,9 @@ async function get_cmds(){
 
     if(Object.keys(res).length > 0){
         res.forEach(item => {
-            cliente = item['cliente']
-            cmd = item['cmd']
-            func = item['func']
+            const cliente = item['cliente']
+            const cmd = item['cmd']
+            const func = item['func']
             valor = item['valor']
 
             const tr = document.createElement('tr')
@@ -967,6 +969,90 @@ async function mount_cmd_panel(dd){
         })
 
     }else{toast(res, 'erro')}
+}
+
+// Vendas
+async function get_vendas(){
+    const req = await request('vendas')
+    const res = await req.json()
+    if(req.ok){
+        const tb_vendas = document.getElementById('tb_vendas') 
+        const tableData = []
+        res.forEach(item => {
+            tableData.push({
+                cmd: item['cmd'],
+                func: item['funcionario'],
+                data: new Date(item['data']).toLocaleDateString('pt-br', {day:'numeric', month:'long'}),
+                valor: real(item['valor_real']),
+                status: item['status'] === 'FINALIZADA' ? true : false,
+            })
+            // const tr = document.createElement('tr')
+
+            // const tdCmd = document.createElement('td')
+            // tdCmd.textContent = item['cmd']
+            // tr.appendChild(tdCmd)
+
+            // const tdFunc = document.createElement('td')
+            // tdFunc.textContent = item['funcionario']
+            // tr.appendChild(tdFunc)
+
+            // const tdData = document.createElement('td')
+            // const data = new Date(item['data'])
+            // tdData.textContent = data.toLocaleDateString('pt-br', {day:'numeric', month:'long'})
+            // tr.appendChild(tdData)
+
+            // tdValor = document.createElement('td')
+            // tdValor.textContent = real(item['valor_real'])
+            // tr.appendChild(tdValor)
+
+            // tdPagamento = document.createElement('td')
+            // const sp = document.createElement('span')
+            // sp.textContent = item['status']
+            // sp.classList.add('badge','rounded-pill', 'text-bg-success')
+            // tdPagamento.appendChild(sp)
+            // tr.appendChild(tdPagamento)
+
+            // const tdBtn = document.createElement('td')
+            // const btnGp = document.createElement('div')
+            // btnGp.classList.add('btn-group')
+
+            // const btnView = document.createElement('button')
+            // btnView.innerHTML = '<i class="bi bi-eye-fill"></i>'
+            // btnView.classList.add('btn', 'btn-sm', 'btn-secondary')
+            // btnView.addEventListener('click', async function(){})
+            // btnGp.appendChild(btnView)
+
+            // const btnRemove = document.createElement('button')
+            // btnRemove.innerHTML = lixeira
+            // btnRemove.classList.add('btn', 'btn-sm', 'btn-danger')
+            // btnRemove.addEventListener('click', async function(){})
+            // btnGp.appendChild(btnRemove)
+
+            // tdBtn.appendChild(btnGp)
+            // tr.appendChild(tdBtn)
+
+            
+            // tb_vendas.appendChild(tr)
+        })
+        const table = new Tabulator("#tb_vendas", {
+            data: tableData,
+            layout: "fitColumns",
+            responsiveLayout: true, // enable responsive layouts
+            paginationSize: 30,
+            paginationCounter:"rows", //display count of paginated rows in footer
+            pagination:"local",       //paginate the data
+            initialSort:[             //set the initial sort order of the data
+                {column:"data", dir:"desc"},
+            ],
+            columns: [
+                {title: "Comanda", field: "cmd", responsive: 0, minWidth: 100},
+                {title: "Funcionario", field: "func", responsive: 6, minWidth: 100},
+                {title:"Data da venda", field:"data", hozAlign:"center", responsive: 0, minWidth: 100},
+                {title:"Valor", field:"valor", hozAlign:"right", responsive: 0, minWidth: 100},   
+                {title:"Status", field:"status",  hozAlign:"center", formatter:"tickCross", responsive:0, sorter:"boolean", minWidth: 100},
+            ]
+        });
+    }
 }
 
 // Controle de Permissao ----------------------------------------------------------------------------------------------

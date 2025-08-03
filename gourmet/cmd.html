@@ -133,6 +133,15 @@
         function teste(){
             console.log(document.getElementById('in_desc').value)
         }
+
+        document.getElementById('btn_cancel').addEventListener('click', async function() {
+            if (confirm('Deseja cancelar a comanda?')) {
+                const req = await request('comandas', 'DELETE', JSON.stringify(dd))
+                const res = await req.json()
+                if(req.ok){location.href = '/gourmet/comandas.html'}
+                else{toast(res)}
+            }
+        }); 
     </script>
 
 </body>

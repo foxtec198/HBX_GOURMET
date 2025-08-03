@@ -342,3 +342,50 @@ input:checked + .slider:after {
 /*--------- END --------*/
 
 
+/*Theme the Tabulator element*/
+#tb_vendas{
+    background-color:#333;
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+/*Theme the header*/
+#tb_vendas .tabulator-header {
+    background-color:#333;
+    color:#fff;
+}
+
+/*Allow column header names to wrap lines*/
+#tb_vendas .tabulator-header .tabulator-col,
+#tb_vendas .tabulator-header .tabulator-col-row-handle {
+    white-space: normal;
+    background: #111;
+}
+#tb_vendas .tabulator-paginator {
+    white-space: normal;
+    background: #111;
+    color: white;
+}
+
+#tb_vendas .tabulator-paginator button{
+    white-space: normal;
+    background: #111;
+    color: white;
+}
+
+.tabulator .tabulator-footer {
+  background-color: #111; /* Cor de fundo desejada */
+  color: white;              /* Cor do texto */
+}
+
+
+/*Color the table rows*/
+#tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row{
+    color:#fff;
+    background-color: #333;
+}
+
+/*Color even rows*/
+    #tb_vendas .tabulator-tableholder .tabulator-table .tabulator-row:nth-child(even) {
+    background-color: #444;
+}
