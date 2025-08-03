@@ -14,48 +14,47 @@
     <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
-    <div class="d-flex flex-column p-2 contG">
-        <span class="fs-4 fw-bold">Iniciar Atendimento!</span>
-        <span>Selecione seus items e clique no botão Novo Pedido!</span>
-        <div class="d-inline">
-            <p class="fs-5" id="atendente1">
-                <span class="badge rounded-pill text-bg-light">
-                    <i class="bi bi-person-bounding-box"></i>
-                    <span id="lbl_at">Atendente</span>
-                </span>
-                <span class="badge rounded-pill placeholder" id="lbl_cx">
-                    Status Caixa
-                </span>
-            </p>
+    <div class="d-flex flex-column vh-100">
+        <div class="d-flex flex-column p-1 contG">
+            <span class="fs-4 fw-bold">Iniciar Atendimento!</span>
+            <span>Selecione seus items e clique no botão Novo Pedido!</span>
+            <div class="d-inline">
+                <p class="fs-5" id="atendente1">
+                    <span class="badge rounded-pill text-bg-light">
+                        <i class="bi bi-person-bounding-box"></i>
+                        <span id="lbl_at">Atendente</span>
+                    </span>
+                    <span class="badge rounded-pill placeholder" id="lbl_cx">
+                        Status Caixa
+                    </span>
+                </p>
+            </div>
+        </div> 
+    
+        <div class="d-flex flex-row flex-wrap gap-2 p-1">
+            <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
+                <input id="cmdIn" type="number" class="form-control" placeholder="Comanda ou Mesa" >
+            </div>
+            <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
+                <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
+            </div>
         </div>
-    </div> 
-    <div class="d-flex flex-row flex-wrap gap-2 p-2">
-        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 100px;">
-            <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
-            <input id="cmdIn" type="number" class="form-control" placeholder="Comanda ou Mesa" >
+    
+        <div class="d-flex flex-column p-1" style="height: 75%; overflow-y: auto;">
+            <div class="input-group mb-4">
+                <span class="input-group-text">@</span>
+                <input id="search_prods" type="text" placeholder="Busque por produtos, categorias ou preços!!" class="form-control" autocapitalize="off" autocomplete="off" autofocus>
+            </div>
+    
+            <ul class="list-group w-100" id="list_prods"></ul>
         </div>
-        <div class="input-group mb-3" style="flex-grow: 1; flex-basis: 100px;">
-            <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
-            <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
+    
+        <div class="d-flex mt-5 justify-content-center align-item-center" id="btnNew">
+            <button onclick="enviar_prods(this)" class="btn btn-success w-75 fw-bold">Novo Pedido</button>
         </div>
     </div>
-
-    <div class="d-flex flex-column p-2" style="height: 75%; overflow-y: auto;">
-        <div class="input-group mb-4">
-            <span class="input-group-text">@</span>
-            <input id="search_prods" type="text" placeholder="Busque por produtos, categorias ou preços!!" class="form-control" autocapitalize="off" autocomplete="off" autofocus>
-        </div>
-
-        <ul class="list-group w-100" id="list_prods"></ul>
-    </div>
-
-    <div class="d-flex mt-5 justify-content-center align-item-center" id="btnNew">
-        <button onclick="enviar_prods(this)" class="btn btn-success w-75 fw-bold">Novo Pedido</button>
-    </div>
-
-    <a href="#btnNew" id="goToTheButton" class="d-flex text-center justify-content-center align-item-center">
-        <i class="bi bi-chevron-double-down"></i>
-    </a>
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
@@ -72,6 +71,14 @@
             });
         });
         });
+
+        string = location.href // Pega o local completo
+        indice = string.indexOf('?') // Pega somente os parametros
+        str = string.slice(indice + 1) // Faz com que ele pegue apos o caracter
+        cmd = str.replace('cmd=','')
+        if(cmd){
+            document.getElementById('cmdIn').value = cmd
+        }
 
         document.getElementById('lbl_at').textContent = sessionStorage.getItem('display_name').toUpperCase()
         async function cx(){

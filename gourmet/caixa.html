@@ -61,36 +61,34 @@
         <!-- Fechar Caixa -->
         <div class="d-flex flex-column border rounded p-2 mt-2">
             <span class="fs-6 fw-bold">Fechar Caixa</span>
-            <div class="d-flex flex-wrap">
-                <div class="d-flex flex-column gap-2 p-2" style="flex-grow: 1; flex-basis: 300px;">
-                    <div class="input-group">
-                        <span class="input-group-text">Dinheiro</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">Débito</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Dinheiro</span>
+                    <input type="integer" class="form-control" id="cx_dinheiro" readonly>
                 </div>
-                <div class="d-flex flex-column gap-2 p-2" style="flex-grow: 1; flex-basis: 300px;">
-                    <div class="input-group">
-                        <span class="input-group-text">Crédito</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">Pix</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Débito</span>
+                    <input type="integer" class="form-control" id="cx_debito" readonly>
                 </div>
-                <div class="d-flex flex-column gap-2 p-2" style="flex-grow: 1; flex-basis: 300px;">
-                    <div class="input-group">
-                        <span class="input-group-text">Total</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-text">Abertura</span>
-                        <input type="integer" class="form-control" readonly>
-                    </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Crédito</span>
+                    <input type="integer" class="form-control" id="cx_credito" readonly>
+                </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Pix</span>
+                    <input type="integer" class="form-control" id="cx_pix" readonly>
+                </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Total</span>
+                    <input type="integer" class="form-control" id="cx_total" readonly>
+                </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Abertura</span>
+                    <input type="integer" class="form-control" id="cx_abertura" readonly>
+                </div>
+                <div class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text">Fechamento</span>
+                    <input type="integer" class="form-control" id="cx_fechamento" readonly>
                 </div>
             </div>
             <button class="btn m-2 btn-success" onclick="fechar_caixa(this)">Fechar Caixa</button>
@@ -117,6 +115,6 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
 
     <script src="/js/gourmet.js"></script>
-    <script>status_caixa(); get_despesas(); last_value()</script>
+    <script>status_caixa(); get_history_cx(); get_despesas(); last_value()</script>
 </body>
 </html>

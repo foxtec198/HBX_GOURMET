@@ -48,6 +48,45 @@ function confer_troco(){
 
 }
 
+function atualizaValores(total){
+    const descontoInput = document.getElementById('in_desc');
+
+    let desconto = parseFloat(descontoInput.value) || 0;
+    console.log(desconto, total)
+
+    // Limita o desconto ao valor do total original
+    if (desconto > total) {
+      desconto = total;
+      descontoInput.value = total.toFixed(2);
+      alert('Desconto não deve ser maior que o valor total!');
+    }
+
+    const debito = parseFloat(document.getElementById('pagPartialDeb').value) || 0;
+    const credito = parseFloat(document.getElementById('pagPartialCred').value) || 0;
+    const pix = parseFloat(document.getElementById('pagPartialPix').value) || 0;
+    const dinheiro = parseFloat(document.getElementById('pagPartialDinheiro').value) || 0;
+
+    const totalPago = debito + credito + pix + dinheiro;
+
+    const totalFinal = Math.max(total - desconto, 0);
+    const falta = totalFinal - totalPago;
+
+    const faltaElem = document.getElementById('faltPag');
+    const trocoElem = document.getElementById('trocoLbl');
+    const btn = document.getElementById('setVenda');
+    const ck = document.getElementById('pagPartial')
+
+    if (falta > 0) {
+        faltaElem.textContent = 'Falta pagar: ' + real(falta)
+        trocoElem.textContent = 'Troco: 0.00';
+        if(ck.checked){btn.disabled = true;}
+    } else {
+        faltaElem.textContent = 'Pago: ' + real(totalPago);
+        trocoElem.textContent = 'Troco: ' + real(Math.abs(falta));
+        if(ck.checked){btn.disabled = false;}
+    }
+}
+
 // Troca de Frame e seta cor no Menu Button
 function change_screen(screnn, t=null){
     others = parent.document.querySelectorAll('.menu-item')
@@ -177,7 +216,7 @@ async function status_caixa(){
 
     if(res){
         st.classList.add('text-bg-success')
-        st.textContent = `Caixa Aberto - R$${res}`
+        st.textContent = `Caixa Aberto - R$${res['fechamento']}`
     }else{
         st.classList.add('text-bg-danger')
         st.textContent = `Caixa Fechado - R$0`
@@ -199,7 +238,6 @@ async function fechar_caixa(t){
     res = await req.json()
     if(req.ok){location.reload()}
     else{toast(res, 'erro')}
-
 }
 
 async function last_value(){
@@ -209,6 +247,27 @@ async function last_value(){
         document.getElementById('vl_ab_caixa').value = res[0]
     }else{
         document.getElementById('vl_ab_caixa').value = ''
+    }
+}
+
+async function get_history_cx(){
+    const res = await get_caixa()
+    if(res){
+        document.getElementById('cx_dinheiro').value = real(res['dinheiro'])
+        document.getElementById('cx_debito').value = real(res['debito'])
+        document.getElementById('cx_credito').value = real(res['credito'])
+        document.getElementById('cx_pix').value = real(res['pix'])
+        document.getElementById('cx_total').value = real(res['total'])
+        document.getElementById('cx_abertura').value = real(res['abertura'])
+        document.getElementById('cx_fechamento').value = real(res['fechamento'])
+    }else{
+        document.getElementById('cx_dinheiro').value = real(0)
+        document.getElementById('cx_debito').value = real(0)
+        document.getElementById('cx_credito').value = real(0)
+        document.getElementById('cx_pix').value = real(0)
+        document.getElementById('cx_total').value = real(0)
+        document.getElementById('cx_abertura').value = real(0)
+        document.getElementById('cx_fechamento').value = real(0)
     }
 }
 
@@ -244,15 +303,15 @@ async function get_despesas(filter=null){
             const id = item['id']
             const nome = item['motivo']
             const valor = item['valor']
-            date = `${item['data']}`
-            const data = new Date(date)
-            
+            const data = new Date(item['data'])
             const hora = item['hora']
             const dataAtual = new Date()
+
             const dataStr = dataAtual.toLocaleDateString('pt-br', {month: 'numeric'})
-            console.log(data, dataStr)
+            const dataStr2 = data.toLocaleDateString('pt-br', {month: 'numeric'})
+
             
-            if(dataStr === data.toLocaleDateString('pt-br')){
+            if(dataStr === dataStr2){
                 td = document.createElement('tr')
     
                 trMotivo = document.createElement('td')
@@ -674,7 +733,17 @@ async function get_cmds(){
             const divBtn = document.createElement('div')
             divBtn.classList.add('btn-group')
 
-            
+            // Botão para adicionar na CMD
+            const btnAddProdCmd = document.createElement('button')
+            btnAddProdCmd.classList.add('btn')
+            btnAddProdCmd.classList.add('btn-sm')
+            btnAddProdCmd.classList.add('btn-warning')
+            btnAddProdCmd.innerHTML = '<i class="bi bi-plus-circle-fill"></i>'
+            divBtn.appendChild(btnAddProdCmd)
+            btnAddProdCmd.addEventListener('click', async function(){
+                location = '/gourmet/novoPedido.html?cmd='+cmd
+            })
+
             // Btn Abrir
             const btnAbrirCmd = document.createElement('button')
             btnAbrirCmd.classList.add('btn')
@@ -735,9 +804,8 @@ async function mount_cmd_panel(dd){
         const cli = res['cli']
         const func = res['func']
         const data = new Date(res['data'])
-        var total = res['total']
-        prods = res['prods']
-        console.log(prods)
+        let total = res['total']
+        const prods = res['prods']
 
         lblCmd = document.getElementById('lbl_cmd')
         lblCmd.classList.remove('placeholder')
@@ -759,10 +827,10 @@ async function mount_cmd_panel(dd){
         prods.forEach(item=>{
             const prod = item['nome']
             const nome = item['func']
-            valor = item['valor']
-            quant = item['quant']
-            hora = item['hora']
-            st = item['status']
+            let valor = item['valor']
+            const quant = item['quant']
+            const hora = item['hora']
+            const st = item['status']
 
             li = document.createElement('li')
             li.classList.add('list-group-item')
@@ -823,138 +891,58 @@ async function mount_cmd_panel(dd){
         mb = document.getElementById('modal-body')
 
         const in_desc = document.getElementById("in_desc")
-        in_desc.oninput = function(){
-            if(ck.checked){
-                if(in_desc.value > total){
-                    in_desc.value = total
-                    flPg.textContent = 'Pago: ' + real(total)
-                    alertInApp(
-                        'Valor de desconto nao deve ser maior que o valor!',
-                        'danger'
-                    )
-                }else{
-                    total = total - in_desc.value
-                    if(total >= valorPago){
-                        flPg.textContent = 'Pago: ' + real(valorPago)
-                    }else{
-                        flPg.textContent = 'Falta pagar: ' + real(valorPago)
-                    }
-                }
-            }else{
-                if(in_desc.value > total){
-                    in_desc.value = total
-                    flPg.textContent = 'Pago: ' + real(total)
-                    alertInApp(
-                        'Valor de desconto nao deve ser maior que o valor!',
-                        'danger'
-                    )
-                }else{
-                    flPg.textContent = 'Falta pagar: ' + real(total - in_desc.value)
-                }
-            }
-        }
 
         const ck = document.getElementById('pagPartial')
         ck.onchange = function(){
+            document.getElementById('setVenda').disabled = true
             const t = document.getElementById('div_pag')
             const t2 = document.getElementById('div_pag_partial')
 
             if(ck.checked){
                 t.hidden = 'none'
                 t2.hidden = ''
-            }else if(!ck.checked){
+            }else{
+
                 t.hidden = ''
                 t2.hidden = 'none'
             }
         }
+
+        document.getElementById('pagPartialDeb').oninput = function(){atualizaValores(total)}
+        document.getElementById('pagPartialCred').oninput = function(){atualizaValores(total)}
+        document.getElementById('pagPartialPix').oninput = function(){atualizaValores(total)}
+        document.getElementById('pagPartialDinheiro').oninput = function(){atualizaValores(total)}
+        document.getElementById('in_desc').oninput = function(){atualizaValores(total)}
         
-        flPg = document.getElementById('faltPag')
-        tcLbl = document.getElementById('trocoLbl') 
-        var valorPago = 0
-        var troco = 0
-
-        pgDeb = document.getElementById('pagPartialDeb')
-        pgDeb.onblur = function(){
-            if(pgDeb.value){
-                troco = total - pgDeb.value - pgCred.value - pgPix.value - pgDin.value
-    
-                if(troco <= 0){
-                    flPg.textContent = 'Pago: ' + real(total)
-                    valorPago += parseFloat(pgDeb.value)
-                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
-                }else{
-                    valorPago += parseFloat(pgDeb.value)
-                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
-                    tcLbl.textContent = 'Troco: '
-                }
-            }
-        }
-
-        const pgCred = document.getElementById('pagPartialCred')
-        pgCred.onblur = function(){
-            if(pgCred.value){
-                troco = total - pgDeb.value - pgCred.value - pgPix.value - pgDin.value
-    
-                if(troco <= 0){
-                    flPg.textContent = 'Pago: ' + real(total)
-                    valorPago += parseFloat(pgCred.value)
-                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
-                }else{
-                    valorPago += parseFloat(pgCred.value)
-                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
-                    tcLbl.textContent = 'Troco: '
-                }
-            }
-
-        }
-        
-        const pgPix = document.getElementById('pagPartialPix')
-        pgPix.onblur = function(){
-            if(pgPix.value){
-                troco = total - pgDeb.value - pgPix.value - pgPix.value - pgDin.value
-    
-                if(troco <= 0){
-                    flPg.textContent = 'Pago: ' + real(total)
-                    valorPago += parseFloat(pgPix.value)
-                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
-                }else{
-                    valorPago += parseFloat(pgPix.value)
-                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
-                    tcLbl.textContent = 'Troco: '
-                }
-            }
-        }
-
-        const pgDin = document.getElementById('pagPartialDinheiro')
-        pgDin.onblur = function(){
-            if(pgDin.value){
-                troco = total - pgDeb.value - pgDin.value - pgPix.value - pgDin.value
-    
-                if(troco <= 0){
-                    flPg.textContent = 'Pago: ' + real(total)
-                    valorPago += parseFloat(pgDin.value)
-                    tcLbl.textContent = 'Troco: ' + real(Math.abs(troco))
-                }else{
-                    valorPago += parseFloat(pgDin.value)
-                    flPg.textContent = 'Falta pagar: ' + real(total - valorPago)
-                    tcLbl.textContent = 'Troco: '
-                }
-            }
-        }
 
         document.getElementById('setVenda').addEventListener('click', async function(e){
             e.preventDefault()
 
+            const debito = parseFloat(document.getElementById('pagPartialDeb').value) || 0;
+            const credito = parseFloat(document.getElementById('pagPartialCred').value) || 0;
+            const pix = parseFloat(document.getElementById('pagPartialPix').value) || 0;
+            const dinheiro = parseFloat(document.getElementById('pagPartialDinheiro').value) || 0;
+
+            let valor_pago = 0;
+            let troco = 0;
+
+            if(ck.checked){
+                valor_pago = document.getElementById('faltPag').textContent.replace('Pago: R$ ', '').replace(',','.') || 0;
+                troco = document.getElementById('trocoLbl').textContent.replace('Troco: R$ ', '').replace(',','.') || 0;
+            }else{
+                valor_pago = total
+            }
+
             dd = {
                 'cmd': cmd,
-                'valor': parseFloat(total),
+                'valor': parseFloat(valor_pago),
                 'desconto': parseFloat(in_desc.value),
-                'debito': parseFloat(pgDeb.value),
-                'credito': parseFloat(pgCred.value),
-                'pix': parseFloat(pgPix.value),
-                'dinheiro': parseFloat(pgDin.value),
+                'debito': debito,
+                'credito': credito,
+                'pix': pix,
+                'dinheiro': dinheiro,
                 'cliente': cli,
-                'troco': Math.abs(troco)
+                'troco': troco
             }
 
             if(!ck.checked){
@@ -964,7 +952,7 @@ async function mount_cmd_panel(dd){
             const req = await request('comandas', 'POST', JSON.stringify(dd))
             const res = await req.json()
 
-            if(req.ok){location.reload()}
+            if(req.ok){change_screen('comandas', parent.document.getElementById('menu_comandas'))}
             else{toast(res, 'erro')}
         })
 
@@ -975,74 +963,34 @@ async function mount_cmd_panel(dd){
 async function get_vendas(){
     const req = await request('vendas')
     const res = await req.json()
-    console.log(res)
     if(req.ok){
-        const tb_vendas = document.getElementById('tb_vendas') 
         const tableData = []
         res.forEach(item => {
-            tableData.push({
-                cmd: item['cmd'],
-                func: item['funcionario'],
-                data: new Date(item['data']).toLocaleDateString('pt-br', {day:'numeric', month:'long'}),
-                valor: real(item['valor_real']),
-                status: item['status'] === 'FINALIZADA' ? true : false,
-            })
-            // const tr = document.createElement('tr')
-
-            // const tdCmd = document.createElement('td')
-            // tdCmd.textContent = item['cmd']
-            // tr.appendChild(tdCmd)
-
-            // const tdFunc = document.createElement('td')
-            // tdFunc.textContent = item['funcionario']
-            // tr.appendChild(tdFunc)
-
-            // const tdData = document.createElement('td')
-            // const data = new Date(item['data'])
-            // tdData.textContent = data.toLocaleDateString('pt-br', {day:'numeric', month:'long'})
-            // tr.appendChild(tdData)
-
-            // tdValor = document.createElement('td')
-            // tdValor.textContent = real(item['valor_real'])
-            // tr.appendChild(tdValor)
-
-            // tdPagamento = document.createElement('td')
-            // const sp = document.createElement('span')
-            // sp.textContent = item['status']
-            // sp.classList.add('badge','rounded-pill', 'text-bg-success')
-            // tdPagamento.appendChild(sp)
-            // tr.appendChild(tdPagamento)
-
-            // const tdBtn = document.createElement('td')
-            // const btnGp = document.createElement('div')
-            // btnGp.classList.add('btn-group')
-
-            // const btnView = document.createElement('button')
-            // btnView.innerHTML = '<i class="bi bi-eye-fill"></i>'
-            // btnView.classList.add('btn', 'btn-sm', 'btn-secondary')
-            // btnView.addEventListener('click', async function(){})
-            // btnGp.appendChild(btnView)
-
-            // const btnRemove = document.createElement('button')
-            // btnRemove.innerHTML = lixeira
-            // btnRemove.classList.add('btn', 'btn-sm', 'btn-danger')
-            // btnRemove.addEventListener('click', async function(){})
-            // btnGp.appendChild(btnRemove)
-
-            // tdBtn.appendChild(btnGp)
-            // tr.appendChild(tdBtn)
-
-            
-            // tb_vendas.appendChild(tr)
+            const datt = new Date(item['data']).toLocaleDateString('pt-br', {month: 'numeric'})
+            const datA = new Date().toLocaleDateString('pt-br', {month: 'numeric'})
+            if(datt === datA){
+                tableData.push({
+                    cmd: item['cmd'],
+                    func: item['funcionario'],
+                    data: new Date(item['data']).toLocaleDateString('pt-br', {day:'numeric', month:'long', hour:'numeric', minute:'numeric'}),
+                    valor: real(item['valor_real']),
+                    status: item['status'] === 'FINALIZADA' ? true : false,
+                    cliente: item['cliente'],
+                    btn: `<div class="btn-group">
+                        <button class="btn btn-sm btn-secondary" onclick="mount_cmd_panel({'cmd':'${item['cmd']}'})"><i class="bi bi-eye-fill"></i></button>
+                        <button class="btn btn-sm btn-danger">${lixeira}</button>
+                    </div>`
+                })
+            }
         })
         const table = new Tabulator("#tb_vendas", {
             data: tableData,
             layout: "fitColumns",
-            responsiveLayout: true, // enable responsive layouts
-            paginationSize: 30,
-            paginationCounter:"rows", //display count of paginated rows in footer
-            pagination:"local",       //paginate the data
-            initialSort:[             //set the initial sort order of the data
+            responsiveLayout: true,
+            paginationSize: 10,
+            paginationCounter:"rows",
+            pagination:"local",
+            initialSort:[
                 {column:"data", dir:"desc"},
             ],
             columns: [
@@ -1051,6 +999,8 @@ async function get_vendas(){
                 {title:"Data da venda", field:"data", hozAlign:"center", responsive: 0, minWidth: 100},
                 {title:"Valor", field:"valor", hozAlign:"right", responsive: 0, minWidth: 100},   
                 {title:"Status", field:"status",  hozAlign:"center", formatter:"tickCross", responsive:0, sorter:"boolean", minWidth: 100},
+                {title:"Cliente", field:"cliente", responsive: 4, minWidth: 100},
+                {title:"Ações", field:"btn", hozAlign:"center", responsive: 0, minWidth: 100, formatter:"html"}
             ]
         });
     }
@@ -1075,9 +1025,10 @@ if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
 if(window.location.pathname !== '/' && !mat){window.location = '/'}
 if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
 
+// Eventos--------------------------------- ----------------------------------------------------------------------------
 
-// JQuery ----------------------------------------------------------------------------
 
+// JQuery --------------------------------------------------------------------------------------------------------------
 $(document).ready(function(){
     $(".tel-mask").inputmask("(99) 99999-9999");
 });
