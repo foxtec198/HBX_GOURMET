@@ -87,7 +87,7 @@
             if(res){
                 bd.classList.remove('placeholder')
                 bd.classList.add('text-bg-success')
-                bd.textContent = `Aberto - ${res.toLocaleString('pt-br', {style: 'currency', currency:'BRL'})}`
+                bd.textContent = `Aberto - ${res.fechamento.toLocaleString('pt-br', {style: 'currency', currency:'BRL'})}`
             }else{
                 bd.classList.remove('placeholder')
                 bd.classList.add('text-bg-danger')

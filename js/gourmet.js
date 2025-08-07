@@ -1,6 +1,6 @@
 // Vars
-// api = 'http://localhost:9560/gourmet/api/v1/'
 api = 'https://api.hubbix.com.br/gourmet/api/v1/'
+api = 'http://localhost:9560/gourmet/api/v1/'
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -303,14 +303,14 @@ async function get_despesas(filter=null){
             const id = item['id']
             const nome = item['motivo']
             const valor = item['valor']
+            
             const data = new Date(item['data'])
-            const hora = item['hora']
             const dataAtual = new Date()
+            const hora = data.toLocaleTimeString('pt-br', {hour: '2-digit', minute: '2-digit'})
 
             const dataStr = dataAtual.toLocaleDateString('pt-br', {month: 'numeric'})
             const dataStr2 = data.toLocaleDateString('pt-br', {month: 'numeric'})
 
-            
             if(dataStr === dataStr2){
                 td = document.createElement('tr')
     
@@ -831,47 +831,62 @@ async function mount_cmd_panel(dd){
             const quant = item['quant']
             const hora = item['hora']
             const st = item['status']
+            const idPedido = item['id_pedido']
 
             li = document.createElement('li')
             li.classList.add('list-group-item')
 
-            dvM = document.createElement('div')
+            const dvM = document.createElement('div')
             dvM.classList.add('d-flex')
             dvM.classList.add('flex-row')
             dvM.classList.add('justify-content-between')
             dvM.classList.add('aling-items-center')
 
-            dv = document.createElement('div')
+            const dv = document.createElement('div')
             dv.classList.add('d-flex')
             dv.classList.add('flex-column')
             dv.classList.add('gap-1')
 
-            sp = document.createElement('span')
-            sp.textContent = `${quant} ${prod} - ${real(valor)}`
+            const sp = document.createElement('span')
+            sp.textContent = `${quant} ${prod} - ${real(valor)} - `
             sp.style.fontSize = '14px'
 
-            sp2 = document.createElement('span')
+            const sp2 = document.createElement('span')
             sp2.innerHTML = `
                 <i class="bi bi-person"></i> ${nome}<br>
                 <i class="bi bi-clock"></i> ${hora}
                 `
             sp2.style.fontSize = '12px'
 
-            dv.appendChild(sp)
-            dv.appendChild(sp2)
-            dvM.appendChild(dv)
-
-            dv2 = document.createElement('div')
-            sp3 = document.createElement('span')
+            const sp3 = document.createElement('span')
             sp3.classList.add('badge')
             sp3.classList.add('rounded-pill')
-
             if(st === 'ENTREGUE'){sp3.classList.add('text-bg-success')}
             else if(st === 'SOLICITADO'){sp3.classList.add('text-bg-info')}
             else if(st === 'CANCELADO'){sp3.classList.add('text-bg-danger')}
-
             sp3.innerHTML = `<i class="bi bi-clipboard2-check-fill"></i> ${st}`
-            dv2.appendChild(sp3)
+            sp.appendChild(sp3)
+
+            dv.appendChild(sp)
+            dv.appendChild(sp2)
+            dvM.appendChild(dv)
+            
+            const dv2 = document.createElement('div')
+            dv2.classList.add('btn-group')
+
+            const btnCancelar = document.createElement('button')
+            btnCancelar.classList.add('btn','btn-danger')
+            btnCancelar.innerHTML = lixeira
+            btnCancelar.addEventListener('click', async function(){
+                if(confirm('Deseja cancelar este pedido?')){
+                    const req = await request('pedido', 'DELETE', JSON.stringify({id: idPedido, cmd: cmd}))
+                    const res = await req.json()
+                    if(req.ok){location.reload()}
+                    else{toast(res)}
+                }
+            })
+            
+            dv2.appendChild(btnCancelar)
             dvM.appendChild(dv2)
 
             li.appendChild(dvM)
@@ -956,7 +971,7 @@ async function mount_cmd_panel(dd){
             else{toast(res, 'erro')}
         })
 
-    }else{toast(res, 'erro')}
+    }else{toast(res, 'erro'); change_screen('comandas')}
 }
 
 // Vendas
