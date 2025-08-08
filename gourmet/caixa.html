@@ -20,7 +20,7 @@
     <div>
         <div class="d-flex gap-1 flex-wrap justify-content-center" style="flex-grow: 1;">
             <!-- Abrir Caixa -->
-            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 justify-content-center border p-4 rounded">
+            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 border p-2 rounded">
                 <span class="fs-6 fw-bold">Abrir Caixa</span>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
@@ -30,7 +30,7 @@
                 <span class="text-center" style="font-size: 12px;"><strong>Obs:</strong> O valor é calculado de acordo com o ultimo fechamento, e pode ser alterado caso necessário!</span>
             </div>
             <!-- Aplciar Valor -->
-            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 justify-content-center border p-4 rounded">
+            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 border p-2 rounded">
                 <span class="fs-6 fw-bold">Aplicar Valor</span>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
@@ -41,7 +41,7 @@
                 </button>
             </div>
             <!-- Adicionar Despesas -->
-            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 justify-content-center border p-4 rounded">
+            <div style="flex-basis: 300px; flex-grow: 1;" class="d-flex flex-column gap-2 border p-2 rounded">
                 <span class="fs-6 fw-bold">Adicionar Despesa</span>
                 <div class="d-flex flex-wrap flex-row gap-2">
                     <div class="input-group" style="flex-grow: 1; flex-basis: 120px;">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <!-- Fechar Caixa -->
-        <div class="d-flex flex-column border rounded p-2 mt-2">
+        <div class="d-flex p-2 gap-2 flex-column border rounded p-2 mt-2">
             <span class="fs-6 fw-bold">Fechar Caixa</span>
             <div class="d-flex gap-2 flex-wrap">
                 <div class="input-group flex-grow-1" style="flex-basis: 200px;">
@@ -91,8 +91,9 @@
                     <input type="integer" class="form-control" id="cx_fechamento" readonly>
                 </div>
             </div>
-            <button class="btn m-2 btn-success" onclick="fechar_caixa(this)">Fechar Caixa</button>
+            <button class="btn btn-success w-100" onclick="fechar_caixa(this)">Fechar Caixa</button>
         </div>
+
         <!-- Despesas -->
         <div class="d-flex p-1 flex-column border rounded mt-2 overflow-auto">
             <span class="fw-bold">Despesas Hoje</span>

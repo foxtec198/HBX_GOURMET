@@ -123,16 +123,11 @@
     <script src="/js/gourmet.js"></script>
 
     <script>
-        string = location.href // Pega o local completo
-        indice = string.indexOf('?') // Pega somente os parametros
-        str = string.slice(indice + 1) // Faz com que ele pegue apos o caracter
-        cmd = str.replace('cmd=','')
+        const params = new URLSearchParams(window.location.search);
+        cmd = params.get("cmd")
         dd = {'cmd':cmd}
 
         mount_cmd_panel(JSON.stringify(dd))
-        function teste(){
-            console.log(document.getElementById('in_desc').value)
-        }
 
         document.getElementById('btn_cancel').addEventListener('click', async function() {
             if (confirm('Deseja cancelar a comanda?')) {

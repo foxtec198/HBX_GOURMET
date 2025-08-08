@@ -1,6 +1,7 @@
 // Vars
 api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 // api = 'http://localhost:9560/gourmet/api/v1/'
+
 spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 green = '#5E8B60'
 lixeira = '<i class="bi bi-trash2-fill"></i>'
@@ -10,19 +11,50 @@ loader = '<div class="loader"> <div class="justify-content-center jimu-primary-l
 mat = sessionStorage.getItem('mat') 
 cr = sessionStorage.getItem('cr')
 gc = sessionStorage.getItem('gc')
-cmd = sessionStorage.getItem('cmd')
 nome = sessionStorage.getItem('display_name')
 lds = document.createElement('div')
 
 div = document.createElement('div')
 div.id = 'snackbar'
 document.body.appendChild(div)
+const bodyHtml = document.body.innerHTML
 
 // Funções ------------------------------------------------------------------------------------------------------- 
 // Realiza o Logout limpando os caches e voltando para o login
 function logout(){
     sessionStorage.clear()
     location = '/'
+}
+
+function create_modal(id, title, body, backdrop = true, center='modal-dialog-centered modal-fullscreen'){
+    const container = parent.document.createElement('div')
+    const modalHtml = `
+        <div class="modal fade" id="${id}" data-bs-keyboard="true" tabindex="-1">
+            <div class="modal-dialog ${center}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${title}</h5>
+                </div>
+                <div class="modal-body">
+                    ${body}
+                </div>
+            </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = modalHtml
+    document.body.appendChild(container)
+    return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': backdrop})
+}
+
+async function excluir_venda(id){
+    if(confirm("Deseja excluir esta venda, permanentemente?")){
+        const req = await request('vendas', 'DELETE', JSON.stringify({id: id}))
+        const res = await req.json()
+    
+        if(req.ok){location.reload()}
+        else{toast(res)}
+    }
 }
 
 function real(str){
@@ -37,6 +69,7 @@ function show_ldg(){
     lds.innerHTML = loader
     lds.style.position = 'absolute'
     lds.style.top = 0
+    // document.body.innerHTML = ''
     document.body.appendChild(lds)
 }
 
@@ -52,7 +85,6 @@ function atualizaValores(total){
     const descontoInput = document.getElementById('in_desc');
 
     let desconto = parseFloat(descontoInput.value) || 0;
-    console.log(desconto, total)
 
     // Limita o desconto ao valor do total original
     if (desconto > total) {
@@ -392,9 +424,7 @@ async function get_despesas(filter=null){
 }
 
 // Login
-async function login(){
-    mat = document.getElementById('mat').value
-    pwd = document.getElementById('pwd').value
+async function login(mat, pwd){
     if(mat){
         if(pwd){
             show_ldg()
@@ -485,9 +515,9 @@ async function get_pedidos(){
                     res.forEach(item => {
                         const id = item['id']
                         const idp = item['idp']
-                        prod = item['prod']
-                        quant = item['quant']
-                        st = item['status']
+                        const prod = item['prod']
+                        const quant = item['quant']
+                        const st = item['status']
 
                         li = document.createElement('li')
                         li.classList.add('list-group-item')
@@ -506,16 +536,16 @@ async function get_pedidos(){
                         badge.classList.add('text-bg-success')
 
                         // Botao Cancelamento de Produto e nao do pedido do todo
-                        btn = document.createElement('button')
+                        let btn = document.createElement('button')
                         btn.classList.add('btn')
                         btn.classList.add('btn-sm')
                         btn.classList.add('btn-danger')
                         btn.innerHTML = lixeira
                         btn.addEventListener('click', async function(){
                             if(confirm('Deseja realmente cancelar este produto?')){
-                                dd = {'id':id, 'cmd':cmd, 'idp':idp}
-                                req = await request('rm_order_only', 'DELETE', JSON.stringify(dd))
-                                res = await req.json()
+                                dd = {id:id, cmd:cmd, idp:idp}
+                                const req = await request('rm_order_only', 'DELETE', JSON.stringify(dd))
+                                const res = await req.json()
                                 if(req.ok){location.reload()}
                                 else{toast(res, 'erro')}
                             }
@@ -551,7 +581,7 @@ async function get_pedidos(){
                     else{toast(res)}
                 }
             })
-            console.log()
+
             btnGp.appendChild(btnEntrega)
             btnGp.appendChild(btnView)
             btnGp.appendChild(btnRemove)
@@ -666,12 +696,14 @@ async function rmv_prod(t, id){
 
 //  Nova Comanda/Pedido
 async function enviar_prods(t=null){
-    cmd = document.getElementById('cmdIn').value
-    cli = document.getElementById('cliIn').value
-    objs = document.querySelectorAll(".prods")
-    data = {"cmd": cmd, "cliente":cli}
+    const cmd = document.getElementById('cmdIn').value
+    const cli = document.getElementById('cliIn').value
+    const objs = document.querySelectorAll(".prods")
+    const btnb = document.getElementById('btn_balcao')
+    if(btnb.checked){data = {cmd: cmd, cliente: cmd}}
+    else{data = {cmd: cmd, cliente:cli}}
+    
     prods = {}
-
     objs.forEach(item=>{
         if(item.value > 0){
             prods[item.name] = {"quantidade": parseInt(item.value)}
@@ -682,6 +714,8 @@ async function enviar_prods(t=null){
 
     if(cmd){
         if(Object.keys(prods).length > 0){
+            
+
             if(t){t.innerHTML = spinner}
             req = await request("pedidos", "POST", JSON.stringify(data))
             res = await req.json()
@@ -713,6 +747,7 @@ async function get_cmds(){
 
             const tdCmd = document.createElement('td')
             tdCmd.textContent = cmd
+            tdCmd.classList.add('text-truncate')
             tr.appendChild(tdCmd)
 
             const tdCliente = document.createElement('td')
@@ -720,7 +755,6 @@ async function get_cmds(){
             tdCliente.classList.add('text-truncate')
             tr.appendChild(tdCliente)
 
-            
             const tdValor = document.createElement('td')
             tdValor.textContent = parseFloat(valor).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
             tr.appendChild(tdValor)
@@ -741,7 +775,7 @@ async function get_cmds(){
             btnAddProdCmd.innerHTML = '<i class="bi bi-plus-circle-fill"></i>'
             divBtn.appendChild(btnAddProdCmd)
             btnAddProdCmd.addEventListener('click', async function(){
-                location = '/gourmet/novoPedido.html?cmd='+cmd
+                location = `/gourmet/novoPedido.html?cmd=${cmd}&&cli=${cliente}`
             })
 
             // Btn Abrir
@@ -752,7 +786,7 @@ async function get_cmds(){
             btnAbrirCmd.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>'
             divBtn.appendChild(btnAbrirCmd)
             btnAbrirCmd.addEventListener('click', async function(){
-                location = '/gourmet/cmd.html?cmd='+cmd
+                location = `/gourmet/cmd.html?cmd=${cmd}`
             })
 
             // Btn de Cancelamento
@@ -989,16 +1023,15 @@ async function get_vendas(){
                     func: item['funcionario'],
                     data: new Date(item['data']).toLocaleDateString('pt-br', {day:'numeric', month:'long', hour:'numeric', minute:'numeric'}),
                     valor: real(item['valor_real']),
-                    status: item['status'] === 'FINALIZADA' ? true : false,
                     cliente: item['cliente'],
-                    btn: `<div class="btn-group">
-                        <button class="btn btn-sm btn-secondary" onclick="mount_cmd_panel({'cmd':'${item['cmd']}'})"><i class="bi bi-eye-fill"></i></button>
-                        <button class="btn btn-sm btn-danger">${lixeira}</button>
+                    btn: `
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-danger" onclick="excluir_venda(${item['id']})">${lixeira}</button>
                     </div>`
                 })
             }
         })
-        const table = new Tabulator("#tb_vendas", {
+        new Tabulator("#tb_vendas", {
             data: tableData,
             layout: "fitColumns",
             responsiveLayout: true,
@@ -1009,11 +1042,10 @@ async function get_vendas(){
                 {column:"data", dir:"desc"},
             ],
             columns: [
-                {title: "Comanda", field: "cmd", responsive: 0, minWidth: 100},
+                {title: "Cmd", field: "cmd", responsive: 0, minWidth: 100},
                 {title: "Funcionario", field: "func", responsive: 6, minWidth: 100},
                 {title:"Data da venda", field:"data", hozAlign:"center", responsive: 0, minWidth: 100},
-                {title:"Valor", field:"valor", hozAlign:"right", responsive: 0, minWidth: 100},   
-                {title:"Status", field:"status",  hozAlign:"center", formatter:"tickCross", responsive:0, sorter:"boolean", minWidth: 100},
+                {title:"Valor", field:"valor", hozAlign:"center", responsive: 0, minWidth: 100},   
                 {title:"Cliente", field:"cliente", responsive: 4, minWidth: 100},
                 {title:"Ações", field:"btn", hozAlign:"center", responsive: 0, minWidth: 100, formatter:"html"}
             ]
@@ -1021,26 +1053,116 @@ async function get_vendas(){
     }
 }
 
+async function create_modal_vendas(){
+    const req = await request('produtos')
+    const res = await req.json()
+
+    const body = document.createElement('div')
+    const ulProds = document.createElement('ul')
+    
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                // console.log(item)
+                const li = document.createElement('li')
+                li.classList.add('list-group-item','d-flex', 'justify-content-between', 'align-items-center')
+
+                const span = document.createElement('span')
+                span.textContent = item.nome
+
+                const buttonAdd = document.createElement('button')
+                buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
+                buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
+                
+                li.appendChild(span)
+                li.appendChild(buttonAdd)
+                ulProds.appendChild(li)
+            })
+        }
+    }
+
+    body.innerHTML = `
+        <div class="d-flex flex-column p-2 gap-2 w-100 h-100 align-items-center">
+            <div class="d-flex flex-wrap-reverse w-100 gap-2">
+                <!-- Lista de Produtos -->
+                <div class="card flex-grow-1" style="flex-basis: 300px;">
+                    <div class="card-header">
+                        <i class="bi bi-box-seam"></i> Produtos
+                    </div>
+                    <div class="card-body d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
+                        <div class="form-floating">
+                            <input class="form-control" type="text" id="busca_nova_venda" placeholder="Busque um item">
+                            <label for="busca_nova_venda">Busque um item</label>
+                        </div>
+                        <ul class="list-group" id="prods_nova_venda">
+                            ${ulProds.innerHTML}
+                        </ul>
+                    </div>
+                </div>
+                <!-- Carrinho -->
+                <div class="card flex-grow-1" style="flex-basis: 300px;">
+                    <div class="card-header">
+                        <i class="bi bi-basket2-fill"></i> Carrinho
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <span class="fs-6 text-center">Adicione um item ao carrinho!</span>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card flex-grow-1 w-100" style="flex-basis: 200px;">
+                <div class="card-header">
+                    <i class="bi bi-info-lg"></i> Informações
+                </div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                            <input class="form-control" type="text" name="busca" id="valor" placeholder="Busque um item" readonly>
+                            <label for="valor">Valor R$</label>
+                        </div>
+                        <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                            <input class="form-control" type="text" name="busca" id="valor" placeholder="Desconto">
+                            <label for="valor">Desconto</label>
+                        </div>
+                    </div>
+                    <div class="form-floating">
+                        <select class="form-select" aria-placeholder="Método de Pagamento" id="mt_pg">
+                            <option value="debito">Débito</option>
+                            <option value="credito">Crédito</option>
+                            <option value="pix">PIX</option>
+                            <option value="dinheiro">Dinheiro</option>
+                        </select>
+                        <label for="mt_pg">Método de Pagamento</label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-success align-self-end">Vender</button>
+        </div>
+    `
+    create_modal('modal_vendas', 'Nova Venda', body.innerHTML, '').show()
+
+}
+
 // Controle de Permissao ----------------------------------------------------------------------------------------------
-perm = sessionStorage.getItem('permissao')
+const perm = sessionStorage.getItem('permissao')
 if(perm){
     if(perm === 'FUNC' || perm === 'GRC'){
-        document.getElementById('link_caixa').hidden = 'none'
-        document.getElementById('link_relatorios').hidden = 'none'
-        document.getElementById('link_config').hidden = 'none'
+        parent.document.getElementById('link_caixa').hidden = 'none'
+        parent.document.getElementById('link_relatorios').hidden = 'none'
+        parent.document.getElementById('link_config').hidden = 'none'
         
-        mb_caixa = document.getElementById('mobile_caixa')
+        mb_caixa = parent.document.getElementById('mobile_caixa')
         mb_caixa.classList.remove('d-flex')
         mb_caixa.style.display = 'none'
-        document.getElementById('mobile_relatorios').hidden = 'none'
-        document.getElementById('mobile_config').hidden = 'none'
+        parent.document.getElementById('mobile_relatorios').hidden = 'none'
+        parent.document.getElementById('mobile_config').hidden = 'none'
     }
 }
-if(!cmd){cmd = sessionStorage.setItem('cmd', false)}
 if(window.location.pathname !== '/' && !mat){window.location = '/'}
 if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
 
-// Eventos--------------------------------- ----------------------------------------------------------------------------
+// Masks-------------------------------------------------------------------------------------------------------------
 
 
 // JQuery --------------------------------------------------------------------------------------------------------------
@@ -1051,3 +1173,20 @@ $(document).ready(function(){
 $(document).ready(function(){
     $(".money-mask").inputmask("currency");
 });
+
+// Eventos -------------------------------------------------------------------------------------------------------------
+const btn = document.getElementById('btnNovaVenda')
+if(btn){
+    btn.addEventListener('click', function(){
+        create_modal('modal_nova_venda', 'Nova Venda', 'Hi','center').show()
+    })
+}
+
+const form = document.getElementById("form_login")
+if(form){
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
+
+        login(this.mat.value, this.pwd.value)
+    })
+}
