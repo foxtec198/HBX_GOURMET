@@ -18,7 +18,7 @@
     
 </head>
 <body data-bs-theme="dark">
-    <div class="modal fade" id="modal_close" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modal_close" tabindex="-1" data-bs-keyboard="true" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header d-flex flex-column">
@@ -43,20 +43,20 @@
                     <label for="in_pag">Pagamento</label>
                 </div>
                 <div id="div_pag_partial" hidden>
-                    <div class="d-flex flex-row gap-2 w-100">
-                        <div class="form-floating flex-grow-1">
+                    <div class="d-flex flex-row flex-wrap gap-2 w-100">
+                        <div class="form-floating flex-grow-1" style="flex-basis: 100px;">
                             <input type="text" class="form-control money-mask" placeholder="Débito" id="pagPartialDeb">
                             <label for="pagPartialDeb">Débito</label>
                         </div>
-                        <div class="form-floating flex-grow-1">
+                        <div class="form-floating flex-grow-1" style="flex-basis: 100px;">
                             <input placeholder="Crédito" type="text" class="form-control money-mask" id="pagPartialCred">
                             <label for="pagPartialCred">Crédito</label>
                         </div>
-                        <div class="form-floating flex-grow-1">
+                        <div class="form-floating flex-grow-1" style="flex-basis: 100px;">
                             <input placeholder="PIX" type="text" class="form-control money-mask" id="pagPartialPix" onchange="">
                             <label for="pagPartialPix">PIX</label>
                         </div>
-                        <div class="form-floating flex-grow-1">
+                        <div class="form-floating flex-grow-1" style="flex-basis: 100px;">
                             <input placeholder="Dinheiro" type="text" class="form-control money-mask" id="pagPartialDinheiro">
                             <label for="pagPartialDinheiro">Dinheiro</label>
                         </div>
@@ -74,7 +74,6 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 <button class="btn btn-success" id="setVenda">Salvar</button>
             </div>
           </div>

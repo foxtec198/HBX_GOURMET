@@ -2,24 +2,26 @@
 api = 'https://api.hubbix.com.br/gourmet/api/v1/'
 // api = 'http://localhost:9560/gourmet/api/v1/'
 
-spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
-green = '#5E8B60'
-lixeira = '<i class="bi bi-trash2-fill"></i>'
-loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
+const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
+const green = '#5E8B60'
+const lixeira = '<i class="bi bi-trash2-fill"></i>'
+const loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
+const cart = new Object;
 
-// Variaveis de Usuario
-mat = sessionStorage.getItem('mat') 
-cr = sessionStorage.getItem('cr')
-gc = sessionStorage.getItem('gc')
-nome = sessionStorage.getItem('display_name')
-lds = document.createElement('div')
+// Variaveis de Usuario =================================================================================
+const mat = sessionStorage.getItem('mat') 
+const cr = sessionStorage.getItem('cr')
+const gc = sessionStorage.getItem('gc')
+const nome = sessionStorage.getItem('display_name')
+const lds = document.createElement('div')
 
-div = document.createElement('div')
+const div = document.createElement('div')
 div.id = 'snackbar'
 document.body.appendChild(div)
 const bodyHtml = document.body.innerHTML
 
-// Funções ------------------------------------------------------------------------------------------------------- 
+// Funções ================================================================================= 
+
 // Realiza o Logout limpando os caches e voltando para o login
 function logout(){
     sessionStorage.clear()
@@ -45,6 +47,10 @@ function create_modal(id, title, body, backdrop = true, center='modal-dialog-cen
     container.innerHTML = modalHtml
     document.body.appendChild(container)
     return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': backdrop})
+}
+
+function get_modal(id){
+    return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': true})
 }
 
 async function excluir_venda(id){
@@ -117,6 +123,23 @@ function atualizaValores(total){
         trocoElem.textContent = 'Troco: ' + real(Math.abs(falta));
         if(ck.checked){btn.disabled = false;}
     }
+}
+
+function atualizar_desconto(t){
+    const valor = document.getElementById('valor')
+    const valorOriginal = valor.value
+    const desconto = parseFloat(t.value || 0)
+    const vl_pg = document.getElementById('vl_pg')
+
+    if(valorOriginal && valorOriginal > 0){
+        if(desconto > valorOriginal){
+            toast("Desconto não deve ser maior que a venda!")
+            t.value = valorOriginal
+            vl_pg.textContent = 'Valor Pago: ' + real(0)
+        }else{
+            vl_pg.textContent = 'Valor a Pagar: ' + real(valorOriginal - desconto)
+        }
+    }else{t.value = 0}
 }
 
 // Troca de Frame e seta cor no Menu Button
@@ -194,7 +217,12 @@ function request(url, method='GET', json){
             body: json
         };
     }
-    return fetch(api + url, options)
+
+    try{
+        return fetch(api + url, options)
+    }catch{err => {
+        toast("Erro interno - " + err)
+    }}
 }
 
 // Função de Envio de Formulario
@@ -303,7 +331,7 @@ async function get_history_cx(){
     }
 }
 
-// Despesas
+// Despesas =================================================================================
 async function add_despesa(t){
     valor = document.getElementById('input_valor_despesa').value
     motivo = document.getElementById('input_motivo_despesa').value
@@ -423,7 +451,7 @@ async function get_despesas(filter=null){
 
 }
 
-// Login
+// Login =================================================================================
 async function login(mat, pwd){
     if(mat){
         if(pwd){
@@ -454,7 +482,7 @@ async function login(mat, pwd){
     }else{toast('Matricula obrigatória!')}
 }
 
-// Pedidos
+// Pedidos =================================================================================
 async function get_pedidos(){
     req = await request('pedidos')
     res = await req.json()
@@ -611,7 +639,7 @@ async function get_pedidos(){
     }
 }
 
-// Produtos
+// Produtos =================================================================================
 async function get_prods(){
     req = await request('produtos')
     res = await req.json()
@@ -694,7 +722,7 @@ async function rmv_prod(t, id){
     }else{input.value = 0}
  }
 
-//  Nova Comanda/Pedido
+//  Nova Comanda/Pedido =================================================================================
 async function enviar_prods(t=null){
     const cmd = document.getElementById('cmdIn').value
     const cli = document.getElementById('cliIn').value
@@ -730,7 +758,7 @@ async function enviar_prods(t=null){
     
 }
 
-// Comandas
+// Comandas =================================================================================
 async function get_cmds(){
     req = await request('comandas')
     res = await req.json()
@@ -1008,7 +1036,7 @@ async function mount_cmd_panel(dd){
     }else{toast(res, 'erro'); change_screen('comandas')}
 }
 
-// Vendas
+// Vendas =================================================================================
 async function get_vendas(){
     const req = await request('vendas')
     const res = await req.json()
@@ -1056,95 +1084,144 @@ async function get_vendas(){
 async function create_modal_vendas(){
     const req = await request('produtos')
     const res = await req.json()
+    const tbProds = document.getElementById('prods_nova_venda')
+    const carrinho = document.getElementById('carrinho')
+    const valorIn = document.getElementById('valor')
+    const vl_pg = document.getElementById('vl_pg')
+    const descIn = document.getElementById('desconto')
+    let valor = 0;
+    let cont = 0
 
-    const body = document.createElement('div')
-    const ulProds = document.createElement('ul')
-    
     if(req.ok){
         if(res[0]){
+            tbProds.innerHTML = ''
             res.forEach(item => {
-                // console.log(item)
-                const li = document.createElement('li')
-                li.classList.add('list-group-item','d-flex', 'justify-content-between', 'align-items-center')
+                const nome = item.nome
+                const id = item.id
+                const valorItem = item.valor
+                const quant = item.quantidade
 
-                const span = document.createElement('span')
-                span.textContent = item.nome
+                const tr = document.createElement('tr')
 
-                const buttonAdd = document.createElement('button')
-                buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
-                buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
-                
-                li.appendChild(span)
-                li.appendChild(buttonAdd)
-                ulProds.appendChild(li)
+                const tdProd = document.createElement('td')
+                tdProd.textContent = nome
+                tr.appendChild(tdProd)
+
+                if(quant > 0){
+                    const tdBtn = document.createElement('td')
+
+                    const buttonAdd = document.createElement('button')
+                    buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
+                    buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
+                    buttonAdd.addEventListener('click', function(){
+                        if(cont == 0){carrinho.innerHTML = ''}
+
+                        const li = document.createElement('li')                        
+                        li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                        
+                        const span = document.createElement('span')
+                        span.textContent = nome
+                        
+                        const btnRm = document.createElement('button')
+                        btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
+                        btnRm.innerHTML = lixeira
+                        btnRm.addEventListener('click', function(){
+                            carrinho.removeChild(li)
+                            valor -= valorItem
+                            valorIn.value = valor
+                            cart[id].quantidade -= 1
+                            cart[id].valor -= valorItem
+                            if(cart[id].quantidade == 0){delete cart[id]}
+                            vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                            atualizar_desconto(descIn)
+                        })
+                        
+                        li.appendChild(span)
+                        li.appendChild(btnRm)
+                        
+                        carrinho.appendChild(li)
+
+                        valor += valorItem
+                        valorIn.value = valor
+
+                        vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                        atualizar_desconto(descIn)
+
+                        if(cart[id]){
+                            cart[id].quantidade += 1
+                            cart[id].valor += valorItem
+                        }else{
+                            cart[id] = {
+                                nome: nome,
+                                valor: valorItem,
+                                quantidade: 1
+                            }
+                        }
+
+                        cont += 1
+                    })
+
+                    tdBtn.appendChild(buttonAdd)
+                    tr.appendChild(tdBtn)
+                }else{
+                    const spanEstoque = document.createElement('span')
+                    spanEstoque.classList.add('badge', 'text-bg-danger')
+                    spanEstoque.textContent = 'Sem estoque!'
+                    li.appendChild(spanEstoque)
+                }
+                tbProds.appendChild(tr)
             })
+        }else{
+            const tr = document.createElement("tr")
+
+            const td = document.createElement('td')
+            td.textContent = "Nenhum produto adicionado ainda! Cadastre seu estoque"
+            td.classList.add("text-center", "p-2", "d-flex", "align-items-center", "justify-content-center")
+            
+            const tdAction = document.createElement('td')
+            const btn = document.createElement('button')
+            btn.classList.add("btn", "btn-success")
+            btn.textContent = " + "
+            btn.addEventListener('click', function(){
+                change_screen('estoque')
+            })
+            tdAction.appendChild(btn)
+            
+            tr.appendChild(td)
+            tr.appendChild(tdAction)
+            tbProds.appendChild(tr)
         }
     }
 
-    body.innerHTML = `
-        <div class="d-flex flex-column p-2 gap-2 w-100 h-100 align-items-center">
-            <div class="d-flex flex-wrap-reverse w-100 gap-2">
-                <!-- Lista de Produtos -->
-                <div class="card flex-grow-1" style="flex-basis: 300px;">
-                    <div class="card-header">
-                        <i class="bi bi-box-seam"></i> Produtos
-                    </div>
-                    <div class="card-body d-flex flex-column gap-2" style="max-height: 300px; overflow-y: auto;">
-                        <div class="form-floating">
-                            <input class="form-control" type="text" id="busca_nova_venda" placeholder="Busque um item">
-                            <label for="busca_nova_venda">Busque um item</label>
-                        </div>
-                        <ul class="list-group" id="prods_nova_venda">
-                            ${ulProds.innerHTML}
-                        </ul>
-                    </div>
-                </div>
-                <!-- Carrinho -->
-                <div class="card flex-grow-1" style="flex-basis: 300px;">
-                    <div class="card-header">
-                        <i class="bi bi-basket2-fill"></i> Carrinho
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                            <span class="fs-6 text-center">Adicione um item ao carrinho!</span>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="card flex-grow-1 w-100" style="flex-basis: 200px;">
-                <div class="card-header">
-                    <i class="bi bi-info-lg"></i> Informações
-                </div>
-                <div class="card-body d-flex flex-column gap-2">
-                    <div class="d-flex flex-wrap gap-2">
-                        <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
-                            <input class="form-control" type="text" name="busca" id="valor" placeholder="Busque um item" readonly>
-                            <label for="valor">Valor R$</label>
-                        </div>
-                        <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
-                            <input class="form-control" type="text" name="busca" id="valor" placeholder="Desconto">
-                            <label for="valor">Desconto</label>
-                        </div>
-                    </div>
-                    <div class="form-floating">
-                        <select class="form-select" aria-placeholder="Método de Pagamento" id="mt_pg">
-                            <option value="debito">Débito</option>
-                            <option value="credito">Crédito</option>
-                            <option value="pix">PIX</option>
-                            <option value="dinheiro">Dinheiro</option>
-                        </select>
-                        <label for="mt_pg">Método de Pagamento</label>
-                    </div>
-                </div>
-            </div>
-            <button class="btn btn-success align-self-end">Vender</button>
-        </div>
-    `
-    create_modal('modal_vendas', 'Nova Venda', body.innerHTML, '').show()
+    modal = get_modal('modal_nova_venda')
+    modal.show()
+
 
 }
 
-// Controle de Permissao ----------------------------------------------------------------------------------------------
+async function vender(t){
+    const valor = document.getElementById('valor')
+    const desconto = document.getElementById('desconto')
+    const mt_pg = document.getElementById('mt_pg')
+
+    if(valor.value > 0){
+        t.innerHTML = spinner
+        dd = {
+            valor: parseFloat(valor.value),
+            desconto: parseFloat(desconto.value, 0),
+            mt_pg: mt_pg.value,
+            cart: cart,
+        }
+        const req = await request('vendas', 'POST', JSON.stringify(dd))
+        const res = await req.json()
+    
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro'); t.textContent = 'Vender'}
+    }else{toast("Valor Obrigatório", 'erro')}
+
+}
+
+// Controle de Permissao =================================================================================
 const perm = sessionStorage.getItem('permissao')
 if(perm){
     if(perm === 'FUNC' || perm === 'GRC'){
@@ -1162,7 +1239,7 @@ if(perm){
 if(window.location.pathname !== '/' && !mat){window.location = '/'}
 if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
 
-// Masks-------------------------------------------------------------------------------------------------------------
+// Masks =================================================================================
 
 
 // JQuery --------------------------------------------------------------------------------------------------------------
@@ -1174,7 +1251,7 @@ $(document).ready(function(){
     $(".money-mask").inputmask("currency");
 });
 
-// Eventos -------------------------------------------------------------------------------------------------------------
+// Eventos =================================================================================
 const btn = document.getElementById('btnNovaVenda')
 if(btn){
     btn.addEventListener('click', function(){
