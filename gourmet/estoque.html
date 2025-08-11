@@ -7,15 +7,170 @@
     <title>Pedidos</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
-    <div class="d-flex mb-4">
+    <div class="modal fade" id="md_categorias" tabindex="-1" data-bs-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="fw-bold fs-5">Categorias</span>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column gap-2 p-2">
+                        <div class="input-group">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="newcategoria" placeholder="Nome da Categoria">
+                                <label for="newcategoria">Nome da Categoria</label>
+                            </div>
+                            <button class="btn btn-outline-secondary" onclick="add_categoria(newcategoria.value)"> Adicionar </button>
+                        </div>
+                        <ul class="list-group" id="list_ctg"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="md_newProd" tabindex="-1" data-bs-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="fw-bold fs-5">Criar um Produto</span>
+                </div>
+                <div class="modal-body">
+                    <form id="new_prod" class="p-2 d-flex flex-column gap-2">
+                        <div class="d-flex">
+                            <img id="previewNewProd" src="https://api.hubbix.com.br/img/blank.png" width="100wh" class="img-fluid img-thumbnail" alt="Imagem do Produto">
+                            <div class="mb-3 flex-grow-1 p-2" style="flex-basis: 200px;">
+                                <label for="formFile" class="form-label">Escolha uma imagem para seu produto!</label>
+                                <input name="img" class="form-control" type="file" accept="image/*" id="newProdIn">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN">
+                                <label for="sku">SKU ou EAN</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *">
+                                <label for="nome">Nome do Produto *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <select class="form-select" name="categoria" id="categoria" aria-placeholder="Selecione a Categoria *">
+                                    <option value="0">Não Informado</option>
+                                </select>
+                                <label for="categoria">Selecione a Categoria *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" name="custo" id="custo" oninput="calc_lucro()" placeholder="Custo *" class="form-control money-mask">
+                                <label for="custo">Custo *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" name="valor" id="valor" oninput="calc_lucro()" placeholder="Valor *" class="form-control money-mask">
+                                <label for="valor">Valor *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" id="lucro" placeholder="Lucro" class="form-control money-mask" readonly>
+                                <label for="lucro">Lucro</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" id="mlucro" placeholder="Margem de Lucro" class="form-control" readonly>
+                                <label for="mlucro">Margem de Lucro</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *">
+                                <label for="quantidade">Estoque Atual - Quantidade *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *">
+                                <label for="alerta">Alerta de Estoque *</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg" id="btnNewProd">Cadastrar Produto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between p-1 mb-4">
         <span class="fs-4 fw-bold">Estoque.</span>
+        <div class="btn-group shadow-lg mobile-hide">
+            <button type="button" class="btn btn-success shadow-lg" data-bs-toggle="modal" data-bs-target="#md_newProd"><i class="bi bi-fork-knife"></i> Cadastrar Produto</button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#md_categorias">
+                    <i class="bi bi-tags-fill"></i> Categorias
+                </a></li>
+                <li><a class="dropdown-item disabled" href="#">
+                    <i class="bi bi-truck"></i> Fornecedores
+                </a></li>
+            </ul>
+        </div>
+        <div class="btn-group shadow-lg mobile">
+            <button type="button" class="btn btn-success shadow-lg"><i class="bi bi-fork-knife"></i></button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">
+                    <i class="bi bi-tags-fill"></i> Categorias
+                </a></li>
+                <li><a class="dropdown-item disabled" href="#">
+                    <i class="bi bi-truck"></i> Fornecedores
+                </a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="d-flex flex-column gap-2">
+        <div class="form-floating">
+            <input id="search" type="text" class="form-control" placeholder="Busque por um item">
+            <label for="search">Busque por um item</label>
+        </div>
+        <div class="d-flex overflow-auto border rounded">
+            <table class="table table-hover">
+                <thead class="fw-bold fs-6">
+                    <td class="text-truncate"><i class="bi bi-bookmark-fill"></i> Id</td>
+                    <td class="text-truncate"><i class="bi bi-image"></i> Imagem</td>
+                    <td class="text-truncate"><i class="bi bi-upc"></i> SKU</td>
+                    <td class="text-truncate"><i class="bi bi-highlighter"></i> Nome</td>
+                    <td class="text-truncate"><i class="bi bi-tags-fill"></i> Categoria</td>
+                    <td class="text-truncate"><i class="bi bi-cash"></i> Custo</td>
+                    <td class="text-truncate"><i class="bi bi-cash-coin"></i> Valor</td>
+                    <td class="text-truncate"><i class="bi bi-percent"></i> Lucro</td>
+                    <td class="text-truncate"><i class="bi bi-boxes"></i> Quantidade</td>
+                    <td class="text-truncate"><i class="bi bi-exclamation-triangle-fill"></i> Alerta</td>
+                    <td class="text-truncate"><i class="bi bi-calendar4-range"></i> Cadastro</td>
+                    <td class="text-truncate"><i class="bi bi-three-dots-vertical"></i> Ações</td>
+                </thead>
+                <tbody id="list_prods"></tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="/js/gourmet.js"></script>
+    <script>
+        get_estoque(); get_categorias(); get_categorias_opt();
+        imgPreview('newProdIn', 'previewNewProd');
+        
+        $(document).ready(function(){
+            $("#search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#list_prods tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
 </body>
 </html>

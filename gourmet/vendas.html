@@ -17,8 +17,9 @@
     <div class="modal fade" id="modal_nova_venda" data-bs-keyboard="true" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header d-flex justify-content-between">
                     <h5 class="modal-title">Nova Venda</h5>
+                    <span class="badge rounded-pill placeholder" id="lbl_cx">Status Caixa</span>
                 </div>
                 <div class="modal-body">
                     <div class="d-flex flex-column p-2 gap-2 w-100 h-100 align-items-center">
@@ -110,7 +111,7 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="/js/gourmet.js"></script>
     <script>
-        get_vendas();
+        get_vendas(); cx();
         $(document).ready(function(){
             $("#busca_nova_venda").on("keyup", function() {
                 var value = $(this).val().toLowerCase();

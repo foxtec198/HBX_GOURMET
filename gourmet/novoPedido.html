@@ -110,19 +110,6 @@
         }
 
         document.getElementById('lbl_at').textContent = sessionStorage.getItem('display_name').toUpperCase()
-        async function cx(){
-            res = await get_caixa()
-            bd = document.getElementById('lbl_cx')
-            if(res){
-                bd.classList.remove('placeholder')
-                bd.classList.add('text-bg-success')
-                bd.textContent = `Aberto - ${res.fechamento.toLocaleString('pt-br', {style: 'currency', currency:'BRL'})}`
-            }else{
-                bd.classList.remove('placeholder')
-                bd.classList.add('text-bg-danger')
-                bd.textContent = 'Caixa Fechado'
-            }
-        }
 
         document.getElementById('btn_balcao').addEventListener('click', function(){
             const cmdIn = document.getElementById('cmdIn')

@@ -1,10 +1,12 @@
 // Vars
-api = 'https://api.hubbix.com.br/gourmet/api/v1/'
-// api = 'http://localhost:9560/gourmet/api/v1/'
+server = 'https://api.hubbix.com.br/'
+// server = 'http://localhost:9560/'
+api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 const green = '#5E8B60'
 const lixeira = '<i class="bi bi-trash2-fill"></i>'
+const icon_edit = '<i class="bi bi-pencil-square"></i>'
 const loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
 const cart = new Object;
 
@@ -26,6 +28,54 @@ const bodyHtml = document.body.innerHTML
 function logout(){
     sessionStorage.clear()
     location = '/'
+}
+
+function imgPreview(file, prev){
+    const fileInput = document.getElementById(file)
+    const preview = document.getElementById(prev)
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }else{
+            preview.src = server + 'img/blank.png'
+        }
+    });
+
+}
+
+function calc_lucro(){
+    const valorIn = document.getElementById('valor')
+    const valor = valorIn.value
+
+    const custoIn = document.getElementById('custo')
+    const custo = custoIn.value
+
+    const btn = document.getElementById('btnNewProd')
+
+    const lucro = valor - custo
+    const mlucro = ((valor - custo)/ custo) * 100
+
+    if(lucro <= 0){
+        toast("Valor não deve ser menor ou igual que o lucro")
+        btn.disabled = true
+        document.getElementById('lucro').value = ''
+        document.getElementById('mlucro').value = ''
+    }else{
+        document.getElementById('lucro').value = lucro
+        document.getElementById('mlucro').value = mlucro.toFixed(1) + '%'
+        btn.disabled = false
+    }
+
+
 }
 
 function create_modal(id, title, body, backdrop = true, center='modal-dialog-centered modal-fullscreen'){
@@ -243,6 +293,20 @@ function send_form(url, form){
 // Callbacks API ---------------------------------------------------------------------------------------------
 
 // Caixa
+async function cx(){
+    res = await get_caixa()
+    bd = document.getElementById('lbl_cx')
+    if(res){
+        bd.classList.remove('placeholder')
+        bd.classList.add('text-bg-success')
+        bd.textContent = `Aberto - ${res.fechamento.toLocaleString('pt-br', {style: 'currency', currency:'BRL'})}`
+    }else{
+        bd.classList.remove('placeholder')
+        bd.classList.add('text-bg-danger')
+        bd.textContent = 'Caixa Fechado'
+    }
+}
+
 async function abrir_caixa(t){
     valor = document.getElementById('vl_ab_caixa').value
     if(valor){
@@ -1220,6 +1284,237 @@ async function vender(t){
     }else{toast("Valor Obrigatório", 'erro')}
 
 }
+
+// Estoque =================================================================================
+async function get_estoque(){
+    const req = await request("produtos")
+    const res = await req.json()
+    const list_prods = document.getElementById('list_prods')
+
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const img = item.img
+                const id = item.id
+                const sku = item.sku
+                const nome = item.nome
+                const categoria = item.categoria
+                const custo = item.custo
+                const valor = item.valor
+                const quantidade = item.quantidade
+                const alerta = item.alerta
+                const data = new Date(item.data)
+
+                const tr = document.createElement('tr')
+
+                const tdImg = document.createElement('td')
+                tdImg.classList.add('d-flex', 'justify-content-center')
+                const link = document.createElement('a')
+                const imgIn = document.createElement('img')
+                imgIn.classList.add('img-fluid', 'img-thumbnail')
+                if(img == 'blank.png'){
+                    imgIn.src = server + 'img/' + img
+                    link.href = server + 'img/' + img
+                }else{
+                    imgIn.src = server + 'img/gourmet/' + img
+                    link.href = server + 'img/gourmet/' + img
+                }
+                link.target = '_blank'
+                imgIn.style.height = '35px'
+                link.appendChild(imgIn)
+                tdImg.appendChild(link)
+
+                const tdId = document.createElement('td')
+                tdId.classList.add('text-truncate')
+                const spId = document.createElement('span')
+                spId.classList.add('badge', 'text-bg-info')
+                spId.textContent = id
+                tdId.appendChild(spId)
+
+                const tdSku = document.createElement('td')
+                tdSku.classList.add('text-truncate')
+                tdSku.textContent = sku
+
+                const tdNome = document.createElement('td')
+                tdNome.classList.add('text-truncate', 'fw-bold')
+                tdNome.textContent = nome
+
+                const tdCtg = document.createElement('td')
+                tdCtg.classList.add('text-truncate')
+                tdCtg.textContent = categoria
+
+                const tdCt = document.createElement('td')
+                tdCt.classList.add('text-truncate')
+                tdCt.textContent = real(custo)
+
+                const tdVl = document.createElement('td')
+                tdVl.classList.add('text-truncate')
+                tdVl.textContent = real(valor)
+
+                const tdLc = document.createElement('td')
+                tdLc.classList.add('text-truncate')
+                const spLucro = document.createElement('span')
+                spLucro.classList.add('badge')
+                lucro = parseFloat(((valor - custo) / custo) * 100)
+
+                if(lucro >= 100){
+                    spLucro.textContent = "+99%"
+                    spLucro.classList.add('text-bg-success')
+                }else if(lucro >= 70 && lucro < 100){
+                    spLucro.classList.add('text-bg-primary')
+                    spLucro.textContent = `${lucro.toFixed(1)}%`
+                }else if(lucro >= 50 && lucro < 70){
+                    spLucro.classList.add('text-bg-warning')
+                    spLucro.textContent = `${lucro.toFixed(1)}%`
+                }else if(lucro >= 20 && lucro < 50){
+                    spLucro.classList.add('text-bg-danger')
+                    spLucro.textContent = `${lucro.toFixed(1)}%`
+                }
+
+                tdLc.appendChild(spLucro)
+                
+                const tdQuant = document.createElement('td')
+                tdQuant.classList.add('text-truncate', 'text-center')
+                const spQt = document.createElement('span')
+                spQt.classList.add('fw-bold', 'fs-6')
+                if(quantidade <= alerta){spQt.classList.add('text-danger')}
+                else if(quantidade - 3 <= alerta){spQt.classList.add('text-warning')}
+                else{spQt.classList.add('text-success')}
+                spQt.textContent = quantidade
+                tdQuant.appendChild(spQt)
+
+                const tdAlerta = document.createElement('td')
+                tdAlerta.classList.add('text-truncate')
+                tdAlerta.textContent = alerta
+
+                const tdCad = document.createElement('td')
+                tdCad.classList.add('text-truncate')
+                tdCad.textContent = data.toLocaleDateString('pt-br', {hour: '2-digit', minute: '2-digit'})
+
+                const tdBtn = document.createElement('td')
+                const btnGroup = document.createElement('div')
+                btnGroup.classList.add('btn-group')
+
+                const btnEditar = document.createElement('button')
+                btnEditar.classList.add('btn', 'btn-light', 'btn-sm')
+                btnEditar.innerHTML = icon_edit
+
+                const btnRemover = document.createElement('button')
+                btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
+                btnRemover.innerHTML = lixeira
+                btnRemover.addEventListener('click', function(){
+                    if(confirm('Deseja excluir este item permanentemente?')){
+                        return
+                    }
+                })
+
+                btnGroup.appendChild(btnEditar)
+                btnGroup.appendChild(btnRemover)
+                tdBtn.appendChild(btnGroup)
+
+                
+                tr.appendChild(tdId)
+                tr.appendChild(tdImg)
+                tr.appendChild(tdSku)
+                tr.appendChild(tdNome)
+                tr.appendChild(tdCtg)
+                tr.appendChild(tdCt)
+                tr.appendChild(tdVl)
+                tr.appendChild(tdLc)
+                tr.appendChild(tdQuant)
+                tr.appendChild(tdAlerta)
+                tr.appendChild(tdCad)
+                tr.appendChild(tdBtn)
+
+                list_prods.appendChild(tr)
+            })
+        }
+    }
+}
+
+// Função de Adicionar Produtos
+const formD = document.getElementById('new_prod')
+if(formD){ 
+    formD.addEventListener('submit', async function(e){
+        e.preventDefault()
+
+        const form = new FormData(this)
+        const req = await send_form('produtos', form)
+        const res = await req.json()
+
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
+    })
+}
+
+// Categorias =================================================================================
+async function get_categorias(){
+    const req = await request('categorias')
+    const res = await req.json()
+    const list_ctgs = document.getElementById('list_ctg')
+
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const id = item.id
+                const nome = item.nome
+
+                const li = document.createElement('li')
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
+
+                const sp = document.createElement('span')
+                sp.textContent = nome
+
+                const btnRemover = document.createElement('button')
+                btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
+                btnRemover.innerHTML = lixeira
+                btnRemover.addEventListener('click', async function(){
+                    if(confirm("Deseja realmente excluir esta categoria?")){
+                        const req = await request("categorias", "DELETE", JSON.stringify({id:id}))
+                        const res = await req.json()
+                        if(req.ok){location.reload()}
+                        else{toast(res)}
+                    }
+                })
+                li.appendChild(sp)
+                li.appendChild(btnRemover)
+                list_ctgs.appendChild(li)
+            })
+        }
+    }
+}
+
+async function get_categorias_opt(){
+    const req = await request('categorias')
+    const res = await req.json()
+    const form = document.getElementById('new_prod')
+    const selCtg = form.categoria
+
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const id = item.id
+                const nome = item.nome
+
+                const opt = document.createElement('option')
+                opt.value = id
+                opt.textContent = nome
+                selCtg.appendChild(opt)
+            })
+        }
+    }
+}
+
+async function add_categoria(nome){
+    if(nome){
+        const req = await request("categorias","POST", JSON.stringify({nome:nome.toUpperCase()}))
+        const res = await req.json()
+    
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
+    }else{toast("Nome Invalido", "erro")}
+}
+
 
 // Controle de Permissao =================================================================================
 const perm = sessionStorage.getItem('permissao')
