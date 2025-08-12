@@ -52,6 +52,32 @@ function imgPreview(file, prev){
 
 }
 
+function ed_calc_lucro(){
+    const valorIn = document.getElementById('ed_valor')
+    const valor = valorIn.value
+
+    const custoIn = document.getElementById('ed_custo')
+    const custo = custoIn.value
+
+    const btn = document.getElementById('btnEditProd')
+
+    const lucro = valor - custo
+    const mlucro = ((valor - custo)/ custo) * 100
+
+    if(lucro <= 0){
+        toast("Valor não deve ser menor ou igual que o lucro")
+        btn.disabled = true
+        document.getElementById('ed_lucro').value = ''
+        document.getElementById('ed_mlucro').value = ''
+    }else{
+        document.getElementById('ed_lucro').value = lucro
+        document.getElementById('ed_mlucro').value = mlucro.toFixed(1) + '%'
+        btn.disabled = false
+    }
+
+
+}
+
 function calc_lucro(){
     const valorIn = document.getElementById('valor')
     const valor = valorIn.value
@@ -1299,6 +1325,7 @@ async function get_estoque(){
                 const sku = item.sku
                 const nome = item.nome
                 const categoria = item.categoria
+                const id_ctg = item.id_ctg
                 const custo = item.custo
                 const valor = item.valor
                 const quantidade = item.quantidade
@@ -1398,13 +1425,33 @@ async function get_estoque(){
                 const btnEditar = document.createElement('button')
                 btnEditar.classList.add('btn', 'btn-light', 'btn-sm')
                 btnEditar.innerHTML = icon_edit
+                btnEditar.addEventListener('click', function(){
+                    const form = document.getElementById('edit_prod')
+                    if(img == 'blank.png'){form.previewEditProd.src = server + 'img/blank.png'}
+                    else{form.previewEditProd.src = server + 'img/gourmet/' + img}
+                    form.idprod.value = id
+                    form.nome.value = nome
+                    form.sku.value = sku
+                    form.categoria.value = id_ctg
+                    form.custo.value = custo
+                    form.valor.value = valor
+                    ed_calc_lucro()
+                    form.quantidade.value = quantidade
+                    form.alerta.value = alerta
+
+                    get_modal('md_editProd').show()
+                })
 
                 const btnRemover = document.createElement('button')
                 btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
                 btnRemover.innerHTML = lixeira
-                btnRemover.addEventListener('click', function(){
+                btnRemover.addEventListener('click', async function(){
                     if(confirm('Deseja excluir este item permanentemente?')){
-                        return
+                        const req = await request('produtos', 'DELETE', JSON.stringify({id:id}))
+                        const res = await req.json()
+
+                        if(req.ok){location.reload()}
+                        else{toast(res, 'erro')}
                     }
                 })
 
@@ -1489,6 +1536,10 @@ async function get_categorias_opt(){
     const res = await req.json()
     const form = document.getElementById('new_prod')
     const selCtg = form.categoria
+    
+    const formEdit = document.getElementById('edit_prod')
+    const selEdCtg = formEdit.categoria
+
 
     if(req.ok){
         if(res[0]){
@@ -1500,6 +1551,11 @@ async function get_categorias_opt(){
                 opt.value = id
                 opt.textContent = nome
                 selCtg.appendChild(opt)
+
+                const opt2 = document.createElement('option')
+                opt2.value = id
+                opt2.textContent = nome
+                selEdCtg.appendChild(opt2)
             })
         }
     }

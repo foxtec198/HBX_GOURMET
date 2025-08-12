@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
+    <!-- Modal Categorias -->
     <div class="modal fade" id="md_categorias" tabindex="-1" data-bs-keyboard="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -33,6 +34,7 @@
         </div>
     </div>
 
+    <!-- Modal Novo Produto -->
     <div class="modal fade" id="md_newProd" tabindex="-1" data-bs-keyboard="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -95,6 +97,72 @@
         </div>
     </div>
 
+    <!-- Modal Editar Produto -->
+    <div class="modal fade" id="md_editProd" tabindex="-1" data-bs-keyboard="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="fw-bold fs-5">Editar Produto</span>
+                </div>
+                <div class="modal-body">
+                    <form id="edit_prod" class="p-2 d-flex flex-column gap-2">
+                        <div class="d-flex">
+                            <img id="previewEditProd" name="previewEditProd" src="https://api.hubbix.com.br/img/blank.png" width="100wh" class="img-fluid img-thumbnail" alt="Imagem do Produto">
+                            <div class="mb-3 flex-grow-1 p-2" style="flex-basis: 200px;">
+                                <input name="img" class="form-control" type="file" accept="image/*" id="newProdIn">
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input name="idprod" class="form-control" type="text" id="idprod" placeholder="Id" disabled>
+                                <label for="idprod">Id</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN">
+                                <label for="sku">SKU ou EAN</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *">
+                                <label for="nome">Nome do Produto *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <select class="form-select" name="categoria" id="edcategoria" aria-placeholder="Selecione a Categoria *">
+                                    <option value="0">Não Informado</option>
+                                </select>
+                                <label for="edcategoria">Selecione a Categoria *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" name="custo" id="ed_custo" oninput="ed_calc_lucro()" placeholder="Custo *" class="form-control money-mask">
+                                <label for="custo">Custo *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" name="valor" id="ed_valor" oninput="ed_calc_lucro()" placeholder="Valor *" class="form-control money-mask">
+                                <label for="valor">Valor *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" id="ed_lucro" name="lucro" placeholder="Lucro" class="form-control money-mask" readonly>
+                                <label for="lucro">Lucro</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="text" id="ed_mlucro" name="mlucro" placeholder="Margem de Lucro" class="form-control" readonly>
+                                <label for="mlucro">Margem de Lucro</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *">
+                                <label for="quantidade">Estoque Atual - Quantidade *</label>
+                            </div>
+                            <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
+                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *">
+                                <label for="alerta">Alerta de Estoque *</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg" id="btnEditProd">Editar Produto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="d-flex align-items-center justify-content-between p-1 mb-4">
         <span class="fs-4 fw-bold">Estoque.</span>
@@ -113,12 +181,12 @@
             </ul>
         </div>
         <div class="btn-group shadow-lg mobile">
-            <button type="button" class="btn btn-success shadow-lg"><i class="bi bi-fork-knife"></i></button>
+            <button type="button" class="btn btn-success shadow-lg" data-bs-toggle="modal" data-bs-target="#md_newProd"><i class="bi bi-fork-knife"></i></button>
             <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="visually-hidden">Toggle Dropdown</span>
+                <span class="visually-hidden"></span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#md_categorias">
                     <i class="bi bi-tags-fill"></i> Categorias
                 </a></li>
                 <li><a class="dropdown-item disabled" href="#">
