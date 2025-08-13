@@ -1133,6 +1133,7 @@ async function get_vendas(){
     if(req.ok){
         const tableData = []
         res.forEach(item => {
+            console.log(item)
             const datt = new Date(item['data']).toLocaleDateString('pt-br', {month: 'numeric'})
             const datA = new Date().toLocaleDateString('pt-br', {month: 'numeric'})
             if(datt === datA){
@@ -1156,11 +1157,8 @@ async function get_vendas(){
             paginationSize: 10,
             paginationCounter:"rows",
             pagination:"local",
-            initialSort:[
-                {column:"data", dir:"desc"},
-            ],
             columns: [
-                {title: "Cmd", field: "cmd", responsive: 0, minWidth: 100},
+                {title: "Comanda", field: "cmd", responsive: 0, minWidth: 100},
                 {title: "Funcionario", field: "func", responsive: 6, minWidth: 100},
                 {title:"Data da venda", field:"data", hozAlign:"center", responsive: 0, minWidth: 100},
                 {title:"Valor", field:"valor", hozAlign:"center", responsive: 0, minWidth: 100},   
