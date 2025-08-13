@@ -302,9 +302,9 @@ function request(url, method='GET', json){
 }
 
 // Função de Envio de Formulario
-function send_form(url, form){
+function send_form(url, form, method='post'){
     var options = {
-        method: 'POST',
+        method: method,
         headers: {
             'cr' : `${cr}`,
             'gc' : `${gc}`,
@@ -1491,6 +1491,22 @@ if(formD){
 
         if(req.ok){location.reload()}
         else{toast(res, 'erro')}
+    })
+}
+
+// Função de Editar Produto
+const formE = document.getElementById('edit_prod')
+if(formE){ 
+    formE.addEventListener('submit', async function(e){
+        e.preventDefault()
+        const btn = document.getElementById('btnEditProd')
+        btn.innerHTML = spinner
+        const form = new FormData(this)
+        const req = await send_form('produtos', form, 'PATCH')
+        const res = await req.json()
+
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro'); btn.textContent = 'Editar Produto'}
     })
 }
 

@@ -52,25 +52,25 @@
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN">
+                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN" autocomplete="off">
                                 <label for="sku">SKU ou EAN</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *">
+                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *" required autocomplete="off">
                                 <label for="nome">Nome do Produto *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <select class="form-select" name="categoria" id="categoria" aria-placeholder="Selecione a Categoria *">
+                                <select class="form-select" name="categoria" id="categoria" aria-placeholder="Selecione a Categoria *" required autocomplete="off">
                                     <option value="0">Não Informado</option>
                                 </select>
                                 <label for="categoria">Selecione a Categoria *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="text" name="custo" id="custo" oninput="calc_lucro()" placeholder="Custo *" class="form-control money-mask">
+                                <input type="text" name="custo" id="custo" oninput="calc_lucro()" placeholder="Custo *" class="form-control money-mask" required autocomplete="off">
                                 <label for="custo">Custo *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="text" name="valor" id="valor" oninput="calc_lucro()" placeholder="Valor *" class="form-control money-mask">
+                                <input type="text" name="valor" id="valor" oninput="calc_lucro()" placeholder="Valor *" class="form-control money-mask" required autocomplete="off">
                                 <label for="valor">Valor *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
@@ -82,17 +82,20 @@
                                 <label for="mlucro">Margem de Lucro</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *">
+                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *" required autocomplete="off">
                                 <label for="quantidade">Estoque Atual - Quantidade *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *">
+                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *" required autocomplete="off">
                                 <label for="alerta">Alerta de Estoque *</label>
                             </div>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Fechar</button>
                         <button type="submit" class="btn btn-success btn-lg" id="btnNewProd">Cadastrar Produto</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -109,34 +112,34 @@
                         <div class="d-flex">
                             <img id="previewEditProd" name="previewEditProd" src="https://api.hubbix.com.br/img/blank.png" width="100wh" class="img-fluid img-thumbnail" alt="Imagem do Produto">
                             <div class="mb-3 flex-grow-1 p-2" style="flex-basis: 200px;">
-                                <input name="img" class="form-control" type="file" accept="image/*" id="newProdIn">
+                                <input name="img" class="form-control" type="file" accept="image/*" id="editProdIn">
                             </div>
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input name="idprod" class="form-control" type="text" id="idprod" placeholder="Id" disabled>
+                                <input name="idprod" class="form-control" type="text" id="idprod" placeholder="Id" readonly>
                                 <label for="idprod">Id</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN">
+                                <input name="sku" class="form-control" type="text" id="sku" placeholder="SKU ou EAN" autocomplete="off">
                                 <label for="sku">SKU ou EAN</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *">
+                                <input name="nome" class="form-control" type="text" id="nome" placeholder="Nome do Produto *" required autocomplete="off">
                                 <label for="nome">Nome do Produto *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <select class="form-select" name="categoria" id="edcategoria" aria-placeholder="Selecione a Categoria *">
+                                <select class="form-select" name="categoria" id="edcategoria" aria-placeholder="Selecione a Categoria *" required autocomplete="off">
                                     <option value="0">Não Informado</option>
                                 </select>
                                 <label for="edcategoria">Selecione a Categoria *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="text" name="custo" id="ed_custo" oninput="ed_calc_lucro()" placeholder="Custo *" class="form-control money-mask">
+                                <input type="text" name="custo" id="ed_custo" oninput="ed_calc_lucro()" placeholder="Custo *" class="form-control money-mask" required autocomplete="off">
                                 <label for="custo">Custo *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="text" name="valor" id="ed_valor" oninput="ed_calc_lucro()" placeholder="Valor *" class="form-control money-mask">
+                                <input type="text" name="valor" id="ed_valor" oninput="ed_calc_lucro()" placeholder="Valor *" class="form-control money-mask" required autocomplete="off">
                                 <label for="valor">Valor *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
@@ -148,17 +151,20 @@
                                 <label for="mlucro">Margem de Lucro</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *">
+                                <input type="number" name="quantidade" id="quantidade" class="form-control" placeholder="Estoque Atual - Quantidade *" required autocomplete="off">
                                 <label for="quantidade">Estoque Atual - Quantidade *</label>
                             </div>
                             <div class="form-floating flex-grow-1" style="flex-basis: 200px;">
-                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *">
+                                <input type="number" name="alerta" id="alerta" class="form-control" placeholder="Alerta de Estoque *" required autocomplete="off">
                                 <label for="alerta">Alerta de Estoque *</label>
                             </div>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">Fechar</button>
                         <button type="submit" class="btn btn-success btn-lg" id="btnEditProd">Editar Produto</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -230,6 +236,7 @@
     <script>
         get_estoque(); get_categorias(); get_categorias_opt();
         imgPreview('newProdIn', 'previewNewProd');
+        imgPreview('editProdIn', 'previewEditProd');
         
         $(document).ready(function(){
             $("#search").on("keyup", function() {
