@@ -1,6 +1,6 @@
 // Vars
 server = 'https://api.hubbix.com.br/'
-// server = 'http://192.168.1.53:9560/'
+// server = 'http://localhost:9560/'
 api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
