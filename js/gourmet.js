@@ -23,7 +23,7 @@ document.body.appendChild(div)
 
 const bodyHtml = document.body.innerHTML
 
-const socket = io("http://localhost:9560");
+const socket = io(server);
 socket.on('action', function(tipo) {
     const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
 
