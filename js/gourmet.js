@@ -22,6 +22,16 @@ div.id = 'snackbar'
 document.body.appendChild(div)
 const bodyHtml = document.body.innerHTML
 
+const socket = io("http://localhost:9560");
+socket.on('action', function(tipo) {
+    const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
+
+    if(tipo == "venda" && frame == 'vendas'){location.reload()}
+    if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
+    if(tipo == "comanda" && frame == 'comandas'){location.reload()}
+});
+
+
 // Funções ================================================================================= 
 
 // Realiza o Logout limpando os caches e voltando para o login
