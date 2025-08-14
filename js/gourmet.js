@@ -1143,7 +1143,6 @@ async function get_vendas(){
     if(req.ok){
         const tableData = []
         res.forEach(item => {
-            console.log(item)
             const datt = new Date(item['data']).toLocaleDateString('pt-br', {month: 'numeric'})
             const datA = new Date().toLocaleDateString('pt-br', {month: 'numeric'})
             if(datt === datA){
