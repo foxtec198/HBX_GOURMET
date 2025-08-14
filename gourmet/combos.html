@@ -20,6 +20,21 @@
         <span class="fs-4 fw-bold">Combos.</span>
 
     </div>
+
+    <div class="card">
+        <table class="table table-hover">
+            <thead>
+                <td class="fw-bold"><i class="bi bi-image"></i> Imagem</td>
+                <td class="fw-bold"><i class="bi bi-bookmark-check-fill"></i> id</td>
+                <td class="fw-bold"><i class="bi bi-pen-fill"></i> Nome</td>
+                <td class="fw-bold"><i class="bi bi-currency-dollar"></i> Valor</td>
+                <td class="fw-bold"><i class="bi bi-power"></i> Ativo</td>
+                <td class="fw-bold"><i class="bi bi-list-nested"></i> Itens</td>
+                <td class="fw-bold"><i class="bi bi-three-dots-vertical"></i> Ações</td>
+            </thead>
+            <tbody id="list_combos"></tbody>
+        </table>
+    </div>
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
@@ -27,13 +42,8 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="/js/gourmet.js"></script>
     <script>
-        async function name(params) {
-            const req = await request('combos')
-            const res = await req.json()
-
-            console.log(res)
-            
-        }name()
+        get_combos();
+        
     </script>
  </body>
 </html>

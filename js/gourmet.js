@@ -1,6 +1,6 @@
 // Vars
 server = 'https://api.hubbix.com.br/'
-// server = 'http://localhost:9560/'
+// server = 'http://192.168.1.53:9560/'
 api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
@@ -20,6 +20,7 @@ const lds = document.createElement('div')
 const div = document.createElement('div')
 div.id = 'snackbar'
 document.body.appendChild(div)
+
 const bodyHtml = document.body.innerHTML
 
 const socket = io("http://localhost:9560");
@@ -842,9 +843,8 @@ async function enviar_prods(t=null){
 
     if(cmd){
         if(Object.keys(prods).length > 0){
-            
-
             if(t){t.innerHTML = spinner}
+            socket.emit("novo-pedido", data);
             req = await request("pedidos", "POST", JSON.stringify(data))
             res = await req.json()
             if(req.ok){change_screen('pedidos', parent.document.getElementById('menu_pedidos'))}
@@ -1261,10 +1261,12 @@ async function create_modal_vendas(){
                     tdBtn.appendChild(buttonAdd)
                     tr.appendChild(tdBtn)
                 }else{
+                    const tdSp = document.createElement('td')
                     const spanEstoque = document.createElement('span')
                     spanEstoque.classList.add('badge', 'text-bg-danger')
                     spanEstoque.textContent = 'Sem estoque!'
-                    li.appendChild(spanEstoque)
+                    tdSp.appendChild(spanEstoque)
+                    tr.appendChild(tdSp)
                 }
                 tbProds.appendChild(tr)
             })
@@ -1594,6 +1596,31 @@ async function add_categoria(nome){
     }else{toast("Nome Invalido", "erro")}
 }
 
+
+// Combos =================================================================================
+async function get_combos() {
+    const req = await request('combos')
+    const res = await req.json()
+    const list_combos = document.getElementById('list_combos')
+    
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const img = item.img
+                const nome = item.nome
+                const valor = item.valor
+                const id = item.id
+                const ativo = item.ativo
+                const items = item.items
+                
+                const tdImg = document.createElement('td')
+                if(img == 'blank.png'){}
+                else{}
+            })
+        }
+    }else{toast(res, 'erro')}
+    
+}
 
 // Controle de Permissao =================================================================================
 const perm = sessionStorage.getItem('permissao')
