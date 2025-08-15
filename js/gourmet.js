@@ -1608,23 +1608,24 @@ async function get_combos() {
         if(res[0]){
             res.forEach(item => {
                 console.log(item)
+                const id = item.id
                 const img = item.img
                 const nome = item.nome
                 const valor = item.valor
-                const id = item.id
                 const ativo = item.ativo
                 const items = item.items
                 
                 const tr = document.createElement('tr')
 
                 const tdImg = document.createElement('td')
-                tdImg.classList.add('d-flex','justify-content-center')
+
                 const a = document.createElement('a')
                 a.target = '_blank'
+
                 const imgS = document.createElement('img')
                 imgS.classList.add('img-fluid', 'img-thumbnail')
-                imgS.style.width = '30px'
-                imgS.style.height = '30px'
+                imgS.style.width = '35px'
+                imgS.style.height = '35px'
                 if(img == 'blank.png'){
                     link = server + 'img/blank.png'
                     imgS.src = link
@@ -1642,37 +1643,49 @@ async function get_combos() {
                 tdId.textContent = id
 
                 const tdNome = document.createElement('td')
+                tdNome.classList.add('text-truncate')
                 tdNome.textContent = nome
 
                 const tdValor = document.createElement('td')
+                tdValor.classList.add('text-truncate')
                 tdValor.innerHTML = real(valor)
 
                 const tdAtivo = document.createElement('td')
-                tdAtivo.textContent = ativo
+                if(ativo){
+                    tdAtivo.innerHTML= "<span class='badge text-bg-success'>ATIVO</span>"
+                }else{
+                    tdAtivo.innerHTML= "<span class='badge text-bg-danger'>INATIVO</span>"
+                }
 
                 const tdItems = document.createElement('td')
-                tdItems.textContent = items
+                const btnItems = document.createElement('button')
+                btnItems.classList.add('btn', 'btn-sm', 'btn-outline-secondary')
+                btnItems.setAttribute("data-bs-toggle", "collapse");
+                btnItems.setAttribute("data-bs-target", "#combo" + id);
+                btnItems.innerHTML = `<i class="bi bi-chevron-down"></i> ${item.items.length} Item(s).`
+                tdItems.appendChild(btnItems)
 
                 const tdBtn = document.createElement('td')
                 const btnGroup = document.createElement('div')
                 btnGroup.classList.add('btn-group')
 
                 const btnRemover = document.createElement('button')
-                btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
+                btnRemover.classList.add('btn', 'btn-danger')
                 btnRemover.innerHTML = lixeira
                 btnRemover.addEventListener('click', function(){
 
                 })
 
                 const btnEditar = document.createElement('button')
-                btnEditar.classList.add('btn', 'btn-sm', 'btn-secondary')
+                btnEditar.classList.add('btn', 'btn-secondary')
                 btnEditar.innerHTML = icon_edit
                 btnEditar.addEventListener('click', function(){
 
                 })
 
-                tdBtn.appendChild(btnEditar)
-                tdBtn.appendChild(btnRemover)
+                btnGroup.appendChild(btnEditar)
+                btnGroup.appendChild(btnRemover)
+                tdBtn.appendChild(btnGroup)
 
 
                 tr.appendChild(tdImg)
@@ -1684,9 +1697,24 @@ async function get_combos() {
                 tr.appendChild(tdBtn)
                 list_combos.appendChild(tr)
 
+                const trItems = document.createElement('tr')
+                trItems.classList.add("collapse")
+                trItems.id = "combo" + id
 
+                const tdIt = document.createElement('td')
+                tdIt.colSpan = 7
 
-
+                const list = document.createElement('ul')
+                list.classList.add("list-group", "list-group-flush")
+                item.items.forEach(prod => {
+                    const li = document.createElement('li')
+                    li.classList.add("list-group-item")
+                    li.textContent = `${prod.nome} (${prod.quantidade}x)`
+                    list.appendChild(li)
+                })
+                tdIt.appendChild(list)
+                trItems.appendChild(tdIt)
+                list_combos.appendChild(trItems)
             })
         }
     }else{toast(res, 'erro')}
