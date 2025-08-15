@@ -151,6 +151,7 @@ async function excluir_venda(id){
 }
 
 function real(str){
+    str = parseFloat(str)
     return str.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
 }
 
@@ -1606,6 +1607,7 @@ async function get_combos() {
     if(req.ok){
         if(res[0]){
             res.forEach(item => {
+                console.log(item)
                 const img = item.img
                 const nome = item.nome
                 const valor = item.valor
@@ -1613,9 +1615,78 @@ async function get_combos() {
                 const ativo = item.ativo
                 const items = item.items
                 
+                const tr = document.createElement('tr')
+
                 const tdImg = document.createElement('td')
-                if(img == 'blank.png'){}
-                else{}
+                tdImg.classList.add('d-flex','justify-content-center')
+                const a = document.createElement('a')
+                a.target = '_blank'
+                const imgS = document.createElement('img')
+                imgS.classList.add('img-fluid', 'img-thumbnail')
+                imgS.style.width = '30px'
+                imgS.style.height = '30px'
+                if(img == 'blank.png'){
+                    link = server + 'img/blank.png'
+                    imgS.src = link
+                    a.href = link
+                }
+                else{
+                    link = server + '/img/gourmet/' + img
+                    imgS.src = link
+                    a.href = link
+                }
+                a.appendChild(imgS)
+                tdImg.appendChild(a)
+
+                const tdId = document.createElement('td')
+                tdId.textContent = id
+
+                const tdNome = document.createElement('td')
+                tdNome.textContent = nome
+
+                const tdValor = document.createElement('td')
+                tdValor.innerHTML = real(valor)
+
+                const tdAtivo = document.createElement('td')
+                tdAtivo.textContent = ativo
+
+                const tdItems = document.createElement('td')
+                tdItems.textContent = items
+
+                const tdBtn = document.createElement('td')
+                const btnGroup = document.createElement('div')
+                btnGroup.classList.add('btn-group')
+
+                const btnRemover = document.createElement('button')
+                btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
+                btnRemover.innerHTML = lixeira
+                btnRemover.addEventListener('click', function(){
+
+                })
+
+                const btnEditar = document.createElement('button')
+                btnEditar.classList.add('btn', 'btn-sm', 'btn-secondary')
+                btnEditar.innerHTML = icon_edit
+                btnEditar.addEventListener('click', function(){
+
+                })
+
+                tdBtn.appendChild(btnEditar)
+                tdBtn.appendChild(btnRemover)
+
+
+                tr.appendChild(tdImg)
+                tr.appendChild(tdId)
+                tr.appendChild(tdNome)
+                tr.appendChild(tdValor)
+                tr.appendChild(tdAtivo)
+                tr.appendChild(tdItems)
+                tr.appendChild(tdBtn)
+                list_combos.appendChild(tr)
+
+
+
+
             })
         }
     }else{toast(res, 'erro')}
