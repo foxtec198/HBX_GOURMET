@@ -1812,8 +1812,25 @@ async function config(){
     const res = await req.json()
 
     if(req.ok){
-        console.log()
+        if(res.fuso){
+            document.getElementById('fuso').value = res.fuso
+        }
+        if(res.comandas){
+            document.getElementById('comandas').checked = res.comandas
+        }
+        if(res.pedidos){
+            document.getElementById('pedidos').checked = res.pedidos
+        }
+        if(res.imprimir){
+            document.getElementById('impressao').checked = res.imprimir
+        }
+        if(res.estoque){
+            document.getElementById('estoque').checked = res.estoque
+        }
     }
+
+    // const req2 = await request('funcionarios')
+    // const res2 = await req2.json()
 }
 
 

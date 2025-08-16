@@ -21,57 +21,97 @@
     </div>
     <div id="frameConfig">
         <div class="d-flex flex-column gap-2">
-            <div class="d-flex px-4 justify-content-between">
-                <p>Imprimir Pedidos Automático?</p>
-                <label class="switch">
-                    <input type="checkbox" id="imp">
-                    <span class="slider round"></span>
-                </label>
+            <!-- FUSO -->
+            <div class="d-flex px-4 gap-2 justify-content-between flex-wrap">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Fuso Horário</span>
+                    <span class="">Para que os horarios batam de acordo com seu estado/cidade atualize o fuso de forma correta.</span>
+                </div>
+                <div class="form-floating d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <select class="form-select" id="fuso" aria-placeholder="Selecione um fuso">
+                        <option value="-2">GMT -2</option>
+                        <option value="-3">GMT -3</option>
+                        <option value="-4">GMT -4</option>
+                        <option value="-5">GMT -5</option>
+                    </select>
+                    <label for="">Selecione um fuso</label>
+                </div>
             </div>
             <hr>
-            <div class="d-flex px-4 justify-content-between">
-                <p>Deseja controle de Pedidos ?</p>
-                <label class="switch">  
-                    <input type="checkbox" id="ped">
-                    <span class="slider round"></span>
-                </label>
+            <!-- IMPRESSÃO -->
+            <div class="d-flex px-4 gap-2 justify-content-between flex-wrap">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Impressão Automatica</span>
+                    <span class="">Deseja que ao adicionar um pedido a impressão ocorra de forma automatica?</span>
+                </div>
+                <div class="d-flex align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <label class="switch">
+                        <input type="checkbox" id="impressao">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
             <hr>
-            <div class="d-flex px-4 justify-content-between">
-                <p>Deseja controle de Comandas ?</p>
-                <label class="switch">  
-                    <input type="checkbox" id="cmds">
-                    <span class="slider round"></span>
-                </label>
+            <!-- PEDIDOS -->
+            <div class="d-flex px-4 gap-2 justify-content-between flex-wrap">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Controle de Pedidos</span>
+                    <span class="">Controlar os pedidos antes de serem entregues a comandas? Indicado em caso de retirada de pedidos via BOT</span>
+                </div>
+                <div class="d-flex align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <label class="switch">
+                        <input type="checkbox" id="pedidos">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
             <hr>
-            <div class="d-flex px-4 justify-content-between">
-                <p>Deseja controle de Estoque ?</p>
-                <label class="switch">  
-                    <input type="checkbox" id="es">
-                    <span class="slider round"></span>
-                </label>
+            <!-- COMANDAS -->
+            <div class="d-flex px-4 gap-2 justify-content-between flex-wrap">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Controle de Comandas</span>
+                    <span class="">Controlar as comandas de acordo com o lançado? Caso desativado, somente ficará disponivel a venda direta!</span>
+                </div>
+                <div class="d-flex align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <label class="switch">
+                        <input type="checkbox" id="comandas">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
             <hr>
+            <!-- ESTOQUE -->
+            <div class="d-flex px-4 gap-2 justify-content-between flex-wrap">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Controle de Estoque</span>
+                    <span class="">Caso ativo irá fazer todo o controle de estoque desde quantidade até alertas, caso contrario não haverá restrições para estoque negativo, nem emitirá alertas</span>
+                </div>
+                <div class="d-flex align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <label class="switch">
+                        <input type="checkbox" id="estoque">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <hr>
+            <!-- FUNCIONARIOS -->
             <div class="px-4 d-flex flex-column justify-content-between">
-                <p class="fs-5 fw-bold">Funcionarios:</p>
-                <div class="d-flex gap-5 justify-content-around flex-wrap">
-                    <form class="d-flex flex-column gap-2" action="" method="">
-                        <p>
-                            <i class="bi bi-person-add"></i>
-                            Cadastrar
-                        </p>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <label for="nome">Nome</label>
+                <span class="fs-6 fw-bold">Funcionarios:</span>
+                <span class="mb-2">Controle de Funcionarios, desde remoção adicição, promoção!</span>
+
+                <div class="d-flex gap-5 flex-wrap">
+                    <form class="d-flex flex-column gap-2 flex-grow-1" style="flex-basis: 200px;">
+                        <span class="fw-bold"><i class="bi bi-person-add"></i> Cadastrar</span>
+                        <div class="form-floating mb-2">
                             <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="name">
+                            <label for="">Nome do Funcionario</label>
                         </div>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <label for="pwd">Senha</label>
+                        <div class="form-floating gap-2 mb-2">
                             <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="new-password">
+                            <label for="pwd">Crie uma senha</label>
                         </div>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <label for="pwd">Permissão</label>
-                            <select name="permissao" class="form-select">
+                        <div class="form-floating gap-2 mb-2">
+                            <select id="permissao" class="form-select" aria-placeholder="Permissão">
                                 <option value="FUNC">
                                     🙍🏻‍♂️ Funcionario
                                 </option>
@@ -79,48 +119,56 @@
                                     🔓 Administrador
                                 </option>
                             </select>
+                            <label for="pwd">Permissão</label>
                         </div>
                         <button type="submit" class="btn btn-success">Adicionar</button>
                     </form>
-                    <ul class="list-group">
-                        <p>
-                            <i class="bi bi-file-person-fill"></i>
-                            Cadastrados
-                        </p>
-                        <li class="list-group-item d-flex gap-5 justify-content-between">
+                    <div class="d-flex flex-grow-1" style="flex-basis: 200px;">
+                        <ul class="list-group">
                             <p>
-                                <i class="bi bi-unlock-fill"></i>
-                                <i class="bi bi-person-fill-check"></i>
+                                <i class="bi bi-file-person-fill"></i>
+                                Cadastrados
                             </p>
-                            <div class="btn-group">
-                                <button class="btn btn-light">
+                            <li class="list-group-item d-flex gap-5 justify-content-between">
+                                <p>
                                     <i class="bi bi-unlock-fill"></i>
-                                </button>
-                                <button class="btn btn-danger">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
+                                    <i class="bi bi-person-fill-check"></i>
+                                </p>
+                                <div class="btn-group">
+                                    <button class="btn btn-light">
+                                        <i class="bi bi-unlock-fill"></i>
+                                    </button>
+                                    <button class="btn btn-danger">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <hr>
+            <!-- CARDAPIO DIGITAL -->
             <div class="d-flex px-4 justify-content-between">
-                <div>
-                    <p class="fs-5 fw-bold">Bot do Whatsapp</p>
-                    <p class="fs-6">Editar Informações</p>
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <span class="fs-6 fw-bold">Cardapio Digital</span>
+                    <span>Compartilhe seu cardapio digital com seus clientes, lembrando que ele trabalha em conjunto com o sistema de estoque!</span>
                 </div>
-                <div class="d-flex flex-column">
+                <div class="d-flex align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <img src="" alt="qrcode" height="100" width="100">
+                    <a href="#">Acesse aqui</a>
+                </div>
+            </div>
+            <hr>
+            <!-- BOT -->
+            <div class="d-flex px-4 justify-content-between">
+                <div class="d-flex flex-column flex-grow-1" style="flex-basis: 300px;">
+                    <p class="fs-6 fw-bold">Bot do Whatsapp</p>
+                    <p class="">Tenha um Atendente com IA no seu Whatsapp para pedidos e informações trabalhando diretamente com o seu sistema.</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-end flex-column flex-grow-1" style="flex-basis: 300px;">
                     <img src="" alt="qrcode">
-                    <a style="cursor: wait;">Versão Paga</a>
-                </div>
-            </div>
-            <hr>
-            <div class="d-flex px-4 justify-content-between">
-                <p class="fs-5 fw-bold">Cardapio Digital</p>
-                <div class="d-flex flex-column align-items-center justify-content-center">
-                    <img src="../../static/qrs/qrCard{{cr}}.png" alt="qrcode" height="100" width="100">
-                    <a href="/gourmet/cardapio/{{cr}}">Acesse aqui</a>
+                    <a style="cursor: wait;" class="text-secondary">Versão Paga</a>
                 </div>
             </div>
             <hr>
@@ -133,5 +181,6 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/js/gourmet.js"></script>
+    <script>config();</script>
 </body>
 </html>
