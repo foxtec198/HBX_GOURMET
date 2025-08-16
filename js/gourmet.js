@@ -1,6 +1,6 @@
 // Vars
 server = 'https://api.hubbix.com.br/'
-server = 'http://localhost:9560/'
+// server = 'http://localhost:9560/'
 api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
@@ -1745,6 +1745,17 @@ async function get_combos() {
     }else{toast(res, 'erro')}
     
 }
+
+// Configurações =================================================================================
+async function config(){
+    const req = await request("config")
+    const res = await req.json()
+
+    if(req.ok){
+        console.log()
+    }
+}
+
 
 // Controle de Permissao =================================================================================
 if(window.location.pathname != '/'){
