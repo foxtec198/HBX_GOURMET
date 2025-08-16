@@ -15,7 +15,7 @@
 <body data-bs-theme="dark">
     <div class="d-flex flex-row mb-4 justify-content-between align-items-center">
         <span class="fs-4 fw-bold">Caixa.</span>
-        <span class="badge rounded-pill placeholder" id="caixa_status">Status do Caixa</span>
+        <span class="badge rounded-pill placeholder fs-5" id="caixa_status">Status do Caixa</span>
     </div>
     <div>
         <div class="d-flex gap-1 flex-wrap justify-content-center" style="flex-grow: 1;">
@@ -24,7 +24,10 @@
                 <span class="fs-6 fw-bold">Abrir Caixa</span>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                    <input id="vl_ab_caixa" type="number" placeholder="Valor Inicial" class="form-control">
+                    <div class="form-floating">
+                        <input id="vl_ab_caixa" type="number" placeholder="Valor Inicial" class="form-control">
+                        <label for="">Valor</label>
+                    </div>
                 </div>
                 <button class="btn btn-success" onclick="abrir_caixa(this)">Abrir Caixa</button>
                 <span class="text-center" style="font-size: 12px;"><strong>Obs:</strong> O valor é calculado de acordo com o ultimo fechamento, e pode ser alterado caso necessário!</span>
@@ -34,7 +37,10 @@
                 <span class="fs-6 fw-bold">Aplicar Valor</span>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                    <input type="number" id="valor_ap_caixa" placeholder="Valor" class="form-control">
+                    <div class="form-floating">
+                        <input type="number" id="valor_ap_caixa" placeholder="Valor" class="form-control">
+                        <label for="">Valor</label>
+                    </div>
                 </div>
                 <button class="btn btn-success" onclick="aplicar_caixa(this)">
                     Aplicar Valor
@@ -46,11 +52,17 @@
                 <div class="d-flex flex-wrap flex-row gap-2">
                     <div class="input-group" style="flex-grow: 1; flex-basis: 120px;">
                         <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                        <input id="input_valor_despesa" type="number" placeholder="Valor" class="form-control">
+                        <div class="form-floating">
+                            <input id="input_valor_despesa" type="number" placeholder="Valor" class="form-control">
+                            <label for="">Valor</label>
+                        </div>
                     </div>
                     <div class="input-group" style="flex-grow: 1; flex-basis: 120px;">
                         <span class="input-group-text"><i class="bi bi-chat"></i></span>
-                        <input id="input_motivo_despesa" type="text" placeholder="Motivo" class="form-control">
+                        <div class="form-floating">
+                            <input id="input_motivo_despesa" type="text" placeholder="Motivo" class="form-control">
+                            <label for="">Motivo</label>
+                        </div>
                     </div>
                 </div>
                 <button class="btn btn-success" onclick="add_despesa(this)">

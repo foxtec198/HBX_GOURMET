@@ -15,11 +15,11 @@ const mat = sessionStorage.getItem('mat')
 const cr = sessionStorage.getItem('cr')
 const gc = sessionStorage.getItem('gc')
 const perm = sessionStorage.getItem('permissao')
-console.log(perm)
 const nome = sessionStorage.getItem('display_name')
 const config_pedidos = sessionStorage.getItem('config_pedidos')
 const config_comandas = sessionStorage.getItem('config_comandas')
 const config_combos = sessionStorage.getItem('config_combos')
+const config_estoque = sessionStorage.getItem('config_estoque')
 
 const lds = document.createElement('div')
 const div = document.createElement('div')
@@ -1230,10 +1230,75 @@ async function create_modal_vendas(){
                 const tdProd = document.createElement('td')
                 tdProd.textContent = nome
                 tr.appendChild(tdProd)
-
-                if(quant > 0){
+                
+                // Confirma controle de estoque CONFFIG
+                if(config_estoque == 'true'){
+                    if(quant > 0){
+                        const tdBtn = document.createElement('td')
+    
+                        const buttonAdd = document.createElement('button')
+                        buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
+                        buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
+                        buttonAdd.addEventListener('click', function(){
+                            if(cont == 0){carrinho.innerHTML = ''}
+    
+                            const li = document.createElement('li')                        
+                            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                            
+                            const span = document.createElement('span')
+                            span.textContent = nome
+                            
+                            const btnRm = document.createElement('button')
+                            btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
+                            btnRm.innerHTML = lixeira
+                            btnRm.addEventListener('click', function(){
+                                carrinho.removeChild(li)
+                                valor -= valorItem
+                                valorIn.value = valor
+                                cart[id].quantidade -= 1
+                                cart[id].valor -= valorItem
+                                if(cart[id].quantidade == 0){delete cart[id]}
+                                vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                                atualizar_desconto(descIn)
+                            })
+                            
+                            li.appendChild(span)
+                            li.appendChild(btnRm)
+                            
+                            carrinho.appendChild(li)
+    
+                            valor += valorItem
+                            valorIn.value = valor
+    
+                            vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                            atualizar_desconto(descIn)
+    
+                            if(cart[id]){
+                                cart[id].quantidade += 1
+                                cart[id].valor += valorItem
+                            }else{
+                                cart[id] = {
+                                    nome: nome,
+                                    valor: valorItem,
+                                    quantidade: 1
+                                }
+                            }
+    
+                            cont += 1
+                        })
+    
+                        tdBtn.appendChild(buttonAdd)
+                        tr.appendChild(tdBtn)
+                    }else{
+                        const tdSp = document.createElement('td')
+                        const spanEstoque = document.createElement('span')
+                        spanEstoque.classList.add('badge', 'text-bg-danger')
+                        spanEstoque.textContent = 'Sem estoque!'
+                        tdSp.appendChild(spanEstoque)
+                        tr.appendChild(tdSp)
+                    }
+                }else{
                     const tdBtn = document.createElement('td')
-
                     const buttonAdd = document.createElement('button')
                     buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
                     buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
@@ -1287,13 +1352,7 @@ async function create_modal_vendas(){
 
                     tdBtn.appendChild(buttonAdd)
                     tr.appendChild(tdBtn)
-                }else{
-                    const tdSp = document.createElement('td')
-                    const spanEstoque = document.createElement('span')
-                    spanEstoque.classList.add('badge', 'text-bg-danger')
-                    spanEstoque.textContent = 'Sem estoque!'
-                    tdSp.appendChild(spanEstoque)
-                    tr.appendChild(tdSp)
+
                 }
                 tbProds.appendChild(tr)
             })
