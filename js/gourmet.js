@@ -1,6 +1,6 @@
 // Vars
 server = 'https://api.hubbix.com.br/'
-// server = 'http://localhost:9560/'
+server = 'http://localhost:9560/'
 api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
@@ -14,9 +14,13 @@ const cart = new Object;
 const mat = sessionStorage.getItem('mat') 
 const cr = sessionStorage.getItem('cr')
 const gc = sessionStorage.getItem('gc')
+const perm = sessionStorage.getItem('perm')
 const nome = sessionStorage.getItem('display_name')
-const lds = document.createElement('div')
+const config_pedidos = sessionStorage.getItem('config_pedidos')
+const config_comandas = sessionStorage.getItem('config_comandas')
+const config_combos = sessionStorage.getItem('config_combos')
 
+const lds = document.createElement('div')
 const div = document.createElement('div')
 div.id = 'snackbar'
 document.body.appendChild(div)
@@ -574,6 +578,12 @@ async function login(mat, pwd){
                 sessionStorage.setItem('gc', res['gc'])
                 sessionStorage.setItem('permissao', res['permissao'])
                 sessionStorage.setItem('mat', res['matricula'])
+                sessionStorage.setItem('config_pedidos', res.config.pedidos)
+                sessionStorage.setItem('config_comandas', res.config.comandas)
+                sessionStorage.setItem('config_combos', res.config.combos)
+                sessionStorage.setItem('config_email', res.config.email)
+                sessionStorage.setItem('config_estoque', res.config.estoque)
+                sessionStorage.setItem('config_imprimir', res.config.imprimir)
                 window.location = '/gourmet/base.html'
             }else{
                 close_ldg()
@@ -582,6 +592,21 @@ async function login(mat, pwd){
 
         }else{toast('Senha obrigatória!')}
     }else{toast('Matricula obrigatória!')}
+}
+
+async function get_config(){
+    const req = await request('config')
+    const res = await req.json()
+
+    if(req.ok){
+        sessionStorage.setItem('config_pedidos', res.pedidos)
+        sessionStorage.setItem('config_comandas', res.comandas)
+        sessionStorage.setItem('config_combos', res.combos)
+        sessionStorage.setItem('config_email', res.email)
+        sessionStorage.setItem('config_estoque', res.estoque)
+        sessionStorage.setItem('config_imprimir', res.imprimir)
+    }
+
 }
 
 // Pedidos =================================================================================
@@ -1164,7 +1189,7 @@ async function get_vendas(){
             data: tableData,
             layout: "fitColumns",
             responsiveLayout: true,
-            paginationSize: 10,
+            paginationSize: 15,
             paginationCounter:"rows",
             pagination:"local",
             columns: [
@@ -1722,22 +1747,32 @@ async function get_combos() {
 }
 
 // Controle de Permissao =================================================================================
-const perm = sessionStorage.getItem('permissao')
-if(perm){
-    if(perm === 'FUNC' || perm === 'GRC'){
-        parent.document.getElementById('link_caixa').hidden = 'none'
-        parent.document.getElementById('link_relatorios').hidden = 'none'
-        parent.document.getElementById('link_config').hidden = 'none'
-        
-        mb_caixa = parent.document.getElementById('mobile_caixa')
-        mb_caixa.classList.remove('d-flex')
-        mb_caixa.style.display = 'none'
-        parent.document.getElementById('mobile_relatorios').hidden = 'none'
-        parent.document.getElementById('mobile_config').hidden = 'none'
+if(window.location.pathname != '/'){
+    get_config()
+    const perm = sessionStorage.getItem('permissao')
+    if(perm){
+        if(perm === 'FUNC' || perm === 'GRC'){
+            parent.document.getElementById('link_caixa').hidden = 'none'
+            parent.document.getElementById('link_relatorios').hidden = 'none'
+            parent.document.getElementById('link_config').hidden = 'none'
+            
+            mb_caixa = parent.document.getElementById('mobile_caixa')
+            mb_caixa.classList.remove('d-flex')
+            mb_caixa.style.display = 'none'
+            parent.document.getElementById('mobile_relatorios').hidden = 'none'
+            parent.document.getElementById('mobile_config').hidden = 'none'
+        }
+    }
+    if(window.location.pathname !== '/' && !mat){window.location = '/'}
+    if(nome){parent.document.getElementById('lbl_nome_usuario').textContent = nome}
+
+    if(config_pedidos === 'false'){
+        parent.document.getElementById('link_pedidos').hidden = 'none'
+        const mb_pedidos = parent.document.getElementById('mobile_pedidos')
+        mb_pedidos.classList.remove('d-flex')
+        mb_pedidos.style.display = 'none'
     }
 }
-if(window.location.pathname !== '/' && !mat){window.location = '/'}
-if(nome){try{document.getElementById('lbl_nome_usuario').textContent = nome}catch{}}
 
 // Masks =================================================================================
 
@@ -1766,4 +1801,10 @@ if(form){
 
         login(this.mat.value, this.pwd.value)
     })
+}
+
+if(window.location.pathname == '/gourmet/pedidos.html'){
+    if(config_pedidos == 'false'){
+        change_screen('comandas')
+    }
 }
