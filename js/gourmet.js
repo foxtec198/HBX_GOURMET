@@ -460,7 +460,7 @@ async function add_despesa(t){
     }else{toast('Valor Obrigatório!', 'erro')}
 }
 
-async function get_despesas(filter=null){
+async function get_despesas(){
     req = await request('despesas')
     res = await req.json()
 
@@ -505,9 +505,7 @@ async function get_despesas(filter=null){
                 btnGp.classList.add('btn-group')
     
                 btnRemove.innerHTML = lixeira
-                btnRemove.classList.add('btn')
-                btnRemove.classList.add('btn-sm')
-                btnRemove.classList.add('btn-danger')
+                btnRemove.classList.add('btn', 'btn-danger')
                 btnRemove.addEventListener('click', async function(){
                     if(confirm('Deseja excluir essa despesa?')){
                         req = await request('despesas?id=' + id, 'DELETE')
@@ -640,9 +638,7 @@ async function get_pedidos(){
 
             // Botao de Entregar
             btnEntrega = document.createElement('button')
-            btnEntrega.classList.add('btn')
-            btnEntrega.classList.add('btn-sm')
-            btnEntrega.classList.add('btn-success')
+            btnEntrega.classList.add('btn', 'btn-success')
             btnEntrega.innerHTML = '<i class="bi bi-plus-circle"></i>'
             btnEntrega.addEventListener('click',async function(){
                 dd = {'cmd':cmd, 'mat': mat}
@@ -655,9 +651,7 @@ async function get_pedidos(){
 
             // Botao de Visualizar
             btnView = document.createElement('button')
-            btnView.classList.add('btn')
-            btnView.classList.add('btn-sm')
-            btnView.classList.add('btn-secondary')
+            btnView.classList.add('btn', 'btn-secondary')
             btnView.innerHTML = '<i class="bi bi-eye-fill"></i>'
             btnView.addEventListener('click', async function(){
                 document.getElementById('label_modal_pedidos').textContent = `Pedidos Comanda: ${cmd}.`
@@ -693,9 +687,7 @@ async function get_pedidos(){
 
                         // Botao Cancelamento de Produto e nao do pedido do todo
                         let btn = document.createElement('button')
-                        btn.classList.add('btn')
-                        btn.classList.add('btn-sm')
-                        btn.classList.add('btn-danger')
+                        btn.classList.add('btn', 'btn-danger')
                         btn.innerHTML = lixeira
                         btn.addEventListener('click', async function(){
                             if(confirm('Deseja realmente cancelar este produto?')){
@@ -771,50 +763,103 @@ async function get_pedidos(){
 async function get_prods(){
     req = await request('produtos')
     res = await req.json()
+    const list_prods = document.getElementById('list_prods')
 
-    if(res[0]){
-        res.forEach(item => {
-            const id = item['id']
-            const nome = item['nome']
-            const ctg = item['categoria']
-            const quant = item['quantidade']
-            const valor = item['valor']
-
-            if(quant > 0){
-                li_example = `
+    // PRODUTOS ------------------------
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const id = item['id']
+                const nome = item['nome']
+                const ctg = item['categoria']
+                const quant = item['quantidade']
+                const valor = item['valor']
+    
+                if(quant > 0){
+                    li_example = `
+                        <div class=" d-flex justify-content-between align-item-center">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-wrap">${nome}</span>
+                                <span>R$${parseFloat(valor)} - Categoria: ${ctg} - Quantidade: ${quant}</span>
+                            </div>
+                            <div class="d-flex justify-content-center align-item-center text-center mb-auto">
+                                <button onclick="add_prod(this, ${id})" id="btnAdd${id}" class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
+                                <input class="prods" name="${id}" id="input_prod${id}" type="number" readonly value="0" style="width: 50px;" class="btn border form-control text-center">
+                                <button onclick="rmv_prod(this, ${id})" class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                            </div>
+                        </div>`
+                }else if(quant <= 0){
+                    li_example = `
                     <div class=" d-flex justify-content-between align-item-center">
-                        <div class="d-flex flex-column">
+                        <div class="d-flex flex-column flex-grow-1">
                             <span class="fw-bold text-wrap">${nome}</span>
                             <span>R$${parseFloat(valor)} - Categoria: ${ctg} - Quantidade: ${quant}</span>
                         </div>
                         <div class="d-flex justify-content-center align-item-center text-center mb-auto">
-                            <button onclick="add_prod(this, ${id})" id="btnAdd${id}" class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
-                            <input class="prods" name="${id}" id="input_prod${id}" type="number" readonly value="0" style="width: 50px;" class="btn border form-control text-center">
-                            <button onclick="rmv_prod(this, ${id})" class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                            <span class="badge w-100 text-bg-danger rounded-pill">Estoque Vazio!</span>
                         </div>
                     </div>`
-            }else if(quant <= 0){
-                li_example = `
-                <div class=" d-flex justify-content-between align-item-center">
-                    <div class="d-flex flex-column flex-grow-1">
-                        <span class="fw-bold text-wrap">${nome}</span>
-                        <span>R$${parseFloat(valor)} - Categoria: ${ctg} - Quantidade: ${quant}</span>
-                    </div>
-                    <div class="d-flex justify-content-center align-item-center text-center mb-auto">
-                        <span class="badge w-100 text-bg-danger rounded-pill">Estoque Vazio!</span>
-                    </div>
-                </div>`
-            }
-            const li = document.createElement('li')
-            li.classList.add('list-group-item')
-
-            li.innerHTML = li_example
-
-            document.getElementById('list_prods').appendChild(li)
-        })
-    }else{
-
+                }
+                const li = document.createElement('li')
+                li.classList.add('list-group-item')
+    
+                li.innerHTML = li_example
+    
+                list_prods.appendChild(li)
+            })
+        }else{
+    
+        }
     }
+
+    // COMBOS ------------------------
+    req = await request('combos')
+    res = await req.json()
+    if(req.ok){
+        if(res[0]){
+            res.forEach(item => {
+                const id = item.id
+                const nome = item.nome
+                const valor = item.valor
+                const ativo = item.ativo
+
+                if(ativo){
+                    li_example = `
+                        <div class=" d-flex justify-content-between align-item-center">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-wrap">${nome}</span>
+                                <span>R$${parseFloat(valor)} - Categoria: COMBOS</span>
+                            </div>
+                            <div class="d-flex justify-content-center align-item-center text-center mb-auto">
+                                <button onclick="only_add_prod(${id})" id="btnAdd${id}" class="btn btn-success"><i class="bi bi-plus fw-bold"></i></button>
+                                <input class="prods" name="${id}" id="input_prod${id}" type="number" readonly value="0" style="width: 50px;" class="btn border form-control text-center">
+                                <button onclick="only_rmv_prod(${id})" class="btn btn-danger"><i class="bi bi-dash"></i></button>
+                            </div>
+                        </div>`
+                }else{
+                    li_example = `
+                    <div class=" d-flex justify-content-between align-item-center">
+                        <div class="d-flex flex-column flex-grow-1">
+                            <span class="fw-bold text-wrap">${nome}</span>
+                            <span>R$${parseFloat(valor)} - Categoria: COMBOS</span>
+                        </div>
+                        <div class="d-flex justify-content-center align-item-center text-center mb-auto">
+                            <span class="badge w-100 text-bg-danger rounded-pill">Combo Inativo</span>
+                        </div>
+                    </div>`
+                }
+                const li = document.createElement('li')
+                li.classList.add('list-group-item')
+
+                li.innerHTML = li_example
+
+                list_prods.appendChild(li)
+            })
+        }else{
+
+        }
+    }
+    console.log(res)
 }
 
 async function add_prod(t, id){
@@ -848,7 +893,17 @@ async function rmv_prod(t, id){
             t.innerHTML = '<i class="bi bi-dash" disable></i>'
         }
     }else{input.value = 0}
- }
+}
+
+async function only_add_prod(id){
+    input = document.getElementById('input_prod' + id)
+    input.value = parseInt(input.value) + 1
+}
+
+async function only_rmv_prod(id){
+    input = document.getElementById('input_prod' + id)
+    input.value = parseInt(input.value) - 1
+}
 
 //  Nova Comanda/Pedido =================================================================================
 async function enviar_prods(t=null){
@@ -924,9 +979,7 @@ async function get_cmds(){
 
             // Botão para adicionar na CMD
             const btnAddProdCmd = document.createElement('button')
-            btnAddProdCmd.classList.add('btn')
-            btnAddProdCmd.classList.add('btn-sm')
-            btnAddProdCmd.classList.add('btn-warning')
+            btnAddProdCmd.classList.add('btn', 'btn-primary')
             btnAddProdCmd.innerHTML = '<i class="bi bi-plus-circle-fill"></i>'
             divBtn.appendChild(btnAddProdCmd)
             btnAddProdCmd.addEventListener('click', async function(){
@@ -935,9 +988,7 @@ async function get_cmds(){
 
             // Btn Abrir
             const btnAbrirCmd = document.createElement('button')
-            btnAbrirCmd.classList.add('btn')
-            btnAbrirCmd.classList.add('btn-sm')
-            btnAbrirCmd.classList.add('btn-success')
+            btnAbrirCmd.classList.add('btn', 'btn-success')
             btnAbrirCmd.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>'
             divBtn.appendChild(btnAbrirCmd)
             btnAbrirCmd.addEventListener('click', async function(){
@@ -946,9 +997,7 @@ async function get_cmds(){
 
             // Btn de Cancelamento
             const btnCancelarCmd = document.createElement('button')
-            btnCancelarCmd.classList.add('btn')
-            btnCancelarCmd.classList.add('btn-sm')
-            btnCancelarCmd.classList.add('btn-danger')
+            btnCancelarCmd.classList.add('btn', 'btn-danger')
             btnCancelarCmd.innerHTML = lixeira
             btnCancelarCmd.addEventListener('click', async function(){
                 if(confirm('Deseja realmente cancelar esta comanda?')){
@@ -1161,7 +1210,7 @@ async function mount_cmd_panel(dd){
         })
 
     }else{toast(res, 'erro'); change_screen('comandas')}
-}
+}   
 
 // Vendas =================================================================================
 async function get_vendas(){
@@ -1430,7 +1479,7 @@ async function get_estoque(){
                 const tr = document.createElement('tr')
 
                 const tdImg = document.createElement('td')
-                tdImg.classList.add('d-flex', 'justify-content-center')
+                tdImg.classList.add('text-center')
                 const link = document.createElement('a')
                 const imgIn = document.createElement('img')
                 imgIn.classList.add('img-fluid', 'img-thumbnail')
@@ -1443,6 +1492,8 @@ async function get_estoque(){
                 }
                 link.target = '_blank'
                 imgIn.style.height = '35px'
+                imgIn.style.width = '35px'
+                imgIn.style.objectFit = 'cover'
                 link.appendChild(imgIn)
                 tdImg.appendChild(link)
 
@@ -1518,7 +1569,7 @@ async function get_estoque(){
                 btnGroup.classList.add('btn-group')
 
                 const btnEditar = document.createElement('button')
-                btnEditar.classList.add('btn', 'btn-light', 'btn-sm')
+                btnEditar.classList.add('btn', 'btn-light')
                 btnEditar.innerHTML = icon_edit
                 btnEditar.addEventListener('click', function(){
                     const form = document.getElementById('edit_prod')
@@ -1538,7 +1589,7 @@ async function get_estoque(){
                 })
 
                 const btnRemover = document.createElement('button')
-                btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
+                btnRemover.classList.add('btn', 'btn-danger')
                 btnRemover.innerHTML = lixeira
                 btnRemover.addEventListener('click', async function(){
                     if(confirm('Deseja excluir este item permanentemente?')){
@@ -1743,8 +1794,9 @@ async function get_combos() {
                 }
 
                 const tdItems = document.createElement('td')
+                tdItems.classList.add('text-truncate')
                 const btnItems = document.createElement('button')
-                btnItems.classList.add('btn', 'btn-sm', 'btn-outline-secondary')
+                btnItems.classList.add('btn', 'btn-sm', 'btn-outline-secondary', 'text-light')
                 btnItems.setAttribute("data-bs-toggle", "collapse");
                 btnItems.setAttribute("data-bs-target", "#combo" + id);
                 btnItems.innerHTML = `<i class="bi bi-chevron-down"></i> ${item.items.length} Item(s).`
@@ -1773,12 +1825,12 @@ async function get_combos() {
                 tdBtn.appendChild(btnGroup)
 
 
+                tr.appendChild(tdItems) 
                 tr.appendChild(tdImg)
                 tr.appendChild(tdId)
                 tr.appendChild(tdNome)
                 tr.appendChild(tdValor)
                 tr.appendChild(tdAtivo)
-                tr.appendChild(tdItems)
                 tr.appendChild(tdBtn)
                 list_combos.appendChild(tr)
 
