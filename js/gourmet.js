@@ -911,7 +911,7 @@ async function enviar_prods(t=null){
     const cli = document.getElementById('cliIn').value
     const objs = document.querySelectorAll(".prods")
     const btnb = document.getElementById('btn_balcao')
-    if(btnb.checked){data = {cmd: cmd, cliente: cmd}}
+    if(btnb.checked){data = {cmd: cmd.toUpperCase(), cliente: cmd.toUpperCase()}}
     else{data = {cmd: cmd, cliente:cli}}
     
     prods = {}
@@ -926,7 +926,6 @@ async function enviar_prods(t=null){
     if(cmd){
         if(Object.keys(prods).length > 0){
             if(t){t.innerHTML = spinner}
-            socket.emit("novo-pedido", data);
             req = await request("pedidos", "POST", JSON.stringify(data))
             res = await req.json()
             if(req.ok){change_screen('pedidos', parent.document.getElementById('menu_pedidos'))}

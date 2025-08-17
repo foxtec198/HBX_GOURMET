@@ -14,9 +14,10 @@
     <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
-    <div class="d-flex flex-column vh-100">
-        <div class="d-flex flex-column p-1 contG">
-            <span class="fs-4 fw-bold">Iniciar Atendimento!</span>
+    <div class="d-flex flex-column p-1" style="height: 100%;">
+        <!-- DIV INFORMAÇÕES -->
+        <div class="d-flex flex-column">
+            <span class="fs-5 fw-bold">Iniciar Atendimento!</span>
             <span>Selecione seus items e clique no botão Novo Pedido!</span>
             <div class="d-inline">
                 <p class="fs-5" id="atendente1">
@@ -24,31 +25,27 @@
                         <i class="bi bi-person-bounding-box"></i>
                         <span id="lbl_at">Atendente</span>
                     </span>
-                    <span class="badge rounded-pill placeholder fs-6" id="lbl_cx">
+                    <span class="badge rounded-pill placeholder" id="lbl_cx">
                         Status Caixa
                     </span>
                 </p>
             </div>
-        </div> 
-    
-        <div class="d-flex flex-wrap flex-row gap-2 p-1">
-            <div class="input-group flex-grow-1" style="flex-basis: 200px;">
-                <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
-                <div class="form-floating">
-                    <input type="number" class="form-control" placeholder="Comanda ou Mesa" id="cmdIn">
-                    <label id="lblCmd" for="cmdIn">Comanda ou Mesa</label>
+            <div class="d-flex flex-row gap-1 mb-2">
+                <div class="input-group flex-grow-1" style="flex-basis: 220px;">
+                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-credit-card-2-back-fill"></i></span>
+                    <div class="form-floating">
+                        <input type="number" class="form-control" placeholder="Comanda/Mesa" id="cmdIn" autocomplete="off">
+                        <label id="lblCmd" for="cmdIn">Comanda/Mesa</label>
+                    </div>
+                </div>
+                <div id="div-client" class="input-group flex-grow-1" style="flex-basis: 200px;">
+                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
+                    <div class="form-floating">
+                        <input id="cliIn" type="text" class="form-control" placeholder="Cliente" autocomplete="off">
+                        <label for="cliIn">Cliente</label>
+                    </div>
                 </div>
             </div>
-            <div id="div-client" class="input-group flex-grow-1" style="flex-basis: 200px;">
-                <span class="input-group-text" id="basic-addon1"><i class="bi bi-people-fill"></i></span>
-                <div class="form-floating">
-                    <input id="cliIn" type="text" class="form-control" placeholder="Cliente" >
-                    <label for="cliIn">Cliente</label>
-                </div>
-            </div>
-        </div>
-        
-        <div class="d-flex flex-column p-1" style="overflow-y: auto;">
             <div class="input-group mb-2">
                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <div class="form-floating">
@@ -56,9 +53,15 @@
                     <label for="search_prods">Busque por produtos, categorias ou preços!!</label>
                 </div>
             </div>
-            <ul class="list-group w-100" id="list_prods"></ul>
+            <hr>
         </div>
-    
+
+        <!-- DIV PRODUTOS -->
+        <div class="d-flex flex-column overflow-y-auto" style="height: 100%;">
+            <ul class="justify-self-start align-self-start list-group w-100" id="list_prods"></ul>
+        </div>
+
+        <!-- DIV BUTTONS -->
         <div class="btn-group p-4" id="btnNew">
             <button onclick="enviar_prods(this)" class="btn btn-success w-75 fw-bold">Novo Pedido</button>
             <input type="checkbox" class="btn-check" id="btn_balcao" autocomplete="off">
@@ -100,11 +103,11 @@
             }
             const cmdIn = document.getElementById('cmdIn')
             cmdIn.type = 'text'
-            cmdIn.value = cmd
+            cmdIn.value = cmd.toUpperCase()
             cmdIn.disabled = true
 
             const cliIn = document.getElementById("cliIn") 
-            cliIn.value = cli
+            cliIn.value = cli.toUpperCase()
             cliIn.disabled = true
 
             document.getElementById('btn_balcao').disabled = true
@@ -125,8 +128,8 @@
             }else{
                 divCli.hidden = ''
                 cmdIn.type = 'number'
-                cmdIn.placeholder = 'Comanda ou Mesa'
-                lblCmd.textContent = 'Comanda ou Mesa'
+                cmdIn.placeholder = 'Comanda/Mesa'
+                lblCmd.textContent = 'Comanda/Mesa'
             }
         })
 
