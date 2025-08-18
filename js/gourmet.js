@@ -928,7 +928,9 @@ async function enviar_prods(t=null){
             if(t){t.innerHTML = spinner}
             req = await request("pedidos", "POST", JSON.stringify(data))
             res = await req.json()
-            if(req.ok){change_screen('pedidos', parent.document.getElementById('menu_pedidos'))}
+            if(req.ok){
+                location.reload()
+            }
             else{
                 t.textContent = 'Novo Pedido'
                 toast(res)
@@ -1474,6 +1476,7 @@ async function get_estoque(){
                 const quantidade = item.quantidade
                 const alerta = item.alerta
                 const data = new Date(item.data)
+                const preparo = item.preparo
 
                 const tr = document.createElement('tr')
 
@@ -1583,6 +1586,7 @@ async function get_estoque(){
                     ed_calc_lucro()
                     form.quantidade.value = quantidade
                     form.alerta.value = alerta
+                    form.preparo.checked = preparo
 
                     get_modal('md_editProd').show()
                 })
@@ -1903,7 +1907,11 @@ if(window.location.pathname != '/'){
         }
     }
     if(window.location.pathname !== '/' && !mat){window.location = '/'}
-    if(nome){parent.document.getElementById('lbl_nome_usuario').textContent = nome}
+    if(nome){
+        if(parent.location.pathname == '/gourmet/base.html'){
+            parent.document.getElementById('lbl_nome_usuario').textContent = nome
+        }
+    }
 
     if(config_pedidos === 'false'){
         parent.document.getElementById('link_pedidos').hidden = 'none'

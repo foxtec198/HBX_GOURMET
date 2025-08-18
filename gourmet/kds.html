@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Metas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- CSS Local -->
+    <link rel="stylesheet" href="/css/gourmet.css">
+    <style>
+        body{
+            zoom: 85%;
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+    <div class="d-flex justify-content-left flex-wrap gap-2 p-2" id="pedidos">
+
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/js/gourmet.js"></script>
+    <script>
+        socket.on('action', function(tipo) {
+            if(tipo == "pedido"){
+                location.reload()
+            }
+        });
+
+        async function _(){
+            const req = await request("pedidos")
+            const res = await req.json()
+            const pedidos = document.getElementById('pedidos')
+
+            if(req.ok){
+                if(res[0]){
+                    pedidos.classList.remove('align-items-center', 'justify-content-center')
+                    res.forEach(item => {
+                        const cmd = item.cmd 
+                        const cli = item.cli
+
+                        // Card Principal
+                        const card = document.createElement('div')
+                        card.classList.add('card', 'flex-grow-1')
+                        card.style.flexBasis = '400px'
+                        card.style.height = '400px'
+                        card.style.maxWidth = '450px'
+                        card.style.overflowY = 'auto'
+                        
+                        const cardheader = document.createElement('div')
+                        cardheader.classList.add('card-header', 'd-flex', 'flex-column')
+
+                        const title = document.createElement('span')
+                        title.classList.add('fw-bold', 'fs-5')
+                        title.innerHTML = `<i class="bi bi-wallet-fill"></i> Mesa ${cmd}`
+
+                        const subtitle = document.createElement('span')
+                        subtitle.innerHTML = `<i class="bi bi-person-walking"></i> ${cli}`
+
+                        cardheader.appendChild(title)
+                        cardheader.appendChild(subtitle)
+                        card.appendChild(cardheader)
+
+                        const cardBody = document.createElement('div')
+                        cardBody.classList.add('card-body')
+
+                        const list_of_orders = document.createElement('ul')
+                        list_of_orders.classList.add('list-group')
+
+                        request("get_cmd", 'POST', JSON.stringify({cmd: cmd}))
+                        .then(res=>{
+                            res.json().then(item => {
+                                item.prods.forEach(item => {
+                                    const nome = item.nome
+                                    const quant = item.quant
+                                    const status = item.status
+                                    const func = item.func 
+                                    const hora = item.hora
+                                    console.log(item.preparo, status)
+                                    if(item.preparo && status == 'SOLICITADO'){
+                                        const li = document.createElement('li')
+                                        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
+    
+                                        const spanInfo = document.createElement('span')
+                                        spanInfo.innerHTML = `
+                                        <div class='d-flex flex-column'>
+                                            <span class='fs-6 fw-bold text-truncate'>${nome} ${quant}x</span>
+                                            <span><i class="bi bi-person-fill-check"></i> ${func} - <i class="bi bi-stopwatch-fill"></i> ${hora}</span>
+                                        </div>
+                                        `
+    
+                                        const spanStatus = document.createElement('span')
+                                        spanStatus.innerHTML = "<span class='badge text-bg-primary'>Solicitado</span>"
+    
+                                        li.appendChild(spanInfo)
+                                        li.appendChild(spanStatus)
+
+                                        list_of_orders.appendChild(li)
+                                    }
+                                })
+                            })
+                            
+                        })
+
+                        cardBody.appendChild(list_of_orders)
+                        card.appendChild(cardBody)
+
+                        const cardFooter = document.createElement('div')
+                        cardFooter.classList.add('card-footer', 'btn-group')
+
+                        const btnPronto = document.createElement('button')
+                        btnPronto.classList.add('btn', 'btn-primary')
+                        btnPronto.innerHTML = `<i class="bi bi-check2-circle"></i> Pronto`
+
+                        const btnEntregue = document.createElement('button')
+                        btnEntregue.classList.add('btn', 'btn-success', 'btn-lg')
+                        btnEntregue.innerHTML = `<i class="bi bi-person-walking"></i> Entregue`
+                        btnEntregue.addEventListener('click', async function(){
+                            dd = {'cmd':cmd, 'mat': mat}
+                            req = await request('pedidos', 'PATCH', JSON.stringify(dd))
+                            res = await req.json()
+                            
+                            if(req.ok){location.reload()}
+                            else{toast(res)}
+                        })
+
+                        // cardFooter.appendChild(btnPronto)
+                        cardFooter.appendChild(btnEntregue)
+                        card.appendChild(cardFooter)
+
+                        pedidos.appendChild(card)
+                    });
+                }       
+                else{
+                    const span = document.createElement("span")
+                    span.classList.add('display-5', 'p-5', 'm-4')
+                    span.innerHTML = `<i class="bi bi-fire"></i> Nenhum pedido <strong class='fw-bold'>adicionado</strong>, por enquanto.`
+                    pedidos.classList.add('justify-content-center','align-items-center', 'h-100')
+                    pedidos.appendChild(span)
+                }
+            }
+        }
+
+        _()
+
+    </script>
+</body>
+</html>
