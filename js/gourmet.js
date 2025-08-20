@@ -2016,10 +2016,6 @@ if(location.pathname == '/gourmet/config.html'){
 
 }
 
-if(config_pedidos == 'false'){
-    parent.document.getElementById(`link_kds`).hidden = 'none'
-}
-
 async function get_employees_config(){
     const req = await request("funcionarios")
     const res = await req.json()
@@ -2100,7 +2096,10 @@ function hide_menus(menu){
     mb.style.display = 'none'
 }
 
-if(config_pedidos === 'false'){hide_menus('pedidos')}
+if(config_pedidos === 'false'){
+    hide_menus('pedidos');
+    parent.document.getElementById(`link_kds`).hidden = 'none';
+}
 if(config_comandas === 'false'){hide_menus('comandas')}
 
 // Controle de Permissao =================================================================================
