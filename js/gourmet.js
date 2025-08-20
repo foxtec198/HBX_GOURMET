@@ -1,11 +1,11 @@
 // Vars
 server = 'https://api.hubbix.com.br/'
-// server = 'http://localhost:9560/'
+server = 'http://localhost:9560/'
 api = server + 'gourmet/api/v1/'
 
 const spinner = '<span class="spinner-border spinner-border-sm text-light" role="status"></span>'
 const green = '#5E8B60'
-const lixeira = '<i class="bi bi-trash2-fill"></i>'
+const icon_lixeira = '<i class="bi bi-trash2-fill"></i>'
 const icon_edit = '<i class="bi bi-pencil-square"></i>'
 const loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
 const cart = new Object;
@@ -16,6 +16,8 @@ const cr = sessionStorage.getItem('cr')
 const gc = sessionStorage.getItem('gc')
 const perm = sessionStorage.getItem('permissao')
 const nome = sessionStorage.getItem('display_name')
+
+get_config()
 const config_pedidos = sessionStorage.getItem('config_pedidos')
 const config_comandas = sessionStorage.getItem('config_comandas')
 const config_combos = sessionStorage.getItem('config_combos')
@@ -36,7 +38,6 @@ socket.on('action', function(tipo) {
     if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
     if(tipo == "comanda" && frame == 'comandas'){location.reload()}
 });
-
 
 // Funções ================================================================================= 
 
@@ -504,7 +505,7 @@ async function get_despesas(){
                 btnGp = document.createElement('div')
                 btnGp.classList.add('btn-group')
     
-                btnRemove.innerHTML = lixeira
+                btnRemove.innerHTML = icon_lixeira
                 btnRemove.classList.add('btn', 'btn-danger')
                 btnRemove.addEventListener('click', async function(){
                     if(confirm('Deseja excluir essa despesa?')){
@@ -593,19 +594,13 @@ async function login(mat, pwd){
     }else{toast('Matricula obrigatória!')}
 }
 
-async function get_config(){
-    const req = await request('config')
-    const res = await req.json()
+const form = document.getElementById("form_login")
+if(form){
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
 
-    if(req.ok){
-        sessionStorage.setItem('config_pedidos', res.pedidos)
-        sessionStorage.setItem('config_comandas', res.comandas)
-        sessionStorage.setItem('config_combos', res.combos)
-        sessionStorage.setItem('config_email', res.email)
-        sessionStorage.setItem('config_estoque', res.estoque)
-        sessionStorage.setItem('config_imprimir', res.imprimir)
-    }
-
+        login(this.mat.value, this.pwd.value)
+    })
 }
 
 // Pedidos =================================================================================
@@ -688,7 +683,7 @@ async function get_pedidos(){
                         // Botao Cancelamento de Produto e nao do pedido do todo
                         let btn = document.createElement('button')
                         btn.classList.add('btn', 'btn-danger')
-                        btn.innerHTML = lixeira
+                        btn.innerHTML = icon_lixeira
                         btn.addEventListener('click', async function(){
                             if(confirm('Deseja realmente cancelar este produto?')){
                                 dd = {id:id, cmd:cmd, idp:idp}
@@ -718,7 +713,7 @@ async function get_pedidos(){
             btnRemove.classList.add('btn')
             btnRemove.classList.add('btn-sm')
             btnRemove.classList.add('btn-danger')
-            btnRemove.innerHTML = lixeira
+            btnRemove.innerHTML = icon_lixeira
             btnRemove.addEventListener('click', async function(){
                 if(confirm('Deseja realmente Cancelar este pedido?')){
                     btnRemove.innerHTML = spinner
@@ -757,6 +752,10 @@ async function get_pedidos(){
         tr.appendChild(td)
         tb_pedidos.appendChild(tr)
     }
+}
+
+if(window.location.pathname == '/gourmet/pedidos.html'){
+    if(config_pedidos == 'false'){change_screen('comandas')}
 }
 
 // Produtos =================================================================================
@@ -855,11 +854,8 @@ async function get_prods(){
 
                 list_prods.appendChild(li)
             })
-        }else{
-
         }
     }
-    console.log(res)
 }
 
 async function add_prod(t, id){
@@ -941,6 +937,15 @@ async function enviar_prods(t=null){
     
 }
 
+if(window.location.pathname == '/gourmet/novoPedido.html'){
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){
+            e.preventDefault()
+            enviar_prods(document.getElementById('btnEnviar'))
+        }else{}
+    })
+}
+
 // Comandas =================================================================================
 async function get_cmds(){
     req = await request('comandas')
@@ -999,7 +1004,7 @@ async function get_cmds(){
             // Btn de Cancelamento
             const btnCancelarCmd = document.createElement('button')
             btnCancelarCmd.classList.add('btn', 'btn-danger')
-            btnCancelarCmd.innerHTML = lixeira
+            btnCancelarCmd.innerHTML = icon_lixeira
             btnCancelarCmd.addEventListener('click', async function(){
                 if(confirm('Deseja realmente cancelar esta comanda?')){
                     dd = {'cmd':cmd}
@@ -1115,7 +1120,7 @@ async function mount_cmd_panel(dd){
 
             const btnCancelar = document.createElement('button')
             btnCancelar.classList.add('btn','btn-danger')
-            btnCancelar.innerHTML = lixeira
+            btnCancelar.innerHTML = icon_lixeira
             btnCancelar.addEventListener('click', async function(){
                 if(confirm('Deseja cancelar este pedido?')){
                     const req = await request('pedido', 'DELETE', JSON.stringify({id: idPedido, cmd: cmd}))
@@ -1213,6 +1218,10 @@ async function mount_cmd_panel(dd){
     }else{toast(res, 'erro'); change_screen('comandas')}
 }   
 
+if(window.location.pathname == '/gourmet/comandas.html'){
+    if(config_comandas == 'false'){change_screen('vendas')}
+}
+
 // Vendas =================================================================================
 async function get_vendas(){
     const req = await request('vendas')
@@ -1231,7 +1240,7 @@ async function get_vendas(){
                     cliente: item['cliente'],
                     btn: `
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-danger" onclick="excluir_venda(${item['id']})">${lixeira}</button>
+                        <button class="btn btn-danger" onclick="excluir_venda(${item['id']})">${icon_lixeira}</button>
                     </div>`
                 })
             }
@@ -1300,7 +1309,7 @@ async function create_modal_vendas(){
                             
                             const btnRm = document.createElement('button')
                             btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
-                            btnRm.innerHTML = lixeira
+                            btnRm.innerHTML = icon_lixeira
                             btnRm.addEventListener('click', function(){
                                 carrinho.removeChild(li)
                                 valor -= valorItem
@@ -1363,7 +1372,7 @@ async function create_modal_vendas(){
                         
                         const btnRm = document.createElement('button')
                         btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
-                        btnRm.innerHTML = lixeira
+                        btnRm.innerHTML = icon_lixeira
                         btnRm.addEventListener('click', function(){
                             carrinho.removeChild(li)
                             valor -= valorItem
@@ -1454,6 +1463,13 @@ async function vender(t){
         else{toast(res, 'erro'); t.textContent = 'Vender'}
     }else{toast("Valor Obrigatório", 'erro')}
 
+}
+
+const btn = document.getElementById('btnNovaVenda')
+if(btn){
+    btn.addEventListener('click', function(){
+        create_modal('modal_nova_venda', 'Nova Venda', 'Hi','center').show()
+    })
 }
 
 // Estoque =================================================================================
@@ -1593,7 +1609,7 @@ async function get_estoque(){
 
                 const btnRemover = document.createElement('button')
                 btnRemover.classList.add('btn', 'btn-danger')
-                btnRemover.innerHTML = lixeira
+                btnRemover.innerHTML = icon_lixeira
                 btnRemover.addEventListener('click', async function(){
                     if(confirm('Deseja excluir este item permanentemente?')){
                         const req = await request('produtos', 'DELETE', JSON.stringify({id:id}))
@@ -1679,7 +1695,7 @@ async function get_categorias(){
 
                 const btnRemover = document.createElement('button')
                 btnRemover.classList.add('btn', 'btn-danger', 'btn-sm')
-                btnRemover.innerHTML = lixeira
+                btnRemover.innerHTML = icon_lixeira
                 btnRemover.addEventListener('click', async function(){
                     if(confirm("Deseja realmente excluir esta categoria?")){
                         const req = await request("categorias", "DELETE", JSON.stringify({id:id}))
@@ -1811,7 +1827,7 @@ async function get_combos() {
 
                 const btnRemover = document.createElement('button')
                 btnRemover.classList.add('btn', 'btn-danger')
-                btnRemover.innerHTML = lixeira
+                btnRemover.innerHTML = icon_lixeira
                 btnRemover.addEventListener('click', function(){
 
                 })
@@ -1862,6 +1878,21 @@ async function get_combos() {
 }
 
 // Configurações =================================================================================
+async function get_config(){ // Pega a configuração do usuer e dp CR 
+    const req = await request('config')
+    const res = await req.json()
+
+    if(req.ok){
+        sessionStorage.setItem('config_pedidos', res.pedidos)
+        sessionStorage.setItem('config_comandas', res.comandas)
+        sessionStorage.setItem('config_combos', res.combos)
+        sessionStorage.setItem('config_email', res.email)
+        sessionStorage.setItem('config_estoque', res.estoque)
+        sessionStorage.setItem('config_imprimir', res.imprimir)
+    }
+
+}
+
 async function config(){
     const req = await request("config")
     const res = await req.json()
@@ -1888,6 +1919,69 @@ async function config(){
     // const res2 = await req2.json()
 }
 
+async function change_config(config, value){
+    const req = await request('config', 'POST', JSON.stringify({'config':config, 'value':value}))
+    const res = await req.json()
+
+    if(req.ok){return res}
+    else{return false}
+}
+
+if(location.pathname == '/gourmet/config.html'){
+    // Fuso
+    document.getElementById('fuso').addEventListener('change', async function(){
+        const res = await change_config('fuso', this.value)
+        if(res){location.reload()}
+        else{toast("Erro interno, nossa equipe já está verificando!")}
+    })
+
+    // Pedidos
+    document.getElementById('pedidos').addEventListener('change', async function(){
+        const res = await change_config('pedidos', this.checked)
+        if(res){
+            const cd = document.getElementById('comandas') 
+            console.log(cd.checked, this.checked)
+            if(this.checked && !cd.checked){
+                await change_config('comandas', true);
+                sessionStorage.setItem('config_pedidos', true);
+                sessionStorage.setItem('config_comandas', true);
+                top.location.reload();
+            }else{
+                sessionStorage.setItem('config_pedidos', this.checked);
+                top.location.reload();
+            }
+        }
+        else{toast("Erro interno, nossa equipe já está verificando!")}
+    })
+
+    // Comandas
+    document.getElementById('comandas').addEventListener('change', async function(){
+        const res = await change_config('comandas', this.checked)
+        if(res){
+            const pd = document.getElementById('pedidos') 
+            if(pd.checked && !this.checked){
+                await change_config('pedidos', false);
+                sessionStorage.setItem('config_pedidos', false);
+                sessionStorage.setItem('config_comandas', false);
+                top.location.reload();
+            }else{
+                sessionStorage.setItem('config_comandas', this.checked);
+                top.location.reload();
+            }
+        }
+        else{toast("Erro interno, nossa equipe já está verificando!")}
+    })
+}
+
+function hide_menus(menu){
+    parent.document.getElementById(`link_${menu}`).hidden = 'none'
+    const mb = parent.document.getElementById(`mobile_${menu}`)
+    mb.classList.remove('d-flex')
+    mb.style.display = 'none'
+}
+
+if(config_pedidos === 'false'){hide_menus('pedidos')}
+if(config_comandas === 'false'){hide_menus('comandas')}
 
 // Controle de Permissao =================================================================================
 if(window.location.pathname != '/'){
@@ -1912,13 +2006,6 @@ if(window.location.pathname != '/'){
             parent.document.getElementById('lbl_nome_usuario').textContent = nome
         }
     }
-
-    if(config_pedidos === 'false'){
-        parent.document.getElementById('link_pedidos').hidden = 'none'
-        const mb_pedidos = parent.document.getElementById('mobile_pedidos')
-        mb_pedidos.classList.remove('d-flex')
-        mb_pedidos.style.display = 'none'
-    }
 }
 
 // Masks =================================================================================
@@ -1933,25 +2020,3 @@ $(document).ready(function(){
     $(".money-mask").inputmask("currency");
 });
 
-// Eventos =================================================================================
-const btn = document.getElementById('btnNovaVenda')
-if(btn){
-    btn.addEventListener('click', function(){
-        create_modal('modal_nova_venda', 'Nova Venda', 'Hi','center').show()
-    })
-}
-
-const form = document.getElementById("form_login")
-if(form){
-    form.addEventListener('submit', function(e){
-        e.preventDefault()
-
-        login(this.mat.value, this.pwd.value)
-    })
-}
-
-if(window.location.pathname == '/gourmet/pedidos.html'){
-    if(config_pedidos == 'false'){
-        change_screen('comandas')
-    }
-}
