@@ -2016,6 +2016,10 @@ if(location.pathname == '/gourmet/config.html'){
 
 }
 
+if(config_pedidos == 'false'){
+    parent.document.getElementById(`link_kds`).hidden = 'none'
+}
+
 async function get_employees_config(){
     const req = await request("funcionarios")
     const res = await req.json()
