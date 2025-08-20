@@ -29,15 +29,14 @@ document.body.appendChild(div)
 const bodyHtml = document.body.innerHTML
 const socket = io(server);
 
-// Funções ================================================================================= 
 
-// Realiza o Logout limpando os caches e voltando para o login
-function logout(){
+// Funções ================================================================================= 
+function logout(){ // Realiza o Logout limpando os caches e voltando para o login
     sessionStorage.clear()
     location = '/'
 }
 
-function imgPreview(file, prev){
+function imgPreview(file, prev){ // Atualiza o preview das Imagens
     const fileInput = document.getElementById(file)
     const preview = document.getElementById(prev)
 
@@ -59,7 +58,7 @@ function imgPreview(file, prev){
 
 }
 
-function ed_calc_lucro(){
+function ed_calc_lucro(){ // Calcula o lucro auto da Edição de Produto
     const valorIn = document.getElementById('ed_valor')
     const valor = valorIn.value
 
@@ -85,7 +84,7 @@ function ed_calc_lucro(){
 
 }
 
-function calc_lucro(){
+function calc_lucro(){ // Calcula o lucro auto de um Novo Produto
     const valorIn = document.getElementById('valor')
     const valor = valorIn.value
 
@@ -132,26 +131,16 @@ function create_modal(id, title, body, backdrop = true, center='modal-dialog-cen
     return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': backdrop})
 }
 
-function get_modal(id){
+function get_modal(id){ // Pega o OBJ do Modal
     return new bootstrap.Modal(document.getElementById(id), {'show':true, 'backdrop': true})
 }
 
-async function excluir_venda(id){
-    if(confirm("Deseja excluir esta venda, permanentemente?")){
-        const req = await request('vendas', 'DELETE', JSON.stringify({id: id}))
-        const res = await req.json()
-    
-        if(req.ok){location.reload()}
-        else{toast(res)}
-    }
-}
-
-function real(str){
+function real(str){ // Converte STR/INT em Moeda R$
     str = parseFloat(str)
     return str.toLocaleString('pt-br', {style:'currency', currency:'BRL'})
 }
 
-function show_ldg(){
+function show_ldg(){ // Mostra a tela de LOADING...
     lds.hidden = ''
     lds.style.width = '100%'
     lds.style.height = '100%'
@@ -163,15 +152,15 @@ function show_ldg(){
     document.body.appendChild(lds)
 }
 
-function close_ldg(){
+function close_ldg(){ // Fecha a tela de LOADING...
     lds.hidden = 'none'
 }
 
-function confer_troco(){
+function confer_troco(){ // Confere o Troco do CAIXA
 
 }
 
-function atualizaValores(total){
+function atualizaValores(total){ // Atualiza os valores a serem pagos na Divisao de Valor
     const descontoInput = document.getElementById('in_desc');
 
     let desconto = parseFloat(descontoInput.value) || 0;
@@ -209,7 +198,7 @@ function atualizaValores(total){
     }
 }
 
-function atualizar_desconto(t){
+function atualizar_desconto(t){ // Atualiza o desconto
     const valor = document.getElementById('valor')
     const valorOriginal = valor.value
     const desconto = parseFloat(t.value || 0)
@@ -226,8 +215,7 @@ function atualizar_desconto(t){
     }else{t.value = 0}
 }
 
-// Troca de Frame e seta cor no Menu Button
-function change_screen(screnn, t=null){
+function change_screen(screnn, t=null){ // Troca de Frame e seta cor no Menu Button
     others = parent.document.querySelectorAll('.menu-item')
     others.forEach(element => {element.style.background = null});
     if(t){t.style.background = green}
@@ -237,8 +225,7 @@ function change_screen(screnn, t=null){
     frame.src = `/gourmet/${screnn}.html`
 }
 
-// Recupera a tela mesmo que atualize a pagina
-function restore_screen(){
+function restore_screen(){ // Recupera a tela mesmo que atualize a pagina
     frame = sessionStorage.getItem('frame')
     frameWidget = document.getElementById('frame_screen')
     
@@ -250,8 +237,7 @@ function restore_screen(){
     }
 }
 
-// Gera um snackbar personalizavel
-function toast(msg, type=null){
+function toast(msg, type=null){ // Gera um snackbar personalizavel
     tst = document.getElementById("snackbar");
     tst.textContent = msg
     tst.className = "show";
@@ -266,7 +252,7 @@ function toast(msg, type=null){
     setTimeout(function(){ tst.className = tst.className.replace("show", ""); }, 3000);
 }
 
-function alertInApp(msg, type='success'){
+function alertInApp(msg, type='success'){ // Alerta quase nao utilizado rsrs
     const al = document.getElementById('alertInApp')
     al.classList.add('alert-'+type)
     document.getElementById('alertMsg').textContent = msg
@@ -275,8 +261,7 @@ function alertInApp(msg, type='success'){
 
 }
 
-// Função que simplifica o fetch!
-function request(url, method='GET', json){
+function request(url, method='GET', json){ // Função que simplifica o fetch!...
     if(!json){
         var options = {
             method: method,
@@ -309,8 +294,7 @@ function request(url, method='GET', json){
     }}
 }
 
-// Função de Envio de Formulario
-function send_form(url, form, method='post'){
+function send_form(url, form, method='post'){ // Função de Envio de Formulario
     var options = {
         method: method,
         headers: {
@@ -325,8 +309,7 @@ function send_form(url, form, method='post'){
 }
 
 // Callbacks API ---------------------------------------------------------------------------------------------
-
-// Caixa
+// Caixa =================================================================================
 async function cx(){
     res = await get_caixa()
     bd = document.getElementById('lbl_cx')
@@ -1272,6 +1255,16 @@ async function get_vendas(){
     }
 }
 
+async function excluir_venda(id){ 
+    if(confirm("Deseja excluir esta venda, permanentemente?")){
+        const req = await request('vendas', 'DELETE', JSON.stringify({id: id}))
+        const res = await req.json()
+    
+        if(req.ok){location.reload()}
+        else{toast(res)}
+    }
+}
+
 async function create_modal_vendas(){
     const req = await request('produtos')
     const res = await req.json()
@@ -1652,8 +1645,7 @@ async function get_estoque(){
     }
 }
 
-// Função de Adicionar Produtos
-const formD = document.getElementById('new_prod')
+const formD = document.getElementById('new_prod') // Função de Adicionar Produtos
 if(formD){ 
     formD.addEventListener('submit', async function(e){
         e.preventDefault()
@@ -1667,8 +1659,7 @@ if(formD){
     })
 }
 
-// Função de Editar Produto
-const formE = document.getElementById('edit_prod')
+const formE = document.getElementById('edit_prod') // Função de Editar Produto
 if(formE){ 
     formE.addEventListener('submit', async function(e){
         e.preventDefault()
@@ -2085,7 +2076,7 @@ function hide_menus(menu){
     mb.style.display = 'none'
 }
 
-// Controle de Permissao =================================================================================
+// Controle de Eventos =================================================================================
 if(window.location.pathname != '/' && window.location.pathname != '/gourmet/kds.html'){
     get_config() // PEga as configurações atualizadas
     socket.on('action', function(tipo) { // Escuta os eventos 
@@ -2138,4 +2129,3 @@ $(document).ready(function(){
 $(document).ready(function(){
     $(".money-mask").inputmask("currency");
 });
-
