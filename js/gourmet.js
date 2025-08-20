@@ -26,19 +26,8 @@ const lds = document.createElement('div')
 const div = document.createElement('div')
 div.id = 'snackbar'
 document.body.appendChild(div)
-
 const bodyHtml = document.body.innerHTML
-
 const socket = io(server);
-if(window.location.pathname != '/gourmet/kds.html' && window.location.pathname != '/'){
-    socket.on('action', function(tipo) {
-        const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
-    
-        if(tipo == "venda" && frame == 'vendas'){location.reload()}
-        if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
-        if(tipo == "comanda" && frame == 'comandas'){location.reload()}
-    });
-}
 
 // Funções ================================================================================= 
 
@@ -2096,15 +2085,17 @@ function hide_menus(menu){
     mb.style.display = 'none'
 }
 
-if(config_pedidos === 'false'){
-    hide_menus('pedidos');
-    parent.document.getElementById(`link_kds`).hidden = 'none';
-}
-if(config_comandas === 'false'){hide_menus('comandas')}
-
 // Controle de Permissao =================================================================================
 if(window.location.pathname != '/' && window.location.pathname != '/gourmet/kds.html'){
-    get_config()
+    get_config() // PEga as configurações atualizadas
+    socket.on('action', function(tipo) { // Escuta os eventos 
+        const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
+    
+        if(tipo == "venda" && frame == 'vendas'){location.reload()}
+        if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
+        if(tipo == "comanda" && frame == 'comandas'){location.reload()}
+    });
+    // Controle de Permissao
     const perm = sessionStorage.getItem('permissao')
     if(perm){
         if(perm === 'FUNC' || perm === 'GRC'){
@@ -2123,12 +2114,17 @@ if(window.location.pathname != '/' && window.location.pathname != '/gourmet/kds.
             parent.document.getElementById('mobile_combos').hidden = 'none'
         }
     }
-    if(window.location.pathname !== '/' && !mat){window.location = '/'}
-    if(nome){
+    if(window.location.pathname !== '/' && !mat){window.location = '/'} // Confirma se a sessão expirou
+    if(nome){ // Adiciona o nome do User
         if(parent.location.pathname == '/gourmet/base.html'){
             parent.document.getElementById('lbl_nome_usuario').textContent = nome
         }
     }
+    if(config_pedidos === 'false'){ // Confirma pedidos e Display KDS
+        hide_menus('pedidos');
+        parent.document.getElementById(`link_kds`).hidden = 'none';
+    }
+    if(config_comandas === 'false'){hide_menus('comandas')} //Confirma Comandas
 }
 
 // Masks =================================================================================
