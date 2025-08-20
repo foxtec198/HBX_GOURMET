@@ -50,7 +50,7 @@
                     Estoque
                 </a>
               </li>
-              <li class="nav-item" id="link_estoque">
+              <li class="nav-item" id="link_combos">
                 <a onclick="change_screen('combos', this)" id="menu_combos" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-collection-fill"></i>
                     Combos
@@ -60,6 +60,12 @@
                 <a onclick="change_screen('relatorios', this)" id="menu_relatorios" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
                     <i class="bi bi-pie-chart-fill"></i>
                     Relatórios
+                </a>
+              </li>
+              <li class="nav-item">
+                <a target="_parent" href="/gourmet/kds.html" class="nav-link text-white d-flex gap-2 menu-item" style="cursor: pointer;">
+                    <i class="bi bi-window-fullscreen"></i>
+                    Painel KDS
                 </a>
               </li>
             </ul>
@@ -97,6 +103,10 @@
                 <i class="bi bi-card-checklist display-6"></i>
                 <span class="fs-6">Comandas</span>
             </div>
+            <div class="btn d-flex flex-column" onclick="change_screen('vendas')" id="mobile_comandas">
+                <i class="bi bi-cart4 display-6"></i>
+                <span class="fs-6">Vendas</span>
+            </div>
             <div class="dropdown">
                 <div class="btn d-flex flex-column" data-bs-toggle="dropdown">
                     <i class="bi bi-list display-6"></i>
@@ -104,7 +114,6 @@
                 </div>
                 <ul class="dropdown-menu" style="background: #202020;">
                     <li>
-                        <button class="dropdown-item" id="mobile_vendas" onclick="change_screen('vendas')"><i class="bi bi-cart4"></i> Vendas</button>
                         <button class="dropdown-item" id="mobile_estoque" onclick="change_screen('estoque')"><i class="bi bi-archive-fill"></i> Estoque</button>
                         <button class="dropdown-item" id="mobile_combos" onclick="change_screen('combos')"><i class="bi bi-collection-fill"></i> Combos</button>
                         <button class="dropdown-item" id="mobile_relatorios" onclick="change_screen('relatorios')"><i class="bi bi-pie-chart-fill"></i> Relatórios</button>

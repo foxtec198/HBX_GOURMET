@@ -64,7 +64,6 @@
                         card.style.flexBasis = '400px'
                         card.style.height = '400px'
                         card.style.maxWidth = '450px'
-                        card.style.overflowY = 'auto'
                         
                         const cardheader = document.createElement('div')
                         cardheader.classList.add('card-header', 'd-flex', 'flex-column')
@@ -82,9 +81,11 @@
 
                         const cardBody = document.createElement('div')
                         cardBody.classList.add('card-body')
+                        cardBody.style.overflowY = 'auto'
 
                         const list_of_orders = document.createElement('ul')
                         list_of_orders.classList.add('list-group')
+
 
                         request("get_cmd", 'POST', JSON.stringify({cmd: cmd}))
                         .then(res=>{

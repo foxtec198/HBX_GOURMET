@@ -82,22 +82,26 @@
 
     <div class="d-flex flex-column justify-content-between" style="height: 100%;">
         <div class="d-flex flex-column">
-            <span class="fs-3 fw-bold placeholder" id="lbl_cmd">
-                <i class="bi bi-credit-card"></i> Comanda
-            </span>
-            <div class="d-flex gap-2 p-3 flex-wrap">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fs-3 fw-bold placeholder" id="lbl_cmd">
+                    <i class="bi bi-credit-card"></i> Comanda
+                </span>
+                <button class="btn btn-light fw-bold" id="btnAdd"><i class="bi bi-plus-square-dotted"></i> Adicionar Itens</button>
+            </div>
+            <div class="d-flex gap-2 p-3 fs-4 flex-wrap">
                 <span class="badge text-bg-light flex-grow-1" id="bdCli">
-                    <i class="fs-5 bi bi-person-fill-check"></i> Cliente:
+                    <i class="bi bi-person-fill-check"></i> Cliente:
                 </span>
                 <span class="badge text-bg-light flex-grow-1" id="bdFunc">
-                    <i class="fs-5 bi bi-person-walking"></i> Atendente:
+                    <i class="bi bi-person-walking"></i> Atendente:
                 </span>
                 <span class="badge text-bg-light flex-grow-1" id="bdVl">
-                    <i class="fs-5 bi bi-basket"></i> Total:
+                    <i class="bi bi-basket"></i> Total:
                 </span>
                 <span class="badge text-bg-light flex-grow-1" id="bdDt">
-                    <i class="fs-5 bi bi-calendar-date"></i> Aberto em:
+                    <i class="bi bi-calendar-date"></i> Aberto dia
                 </span>
+                
             </div>
             <hr>
         </div>
@@ -124,6 +128,7 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         cmd = params.get("cmd")
+        cliente = params.get("cliente") || 'NÃO INFORMADO'
         dd = {'cmd':cmd}
 
         mount_cmd_panel(JSON.stringify(dd))
@@ -136,6 +141,10 @@
                 else{toast(res)}
             }
         }); 
+
+        document.getElementById('btnAdd').addEventListener('click', function(){
+            location = `/gourmet/novoPedido.html?cmd=${cmd}&&cli=${cliente}`
+        })
     </script>
 
 </body>

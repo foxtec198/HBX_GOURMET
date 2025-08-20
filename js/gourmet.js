@@ -17,7 +17,6 @@ const gc = sessionStorage.getItem('gc')
 const perm = sessionStorage.getItem('permissao')
 const nome = sessionStorage.getItem('display_name')
 
-get_config()
 const config_pedidos = sessionStorage.getItem('config_pedidos')
 const config_comandas = sessionStorage.getItem('config_comandas')
 const config_combos = sessionStorage.getItem('config_combos')
@@ -31,13 +30,15 @@ document.body.appendChild(div)
 const bodyHtml = document.body.innerHTML
 
 const socket = io(server);
-socket.on('action', function(tipo) {
-    const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
-
-    if(tipo == "venda" && frame == 'vendas'){location.reload()}
-    if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
-    if(tipo == "comanda" && frame == 'comandas'){location.reload()}
-});
+if(window.location.pathname != '/gourmet/kds.html' && window.location.pathname != '/'){
+    socket.on('action', function(tipo) {
+        const frame = sessionStorage.getItem('frame').replace("/gourmet/", "").replace(".html", "")
+    
+        if(tipo == "venda" && frame == 'vendas'){location.reload()}
+        if(tipo == "pedido" && frame == 'pedidos'){location.reload()}
+        if(tipo == "comanda" && frame == 'comandas'){location.reload()}
+    });
+}
 
 // Funções ================================================================================= 
 
@@ -732,7 +733,7 @@ async function get_pedidos(){
             
             
             tr.appendChild(tdCmd)
-            tr.appendChild(tdCli)
+            // tr.appendChild(tdCli)
             tr.appendChild(tdFunc)
             tr.appendChild(tdGp)
             tb_pedidos.appendChild(tr)
@@ -942,7 +943,26 @@ if(window.location.pathname == '/gourmet/novoPedido.html'){
         if(e.key === 'Enter'){
             e.preventDefault()
             enviar_prods(document.getElementById('btnEnviar'))
-        }else{}
+        }else if(e.key == 'b' && e.ctrlKey){
+            const btn = document.getElementById('btn_balcao')
+            const cmdIn = document.getElementById('cmdIn')
+            const lblCmd = document.getElementById('lblCmd')
+            const divCli = document.getElementById('div-client')
+
+            if(!btn.checked){
+                btn.checked = true
+                divCli.hidden = 'none'
+                cmdIn.type = 'text'
+                cmdIn.placeholder = 'Nome do Cliente'
+                lblCmd.textContent = 'Nome do Cliente'
+            }else{
+                btn.checked = false
+                divCli.hidden = ''
+                cmdIn.type = 'number'
+                cmdIn.placeholder = 'Comanda/Mesa'
+                lblCmd.textContent = 'Comanda/Mesa'
+            }
+        }
     })
 }
 
@@ -977,7 +997,7 @@ async function get_cmds(){
 
             const tdFunc = document.createElement('td')
             tdFunc.textContent = func
-            tr.appendChild(tdFunc)
+            // tr.appendChild(tdFunc)
 
             const tdBtn = document.createElement('td')
             const divBtn = document.createElement('div')
@@ -1020,7 +1040,6 @@ async function get_cmds(){
             tdBtn.appendChild(divBtn)
             tr.appendChild(tdBtn)
 
-
             tb_cmds.appendChild(tr)
         })
     }else{
@@ -1062,7 +1081,7 @@ async function mount_cmd_panel(dd){
         bdFunc.innerHTML = `${bdFunc.innerHTML} ${func}`
 
         bdVl = document.getElementById('bdVl')
-        bdVl.innerHTML = `${bdVl.innerHTML} ${total.toLocaleString('pt-br', {style:'currency', currency: 'BRL'})}`
+        bdVl.innerHTML = `${bdVl.innerHTML} ${real(total)}`
 
         bdDt = document.getElementById('bdDt')
         bdDt.innerHTML = `${bdDt.innerHTML} ${data.toLocaleDateString('pt-br', {month: 'long', day: 'numeric', hour:'numeric', minute:'numeric'})}`
@@ -1249,7 +1268,7 @@ async function get_vendas(){
             data: tableData,
             layout: "fitColumns",
             responsiveLayout: true,
-            paginationSize: 15,
+            paginationSize: 12,
             paginationCounter:"rows",
             pagination:"local",
             columns: [
@@ -1971,6 +1990,103 @@ if(location.pathname == '/gourmet/config.html'){
         }
         else{toast("Erro interno, nossa equipe já está verificando!")}
     })
+
+    // Estoque
+    document.getElementById('estoque').addEventListener('change', async function(){
+        const res = await change_config('estoque', this.checked)
+        if(res){location.reload()}
+        else{toast("Erro interno, nossa equipe já está verificando!")}
+    })
+    
+    // Lista de Funcionarios
+    get_employees_config()
+    
+    // Evento para novo funcionario
+    document.getElementById("newFunc").addEventListener('submit', async function(e){
+        e.preventDefault()
+
+        const form = new FormData(this)
+
+        const req = await send_form('funcionarios', form, 'POST')
+        const res = await req.json()
+
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
+    })
+
+}
+
+async function get_employees_config(){
+    const req = await request("funcionarios")
+    const res = await req.json()
+    
+    if(req.ok){
+        if(res[0]){
+            const list = document.getElementById('list_funcs')
+            list.innerHTML = ''
+
+            res.forEach(item => {
+                const matricula = item.mat
+                const nome = item.nome
+                const perm = item.perm
+
+                if(matricula !== parseInt(mat)){
+                    const li = document.createElement('li')
+                    li.classList.add(
+                        'list-group-item', 
+                        'list-group-item-action',
+                        'd-flex', 'justify-content-between',
+                        'align-items-center'
+                    )
+
+                    const spam = document.createElement('spam')
+                    spam.classList.add(
+                        'd-flex','flex-column'
+                    )
+                    spam.innerHTML = `
+                    <spam class"fw-bold">${matricula} - ${nome}</spam> 
+                    <spam class="text-secondary">${perm}</spam>`
+
+                    const btng = document.createElement('div')
+                    btng.classList.add('btn-group')
+
+                    const btnPmv = document.createElement("btn")
+                    btnPmv.classList.add("btn", "btn-light")
+                    btnPmv.innerHTML = '<i class="fs-5 bi bi-fingerprint"></i>'
+                    if(perm != 'ADMIN'){
+                        btnPmv.addEventListener("click", async function(){
+                            if(confirm("Deseja mesmo promover a ADMIN?")){
+                                const req = await request("funcionarios", "PATCH", JSON.stringify({mat:matricula}))
+                                const res = await req.json()
+                                if(req.ok){location.reload()}
+                                else{toast(res, 'erro')}
+                            }
+                        })
+                        btng.appendChild(btnPmv)
+                    }
+
+                    const btnRmv = document.createElement("btn")
+                    btnRmv.classList.add("btn", "btn-danger", "fs-5")
+                    btnRmv.innerHTML = icon_lixeira
+                    btnRmv.addEventListener('click', async function(){
+                        if(confirm("Desej remover definitivamente " + nome + '?')){
+                            const req = await request("funcionarios", "DELETE", JSON.stringify({mat:matricula}))
+                            const res = await req.json()
+    
+                            if(req.ok){location.reload()}
+                            else{toast(res, 'erro')}
+                        }
+                    })
+                    btng.appendChild(btnRmv)
+
+                    li.appendChild(spam)
+                    li.appendChild(btng)
+                    list.appendChild(li)
+                }
+            })
+        }
+    }
+
 }
 
 function hide_menus(menu){
@@ -1984,7 +2100,7 @@ if(config_pedidos === 'false'){hide_menus('pedidos')}
 if(config_comandas === 'false'){hide_menus('comandas')}
 
 // Controle de Permissao =================================================================================
-if(window.location.pathname != '/'){
+if(window.location.pathname != '/' && window.location.pathname != '/gourmet/kds.html'){
     get_config()
     const perm = sessionStorage.getItem('permissao')
     if(perm){
@@ -1992,12 +2108,16 @@ if(window.location.pathname != '/'){
             parent.document.getElementById('link_caixa').hidden = 'none'
             parent.document.getElementById('link_relatorios').hidden = 'none'
             parent.document.getElementById('link_config').hidden = 'none'
+            parent.document.getElementById('link_estoque').hidden = 'none'
+            parent.document.getElementById('link_combos').hidden = 'none'
             
             mb_caixa = parent.document.getElementById('mobile_caixa')
             mb_caixa.classList.remove('d-flex')
             mb_caixa.style.display = 'none'
             parent.document.getElementById('mobile_relatorios').hidden = 'none'
             parent.document.getElementById('mobile_config').hidden = 'none'
+            parent.document.getElementById('mobile_estoque').hidden = 'none'
+            parent.document.getElementById('mobile_combos').hidden = 'none'
         }
     }
     if(window.location.pathname !== '/' && !mat){window.location = '/'}

@@ -111,18 +111,18 @@
                 <span class="mb-2">Controle de Funcionarios, desde remoção adicição, promoção!</span>
 
                 <div class="d-flex gap-5 flex-wrap">
-                    <form class="d-flex flex-column gap-2 flex-grow-1" style="flex-basis: 200px;">
+                    <form class="d-flex flex-column gap-2 flex-grow-1" style="flex-basis: 200px;" id="newFunc">
                         <span class="fw-bold"><i class="bi bi-person-add"></i> Cadastrar</span>
                         <div class="form-floating mb-2">
-                            <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="name">
+                            <input type="text" name="nome" class="form-control" placeholder="Nome do Funcionário" autocomplete="name" required>
                             <label for="">Nome do Funcionario</label>
                         </div>
                         <div class="form-floating gap-2 mb-2">
-                            <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="new-password">
+                            <input type="password" name="pwd" class="form-control" placeholder="Crie uma senha" autocomplete="new-password" required>
                             <label for="pwd">Crie uma senha</label>
                         </div>
                         <div class="form-floating gap-2 mb-2">
-                            <select id="permissao" class="form-select" aria-placeholder="Permissão">
+                            <select id="permissao" class="form-select" name="perm" aria-placeholder="Permissão">
                                 <option value="FUNC">
                                     🙍🏻‍♂️ Funcionario
                                 </option>
@@ -134,27 +134,9 @@
                         </div>
                         <button type="submit" class="btn btn-success">Adicionar</button>
                     </form>
-                    <div class="d-flex flex-grow-1" style="flex-basis: 200px;">
-                        <ul class="list-group">
-                            <p>
-                                <i class="bi bi-file-person-fill"></i>
-                                Cadastrados
-                            </p>
-                            <li class="list-group-item d-flex gap-5 justify-content-between">
-                                <p>
-                                    <i class="bi bi-unlock-fill"></i>
-                                    <i class="bi bi-person-fill-check"></i>
-                                </p>
-                                <div class="btn-group">
-                                    <button class="btn btn-light">
-                                        <i class="bi bi-unlock-fill"></i>
-                                    </button>
-                                    <button class="btn btn-danger">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </div>
-                            </li>
-                        </ul>
+                    <div class="d-flex flex-column gap-2 flex-grow-1" style="flex-basis: 200px; max-height: 300px; overflow-y: auto;">
+                        <span class="fw-bold"><i class="bi bi-file-person-fill"></i> Cadastrados</span>
+                        <ul class="list-group" id="list_funcs"></ul>
                     </div>
                 </div>
             </div>
