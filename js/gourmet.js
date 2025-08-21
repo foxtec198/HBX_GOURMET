@@ -1064,7 +1064,7 @@ async function mount_cmd_panel(dd){
             const nome = item['func']
             let valor = item['valor']
             const quant = item['quant']
-            const hora = new Date(item.data).toLocaleTimeString('pt-br', {month:"2-digit", minute:"2-digit"})
+            const hora = new Date(item.data).toLocaleTimeString('pt-br', {hour:"2-digit", minute:"2-digit"})
             const st = item['status']
             const idPedido = item['id_pedido']
 
