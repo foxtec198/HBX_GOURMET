@@ -1526,24 +1526,24 @@ async function create_modal_vendas(){
 
 async function vender(t){
     console.log(cart)
-    // const valor = document.getElementById('valor')
-    // const desconto = document.getElementById('desconto')
-    // const mt_pg = document.getElementById('mt_pg')
+    const valor = document.getElementById('valor')
+    const desconto = document.getElementById('desconto')
+    const mt_pg = document.getElementById('mt_pg')
 
-    // if(valor.value > 0){
-    //     t.innerHTML = spinner
-    //     dd = {
-    //         valor: parseFloat(valor.value),
-    //         desconto: parseFloat(desconto.value, 0),
-    //         mt_pg: mt_pg.value,
-    //         cart: cart,
-    //     }
-    //     const req = await request('vendas', 'POST', JSON.stringify(dd))
-    //     const res = await req.json()
+    if(valor.value > 0){
+        t.innerHTML = spinner
+        dd = {
+            valor: parseFloat(valor.value),
+            desconto: parseFloat(desconto.value, 0),
+            mt_pg: mt_pg.value,
+            cart: cart,
+        }
+        const req = await request('vendas', 'POST', JSON.stringify(dd))
+        const res = await req.json()
     
-    //     if(req.ok){location.reload()}
-    //     else{toast(res, 'erro'); t.textContent = 'Vender'}
-    // }else{toast("Valor Obrigatório", 'erro')}
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro'); t.textContent = 'Vender'}
+    }else{toast("Valor Obrigatório", 'erro')}
 
 }
 
