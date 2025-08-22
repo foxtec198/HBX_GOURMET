@@ -1438,31 +1438,112 @@ async function create_modal_vendas(){
         }
     }
 
+    if(config_combos == 'true'){
+        const req = await request('combos')
+        const res = await req.json()
+
+        if(req.ok){
+            if(res[0]){
+                res.forEach(item => {
+                    const nome = item.nome
+                    const id = item.id
+                    const valorItem = item.valor
+                    const ativo = item.ativo
+
+                    if(ativo){
+                        const tr = document.createElement('tr')
+
+                        const tdProd = document.createElement('td')
+                        tdProd.textContent = nome
+                        tr.appendChild(tdProd)
+
+                        const tdBtn = document.createElement('td')
+
+                        const buttonAdd = document.createElement('button')
+                        buttonAdd.classList.add('btn', 'btn-sm', 'btn-success', 'fw-bold', 'fs-5')
+                        buttonAdd.innerHTML = '<i class="bi bi-plus"></i>'
+                        buttonAdd.addEventListener('click', function(){
+                            if(cont == 0){carrinho.innerHTML = ''}
+
+                            const li = document.createElement('li')                        
+                            li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                            
+                            const span = document.createElement('span')
+                            span.textContent = nome
+                            
+                            const btnRm = document.createElement('button')
+                            btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
+                            btnRm.innerHTML = icon_lixeira
+                            btnRm.addEventListener('click', function(){
+                                carrinho.removeChild(li)
+                                valor -= valorItem
+                                valorIn.value = valor
+                                cart[id].quantidade -= 1
+                                cart[id].valor -= valorItem
+                                if(cart[id].quantidade == 0){delete cart[id]}
+                                vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                                atualizar_desconto(descIn)
+                            })
+                            
+                            li.appendChild(span)
+                            li.appendChild(btnRm)
+                            
+                            carrinho.appendChild(li)
+
+                            valor += valorItem
+                            valorIn.value = valor
+
+                            vl_pg.textContent = 'Valor a Pagar: ' + real(valorIn.value)
+                            atualizar_desconto(descIn)
+
+                            if(cart[id]){
+                                cart[id].quantidade += 1
+                                cart[id].valor += valorItem
+                            }else{
+                                cart[id] = {
+                                    nome: nome,
+                                    valor: valorItem,
+                                    quantidade: 1
+                                }
+                            }
+
+                            cont += 1
+                        })
+                        tdBtn.appendChild(buttonAdd)
+                        tr.appendChild(tdBtn)
+                        
+
+                        tbProds.appendChild(tr)
+                    }
+                })
+            }
+        }
+    }
+
     modal = get_modal('modal_nova_venda')
     modal.show()
-
-
 }
 
 async function vender(t){
-    const valor = document.getElementById('valor')
-    const desconto = document.getElementById('desconto')
-    const mt_pg = document.getElementById('mt_pg')
+    console.log(cart)
+    // const valor = document.getElementById('valor')
+    // const desconto = document.getElementById('desconto')
+    // const mt_pg = document.getElementById('mt_pg')
 
-    if(valor.value > 0){
-        t.innerHTML = spinner
-        dd = {
-            valor: parseFloat(valor.value),
-            desconto: parseFloat(desconto.value, 0),
-            mt_pg: mt_pg.value,
-            cart: cart,
-        }
-        const req = await request('vendas', 'POST', JSON.stringify(dd))
-        const res = await req.json()
+    // if(valor.value > 0){
+    //     t.innerHTML = spinner
+    //     dd = {
+    //         valor: parseFloat(valor.value),
+    //         desconto: parseFloat(desconto.value, 0),
+    //         mt_pg: mt_pg.value,
+    //         cart: cart,
+    //     }
+    //     const req = await request('vendas', 'POST', JSON.stringify(dd))
+    //     const res = await req.json()
     
-        if(req.ok){location.reload()}
-        else{toast(res, 'erro'); t.textContent = 'Vender'}
-    }else{toast("Valor Obrigatório", 'erro')}
+    //     if(req.ok){location.reload()}
+    //     else{toast(res, 'erro'); t.textContent = 'Vender'}
+    // }else{toast("Valor Obrigatório", 'erro')}
 
 }
 
