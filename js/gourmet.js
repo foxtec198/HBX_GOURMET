@@ -7,8 +7,10 @@ const spinner = '<span class="spinner-border spinner-border-sm text-light" role=
 const green = '#5E8B60'
 const icon_lixeira = '<i class="bi bi-trash2-fill"></i>'
 const icon_edit = '<i class="bi bi-pencil-square"></i>'
+const icon_eye = '<i class="bi bi-eye-fill"></i>'
 const loader = '<div class="loader"> <div class="justify-content-center jimu-primary-loading"></div> </div>' 
 const cart = new Object;
+const prods_combo = new Object;
 
 // Variaveis de Usuario =================================================================================
 const mat = sessionStorage.getItem('mat') 
@@ -55,58 +57,6 @@ function imgPreview(file, prev){ // Atualiza o preview das Imagens
             preview.src = server + 'img/blank.png'
         }
     });
-
-}
-
-function ed_calc_lucro(){ // Calcula o lucro auto da Edição de Produto
-    const valorIn = document.getElementById('ed_valor')
-    const valor = valorIn.value
-
-    const custoIn = document.getElementById('ed_custo')
-    const custo = custoIn.value
-
-    const btn = document.getElementById('btnEditProd')
-
-    const lucro = valor - custo
-    const mlucro = ((valor - custo)/ custo) * 100
-
-    if(lucro <= 0){
-        toast("Valor não deve ser menor ou igual que o lucro")
-        btn.disabled = true
-        document.getElementById('ed_lucro').value = ''
-        document.getElementById('ed_mlucro').value = ''
-    }else{
-        document.getElementById('ed_lucro').value = lucro
-        document.getElementById('ed_mlucro').value = mlucro.toFixed(1) + '%'
-        btn.disabled = false
-    }
-
-
-}
-
-function calc_lucro(){ // Calcula o lucro auto de um Novo Produto
-    const valorIn = document.getElementById('valor')
-    const valor = valorIn.value
-
-    const custoIn = document.getElementById('custo')
-    const custo = custoIn.value
-
-    const btn = document.getElementById('btnNewProd')
-
-    const lucro = valor - custo
-    const mlucro = ((valor - custo)/ custo) * 100
-
-    if(lucro <= 0){
-        toast("Valor não deve ser menor ou igual que o lucro")
-        btn.disabled = true
-        document.getElementById('lucro').value = ''
-        document.getElementById('mlucro').value = ''
-    }else{
-        document.getElementById('lucro').value = lucro
-        document.getElementById('mlucro').value = mlucro.toFixed(1) + '%'
-        btn.disabled = false
-    }
-
 
 }
 
@@ -1223,14 +1173,21 @@ async function get_vendas(){
             const datt = new Date(item['data']).toLocaleDateString('pt-br', {month: 'numeric'})
             const datA = new Date().toLocaleDateString('pt-br', {month: 'numeric'})
             if(datt === datA){
+                let desconto = (item.valor_real - item.valor_pago)
+                if(desconto == 0){desconto = '<span style="font-size: 14px;" class="badge w-100 text-bg-success">Nenhum</span>'}
+                else{desconto = `<span style="font-size: 14px;" class="badge w-100 text-bg-primary">${real(desconto)}</span>`}
+
                 tableData.push({
-                    cmd: item['cmd'],
-                    func: item['funcionario'],
+                    cmd: item.cmd,
+                    func: item.funcionario,
                     data: new Date(item['data']).toLocaleDateString('pt-br', {day:'numeric', month:'long', hour:'numeric', minute:'numeric'}),
                     valor: real(item['valor_real']),
+                    valor_pago: real(item['valor_pago']),
                     cliente: item['cliente'],
+                    desconto: desconto,
                     btn: `
                     <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="open_sell(this, ${item.id}, '${item.cmd}')">${icon_eye}</button>
                         <button class="btn btn-danger" onclick="excluir_venda(${item['id']})">${icon_lixeira}</button>
                     </div>`
                 })
@@ -1244,12 +1201,14 @@ async function get_vendas(){
             paginationCounter:"rows",
             pagination:"local",
             columns: [
-                {title: "Comanda", field: "cmd", responsive: 0, minWidth: 100},
-                {title: "Funcionario", field: "func", responsive: 6, minWidth: 100},
-                {title:"Data da venda", field:"data", hozAlign:"center", responsive: 0, minWidth: 100},
-                {title:"Valor", field:"valor", hozAlign:"center", responsive: 0, minWidth: 100},   
-                {title:"Cliente", field:"cliente", responsive: 4, minWidth: 100},
-                {title:"Ações", field:"btn", hozAlign:"center", responsive: 0, minWidth: 100, formatter:"html"}
+                {title: `<i class="bi bi-card-list"></i> Cmd`, field: "cmd", responsive: 0, minWidth: 80},
+                {title: `<i class="bi bi-people-fill"></i> Cliente`, field:"cliente", responsive: 0, minWidth: 120},
+                {title: `<i class="bi bi-coin"></i> Valor`, field:"valor", hozAlign:"center", responsive: 0, minWidth: 100},   
+                {title: `<i class="bi bi-cash-stack"></i> Pago`, field:"valor_pago", hozAlign:"center", responsive: 0, minWidth: 100},   
+                {title: `<i class="bi bi-percent"></i> Desconto`, field:"desconto", hozAlign:"center", responsive: 0, minWidth: 120, formatter:"html"},   
+                {title: `<i class="bi bi-calendar-fill"></i> Data`, field:"data", hozAlign:"center", responsive: 0, minWidth: 150},
+                {title: `<i class="bi bi-person-badge-fill"></i> Atendente`, field: "func", responsive: 0, minWidth: 130},
+                {title: `<i class="bi bi-three-dots-vertical"></i> Ações`, field:"btn", hozAlign:"center", responsive: 0, minWidth: 100, formatter:"html"}
             ]
         });
     }
@@ -1525,7 +1484,6 @@ async function create_modal_vendas(){
 }
 
 async function vender(t){
-    console.log(cart)
     const valor = document.getElementById('valor')
     const desconto = document.getElementById('desconto')
     const mt_pg = document.getElementById('mt_pg')
@@ -1544,6 +1502,40 @@ async function vender(t){
         if(req.ok){location.reload()}
         else{toast(res, 'erro'); t.textContent = 'Vender'}
     }else{toast("Valor Obrigatório", 'erro')}
+
+}
+
+async function open_sell(t, id, cmd){
+    const req = await request(`saida?id=${id}`)
+    const res = await req.json()
+    t.innerHTML = spinner
+
+    if(req.ok){
+        const dv = document.createElement('div')
+        const ul = document.createElement('ul')
+        ul.classList.add('list-group', 'mb-3')
+
+        res.forEach(item=>{
+            const li = document.createElement('li')
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
+
+            spanNome = document.createElement('span')
+            spanNome.textContent = item.nome
+            li.appendChild(spanNome)
+
+            spanQuant = document.createElement('span')
+            spanQuant.classList.add('badge', 'text-bg-secondary', 'rounded-pill', 'fs-6', 'fw-bold')
+            spanQuant.textContent = `${item.quantidade}x`
+            li.appendChild(spanQuant)
+
+            ul.appendChild(li)
+        })
+        
+        dv.appendChild(ul)
+        modal = create_modal('modal_venda_' + id, `Itens da Venda - ${id}, Comanda: ${cmd}`, dv.innerHTML, 'center', 'xl')
+        modal.show()
+        t.innerHTML = icon_eye
+    }else{toast(res, 'erro'); t.innerHTML = icon_eye}
 
 }
 
@@ -1755,6 +1747,58 @@ if(formE){
     })
 }
 
+function ed_calc_lucro(){ // Calcula o lucro auto da Edição de Produto
+    const valorIn = document.getElementById('ed_valor')
+    const valor = valorIn.value
+
+    const custoIn = document.getElementById('ed_custo')
+    const custo = custoIn.value
+
+    const btn = document.getElementById('btnEditProd')
+
+    const lucro = valor - custo
+    const mlucro = ((valor - custo)/ custo) * 100
+
+    if(lucro < 0){
+        toast("Valor não deve ser menor ou igual que o lucro")
+        btn.disabled = true
+        document.getElementById('ed_lucro').value = ''
+        document.getElementById('ed_mlucro').value = ''
+    }else{
+        document.getElementById('ed_lucro').value = lucro
+        document.getElementById('ed_mlucro').value = mlucro.toFixed(1) + '%'
+        btn.disabled = false
+    }
+
+
+}
+
+function calc_lucro(){ // Calcula o lucro auto de um Novo Produto
+    const valorIn = document.getElementById('valor')
+    const valor = valorIn.value
+
+    const custoIn = document.getElementById('custo')
+    const custo = custoIn.value
+
+    const btn = document.getElementById('btnNewProd')
+
+    const lucro = valor - custo
+    const mlucro = ((valor - custo)/ custo) * 100
+
+    if(lucro < 0){
+        toast("Valor não deve ser menor ou igual que o lucro")
+        btn.disabled = true
+        document.getElementById('lucro').value = ''
+        document.getElementById('mlucro').value = ''
+    }else{
+        document.getElementById('lucro').value = lucro
+        document.getElementById('mlucro').value = mlucro.toFixed(1) + '%'
+        btn.disabled = false
+    }
+
+
+}
+
 // Categorias =================================================================================
 async function get_categorias(){
     const req = await request('categorias')
@@ -1842,7 +1886,6 @@ async function get_combos() {
     if(req.ok){
         if(res[0]){
             res.forEach(item => {
-                console.log(item)
                 const id = item.id
                 const img = item.img
                 const nome = item.nome
@@ -1908,8 +1951,14 @@ async function get_combos() {
                 const btnRemover = document.createElement('button')
                 btnRemover.classList.add('btn', 'btn-danger')
                 btnRemover.innerHTML = icon_lixeira
-                btnRemover.addEventListener('click', function(){
+                btnRemover.addEventListener('click', async function(){
+                    if(confirm("Deseja excluir este combo permanentemente?")){
+                        const req = await request('combos', 'DELETE', JSON.stringify({id:id}))
+                        const res = await req.json()
 
+                        if(req.ok){location.reload()}
+                        else{toast(res, 'erro')}
+                    }
                 })
 
                 const btnEditar = document.createElement('button')
@@ -1955,6 +2004,88 @@ async function get_combos() {
         }
     }else{toast(res, 'erro')}
     
+}
+
+async function get_prods_combos(){
+    const req = await request('produtos')
+    const res = await req.json()
+    const list_prods = document.getElementById('combo_prods')
+    const list_adds = document.getElementById('combo_items_add')
+
+    if (req.ok){
+        res.forEach(item => {
+            const nome = item.nome
+            const id = item.id
+
+            const li = document.createElement('li')
+            li.classList.add('list-group-item')
+
+            const div = document.createElement('div')
+            div.classList.add('d-flex', 'justify-content-between', 'align-items-center')
+            
+            const span = document.createElement('spam')
+            
+            span.textContent = nome
+            const btnAdd = document.createElement('button')
+
+            btnAdd.classList.add('btn', 'btn-sm', 'btn-success')
+            btnAdd.innerHTML = "<i class='bi bi-plus'></i>"
+            btnAdd.type = 'button'
+            btnAdd.addEventListener('click', function(){
+                const li = document.createElement('li')
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between')
+                
+                const span = document.createElement('span')
+                span.textContent = nome
+
+                const btnRm = document.createElement('button')
+                btnRm.classList.add('btn', 'btn-sm', 'btn-danger')
+                btnRm.innerHTML = icon_lixeira
+                btnRm.type = 'button'
+                
+                btnRm.addEventListener('click', function(){
+                    list_adds.removeChild(li)
+                    prods_combo[id].quantidade -= 1
+                    if(prods_combo[id].quantidade == 0){delete prods_combo[id]}
+                })
+
+                if(prods_combo[id]){
+                    prods_combo[id].quantidade += 1
+                }else{
+                    prods_combo[id] = {
+                        nome: nome,
+                        quantidade: 1
+                    }
+                }
+                li.appendChild(span)
+                li.appendChild(btnRm)
+                list_adds.appendChild(li)
+            })
+
+            div.appendChild(span)
+            div.appendChild(btnAdd)
+
+            li.appendChild(div)
+            list_prods.appendChild(li)
+        })
+
+    }
+}
+
+const formNewCombo = document.getElementById('form_new_combo')
+if(formNewCombo){
+    formNewCombo.addEventListener('submit', async function(e){
+        e.preventDefault() 
+
+        const formN = new FormData(this)
+        formN.append('items', JSON.stringify(prods_combo))
+
+        const req = await send_form('combos', formN)
+        const res = await req.json()
+
+        if(req.ok){location.reload()}
+        else{toast(res, 'erro')}
+    })
 }
 
 // Configurações =================================================================================

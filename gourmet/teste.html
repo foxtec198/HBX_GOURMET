@@ -14,7 +14,58 @@
     <link rel="stylesheet" href="/css/gourmet.css">
 </head>
 <body data-bs-theme="dark">
-    
+    <div class="d-flex p-2 gap-2 card flex-column">
+        <span class="fs-5"><i class="bi bi-diagram-3-fill"></i> Novo Combo</span>
+        <form class="d-flex flex-column gap-2" id="form_new_combo" enctype="multipart/form-data">
+            <div class="d-flex">
+                <img id="previewEditProd" name="previewEditProd" src="https://api.hubbix.com.br/img/blank.png" width="100wh" class="img-fluid img-thumbnail" alt="Imagem do Produto">
+                <div class="mb-3 flex-grow-1 p-2" style="flex-basis: 200px;">
+                    <input name="img" class="form-control" type="file" accept="image/*" id="editProdIn">
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                    <input type="text" class="form-control" name="sku" placeholder="SKU ou EAN" autocomplete="off">
+                    <label for="nome_combo">SKU ou EAN</label>
+                </div>
+                <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                    <input type="text" class="form-control" name="nome" placeholder="Nome do combo" autocomplete="off">
+                    <label for="nome_combo">Nome do combo *</label>
+                </div>
+                <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                    <input type="text" class="form-control money-mask" name="nome" placeholder="Custo do combo" autocomplete="off">
+                    <label for="">Custo do combo *</label>
+                </div>
+                <div class="form-floating flex-grow-1" style="flex-basis: 300px;">
+                    <input type="text" class="form-control money-mask" name="custo" placeholder="Valor do combo" autocomplete="off">
+                    <label for="valor_combo">Valor do combo *</label>
+                </div>
+            </div>
+            <div class="d-flex flex-wrapm gap-2">
+                <div class="d-flex card flex-grow-1" style="flex-basis: 300px;">
+                    <div class="card-header">
+                        Adicionar Itens
+                    </div>
+                    <div class="card-body" id="combo_prods">
+                    </div>
+                </div>
+                <div class="d-flex card flex-grow-1" style="flex-basis: 300px;">
+                    <div class="card-header">
+                        Produtos do Combo
+                    </div>
+                    <div class="card-body" id="combo_items_add">
+                    </div>
+                </div>
+            </div>
+            <div class="form-check align-self-end">
+                <input class="form-check-input" type="checkbox" name="preparo" id="preparo">
+                <label class="form-check-label" for="checkDefault">
+                    Necessita de Preparo?
+                </label>
+            </div>
+            <button class="btn btn-success align-self-end" type="submit"><i class="bi bi-save-fill"></i> Salvar Combo</button>
+        </form>
+    </div>
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
