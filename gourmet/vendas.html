@@ -15,7 +15,7 @@
 </head>
 <body data-bs-theme="dark">
     <div class="modal fade" id="modal_nova_venda" data-bs-keyboard="true" tabindex="-1">
-            <div class="modal-dialog modal-fullscreen">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header d-flex justify-content-between">
                     <h5 class="modal-title">Nova Venda</h5>
@@ -73,6 +73,9 @@
                                         <label for="desconto">Desconto</label>
                                     </div>
                                 </div>
+                                <div class="alert alert-info" role="alert">
+                                    O valor de Venda é calculado de forma automática!
+                                </div>
                                 <div class="form-floating">
                                     <select class="form-select" aria-placeholder="Método de Pagamento" id="mt_pg">
                                         <option value="debito">Débito</option>
@@ -81,9 +84,6 @@
                                         <option value="dinheiro">Dinheiro</option>
                                     </select>
                                     <label for="mt_pg">Método de Pagamento</label>
-                                </div>
-                                <div class="alert alert-info" role="alert">
-                                    O valor de Venda é calculado de forma automática!
                                 </div>
                             </div>
                         </div>
