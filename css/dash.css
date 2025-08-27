@@ -11,9 +11,7 @@ body, html {
     border-radius: 12px;
     box-shadow: 1px 1px 5px #fff;
 }
-.card-sell-header{
-    justify-content: space-between;
-}
+
 .select-sell{
     background: #333;
     border: none;
@@ -26,4 +24,9 @@ body, html {
     background-color: #222;
     box-shadow: 1px 1px 5px #fff;
     border-radius: 12px;
+}
+
+.graph_div{
+    max-width: 500px;
+    /* min-width: 300px; */
 }

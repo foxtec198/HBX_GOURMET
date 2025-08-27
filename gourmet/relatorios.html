@@ -18,27 +18,27 @@
     <div class="d-flex flex-column gap-2 p-4">
         <div class="d-flex gap-3 flex-wrap">
             <!-- div for stats sells -->
-            <div class="card-sell d-flex flex-column p-4 flex-grow-1" style="flex-basis: 400px;">
-                <div class="card-sell-header d-flex">
+            <div class="card-sell d-flex flex-column justify-content-between p-4 flex-grow-1" style="flex-basis: 400px;">
+                <div class="d-flex justify-content-between">
                     <div class="d-flex flex-column">
                         <span class="fs-5 fw-bold">Estatisticas de Vendas</span>
-                        <span class="fs-6 subtitulo">Atualizado a 0 min</span>
+                        <span class="fs-6 subtitulo" id="timeAtu">Atualizado a 0 min</span>
                     </div>
-                    <select class="select-sell align-self-center p-1">
-                        <option value="este mes">Mensal</option>
-                    <option value="hoje">Diário</option>
-                    <option value="esto ano">Anual</option>
-                </select>
-            </div>
-            <div class="card-sell-body d-flex p-4 flex-row gap-2 mt-2">
-                <div class="d-flex flex-column">
-                    <span class="fs-6 subtitulo">Vendas</span>
-                    <span class="fw-bold fs-2">R$ 1.250</span>
+                    <select class="select-sell align-self-center p-1" onchange="get_relatorios(this.value)">
+                        <option value="mes">Mensal</option>
+                        <option value="hoje">Diário</option>
+                        <option value="ano">Anual</option>
+                    </select>
                 </div>
-                <div class="graph_div flex-grow-1">
-                    <canvas class="d-flex w-100" id="graph_sell"></canvas>
+                <div class="d-flex justify-content-center flex-wrap p-4 flex-row gap-2 mt-2">
+                    <div class="d-flex flex-column flex-grow-1">
+                        <span class="fs-6 subtitulo">Vendas</span>
+                        <span class="fw-bold fs-2" id="valorTotal"></span>
+                    </div>
+                    <div class="graph_div">
+                        <canvas class="d-flex" id="graph_sell"></canvas>
+                    </div>
                 </div>
-            </div>
             </div>
 
             <!-- div for stats payments -->
@@ -50,7 +50,9 @@
                         <span class="fs-6 fw-bold">Débito</span>
                     </div>
                     <div class="d-flex justify-content-between gap-2 align-items-start align-self-end">
-                        <span class="fs-2 fw-bold">R$ 800</span>
+                        <span class="fs-2 fw-bold" id="debito">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                         <span class="badge text-bg-success fs-6 mt-2">50%</span>
                     </div>
                 </div>
@@ -62,7 +64,9 @@
                         <span class="fs-6 fw-bold">Crédito</span>
                     </div>
                     <div class="d-flex justify-content-between gap-2 align-items-start align-self-end">
-                        <span class="fs-2 fw-bold">R$ 500</span>
+                        <span class="fs-2 fw-bold" id="credito">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                         <span class="badge text-bg-success fs-6 mt-2">30%</span>
                     </div>
                 </div>
@@ -74,7 +78,9 @@
                         <span class="fs-6 fw-bold">PIX</span>
                     </div>
                     <div class="d-flex justify-content-between gap-2 align-items-start align-self-end">
-                        <span class="fs-2 fw-bold">R$ 250</span>
+                        <span class="fs-2 fw-bold" id="pix">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                         <span class="badge text-bg-primary fs-6 mt-2">15%</span>
                     </div>
                 </div>
@@ -86,7 +92,9 @@
                         <span class="fs-6 fw-bold">Dinheiro</span>
                     </div>
                     <div class="d-flex justify-content-between gap-2 align-items-start align-self-end">
-                        <span class="fs-2 fw-bold">R$ 100</span>
+                        <span class="fs-2 fw-bold" id="dinheiro">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                         <span class="badge text-bg-danger fs-6 mt-2">10%</span>
                     </div>
                 </div>
@@ -98,13 +106,56 @@
                         <span class="fs-6 fw-bold">Ticket Médio</span>
                     </div>
                     <div class="d-flex justify-content-between gap-2 align-items-start align-self-end">
-                        <span class="fs-2 fw-bold">R$ 800</span>
+                        <span class="fs-2 fw-bold" id="tcmedio">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                         <div class="d-flex flex-column" style="line-height: 10px;">
                             <span class="subtitulo">Ticket por Cupom</span>
-                            <span class="badge text-bg-success fs-6 mt-2">1.25 Un.</span>
+                            <span class="badge text-bg-success fs-6 mt-2" id="tcpc">
+                                <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                            </span>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="d-flex gap-3 mt-2 flex-wrap">
+            <!-- Estoque em Alerta -->
+            <div class="cardd d-flex flex-column p-4 flex-grow-1" style="max-height: 400px; overflow-y: auto;">
+                <div class="d-flex mb-3 gap-4 justify-content-between">
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="material-icons">warning</span>
+                        <span class="fs-6 fw-bold">Estoque em Alerta.</span>
+                    </div>
+                    <button class="btn btn-outline-light">
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="material-icons">save</span>
+                            <span class="fs-6 fw-bold">Exportar.</span>
+                        </div>
+                    </button>
+                </div>
+                <ul class="list-group" id="list_alerta">
+
+                </ul>
+            </div>
+
+            <!-- Estoque Negativo -->
+            <div class="cardd d-flex flex-column p-4 flex-grow-1" style="max-height: 400px; overflow-y: auto;">
+                <div class="d-flex mb-3 gap-4 justify-content-between">
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="material-icons">category</span>
+                        <span class="fs-6 fw-bold">Estoque Excedido.</span>
+                    </div>
+                    <button class="btn btn-outline-light">
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="material-icons">save</span>
+                            <span class="fs-6 fw-bold">Exportar.</span>
+                        </div>
+                    </button>
+                </div>
+                <ul class="list-group" id="list_negativo">
+
+                </ul>
             </div>
         </div>
     </div>
@@ -116,39 +167,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/js/gourmet.js"></script>
     <script>
-        const ctx = document.getElementById('graph_sell');
-        const js = {
-            'JANEIRO': 2500,
-            'FEVEREIRO': 1250,
-        }
-
-        new Chart(ctx, {
-            type: 'bar', // tipo de gráfico
-            data: {
-                labels: Object.keys(js), // meses
-                datasets: [{
-                    data: Object.values(js), // valores
-                    backgroundColor: ['#606c38', '#283618'], // cores das barras
-                    borderWidth: 0,
-                    borderRadius: 20 // 🔥 deixa as barras arredondadas
-                }]
-                },
-                options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false // remove legenda
-                    },
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { display: false }, 
-                    }
-                }
-            }
-        });
-
+        get_relatorios()
     </script>
 </body>
 </html>

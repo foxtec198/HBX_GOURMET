@@ -2287,6 +2287,80 @@ function hide_menus(menu){
     mb.classList.remove('d-flex')
     mb.style.display = 'none'
 }
+// Relatorios =================================================================================
+let chartSell;
+async function get_relatorios(filter='mes'){
+    const req = await request('relatorios', 'POST', JSON.stringify({filter:filter}))
+    const res = await req.json()
+
+    if(req.ok){
+        document.getElementById('valorTotal').textContent = real(res.faturamento)
+        const ctx = document.getElementById('graph_sell');
+
+        if(chartSell){chartSell.destroy()}
+
+        chartSell = new Chart(ctx, {
+            type: 'bar', // tipo de gráfico
+            data: {
+                labels: Object.keys(res.st_vendas), // meses
+                datasets: [{
+                    data: Object.values(res.st_vendas), // valores
+                    backgroundColor: ['#606c38', '#283618'], // cores das barras
+                    borderWidth: 0,
+                    borderRadius: 20 // 🔥 deixa as barras arredondadas
+                }]
+                },
+                options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false // remove legenda
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { display: false }, 
+                    }
+                }
+            }
+        });
+
+        document.getElementById('debito').textContent = real(res.pagamentos.debito)
+        document.getElementById('credito').textContent = real(res.pagamentos.credito)
+        document.getElementById('pix').textContent = real(res.pagamentos.pix)
+        document.getElementById('dinheiro').textContent = real(res.pagamentos.dinheiro)
+        document.getElementById('tcmedio').textContent = real(res.ticket_medio)
+        document.getElementById('tcpc').textContent = res.ticket_pc + ' Un.'
+
+        res.estoque_alerta.forEach(item => {
+            const li = document.createElement('li')
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
+            li.textContent = item.nome
+
+            const span = document.createElement('span')
+            span.classList.add('badge', 'text-bg-danger', 'rounded-pill', 'fs-6', 'fw-bold')
+            span.textContent = item.quantidade
+            li.appendChild(span)
+
+            document.getElementById('list_alerta').appendChild(li)
+        })
+
+        res.produtos_zerados.forEach(item => {
+            const li = document.createElement('li')
+            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
+            li.textContent = item.nome
+
+            const span = document.createElement('span')
+            span.classList.add('badge', 'text-bg-danger', 'rounded-pill', 'fs-6', 'fw-bold')
+            span.textContent = item.quantidade
+            li.appendChild(span)
+
+            document.getElementById('list_negativo').appendChild(li)
+        })
+    }
+}
+
 
 // Controle de Eventos =================================================================================
 if(window.location.pathname != '/' && window.location.pathname != '/gourmet/kds.html'){
