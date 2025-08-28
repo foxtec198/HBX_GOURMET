@@ -26,7 +26,7 @@
                     </div>
                     <select class="select-sell align-self-center p-1" onchange="get_relatorios(this.value)">
                         <option value="mes">Mensal</option>
-                        <option value="hoje">Diário</option>
+                        <option value="dia">Diário</option>
                         <option value="ano">Anual</option>
                     </select>
                 </div>
@@ -44,7 +44,7 @@
             <!-- div for stats payments -->
             <div class="d-flex gap-3 flex-wrap flex-grow-1" style="flex-basis: 400px;">
                 <!-- Card Debito -->
-                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 300px;">
+                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 200px;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-icons">credit_card</span>
                         <span class="fs-6 fw-bold">Débito</span>
@@ -53,12 +53,14 @@
                         <span class="fs-2 fw-bold" id="debito">
                             <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                         </span>
-                        <span class="badge text-bg-success fs-6 mt-2">50%</span>
+                        <span class="badge fs-6 mt-2" id="perc_debito">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                     </div>
                 </div>
 
                 <!-- Card Crédito -->
-                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 300px;">
+                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 200px;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-icons">account_balance</span>
                         <span class="fs-6 fw-bold">Crédito</span>
@@ -67,12 +69,14 @@
                         <span class="fs-2 fw-bold" id="credito">
                             <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                         </span>
-                        <span class="badge text-bg-success fs-6 mt-2">30%</span>
+                        <span class="badge fs-6 mt-2" id="perc_credito">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                     </div>
                 </div>
 
                 <!-- Card PIX -->
-                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 300px;">
+                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 200px;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-icons">pix</span>
                         <span class="fs-6 fw-bold">PIX</span>
@@ -81,12 +85,14 @@
                         <span class="fs-2 fw-bold" id="pix">
                             <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                         </span>
-                        <span class="badge text-bg-primary fs-6 mt-2">15%</span>
+                        <span class="badge fs-6 mt-2" id="perc_pix">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                     </div>
                 </div>
 
                 <!-- Card Dinheiro -->
-                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 300px;">
+                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 200px;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-icons">request_page</span>
                         <span class="fs-6 fw-bold">Dinheiro</span>
@@ -95,12 +101,14 @@
                         <span class="fs-2 fw-bold" id="dinheiro">
                             <span class="spinner-border spinner-border-sm text-light" role="status"></span>
                         </span>
-                        <span class="badge text-bg-danger fs-6 mt-2">10%</span>
+                        <span class="badge fs-6 mt-2" id="perc_dinheiro">
+                            <span class="spinner-border spinner-border-sm text-light" role="status"></span>
+                        </span>
                     </div>
                 </div>
 
                 <!-- Card Ticket -->
-                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 300px;">
+                <div class="cardd d-flex justify-content-between flex-column flex-grow-1" style="flex-basis: 200px;">
                     <div class="d-flex align-items-center gap-2">
                         <span class="material-icons">confirmation_number</span>
                         <span class="fs-6 fw-bold">Ticket Médio</span>

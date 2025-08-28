@@ -2327,12 +2327,43 @@ async function get_relatorios(filter='mes'){
         });
 
         document.getElementById('debito').textContent = real(res.pagamentos.debito)
+        const pd = res.pagamentos.debito*100 / res.faturamento || 0
+        const pcD = document.getElementById('perc_debito')
+        if(pd >= 50){pcD.classList.add("text-bg-success")}
+        else if(pd >= 30 && pd < 50){pcD.classList.add("text-bg-primary")}
+        else if(pd < 30){pcD.classList.add("text-bg-danger")}
+        pcD.textContent = pd.toFixed(1) + '%'
+
         document.getElementById('credito').textContent = real(res.pagamentos.credito)
+        const pc = res.pagamentos.credito*100 / res.faturamento || 0
+        const pcC = document.getElementById('perc_credito')
+        if(pc >= 50){pcC.classList.add("text-bg-success")} 
+        else if(pc >= 30 && pc < 50){pcC.classList.add("text-bg-primary")}
+        else if(pc < 30){pcC.classList.add("text-bg-danger")}
+        pcC.textContent = pc.toFixed(1) + '%'
+
         document.getElementById('pix').textContent = real(res.pagamentos.pix)
+        const pp = res.pagamentos.pix*100 / res.faturamento || 0
+        const pcP = document.getElementById('perc_pix')
+        if(pp >= 50){pcP.classList.add("text-bg-success")}
+        else if(pp >= 30 && pp < 50){pcP.classList.add("text-bg-primary")}
+        else if(pp < 30){pcP.classList.add("text-bg-danger")}
+        pcP.textContent = pp.toFixed(1) + '%'
+
         document.getElementById('dinheiro').textContent = real(res.pagamentos.dinheiro)
+        const pdi = res.pagamentos.dinheiro*100 / res.faturamento || 0
+        const pcDi = document.getElementById('perc_dinheiro')
+        if(pdi >= 50){pcDi.classList.add("text-bg-success")}
+        else if(pdi >= 30 && pdi < 50){pcDi.classList.add("text-bg-primary")}
+        else if(pdi < 30){pcDi.classList.add("text-bg-danger")}
+        pcDi.textContent = pdi.toFixed(1) + '%'
+
         document.getElementById('tcmedio').textContent = real(res.ticket_medio)
+
         document.getElementById('tcpc').textContent = res.ticket_pc + ' Un.'
 
+        const pa = document.getElementById('list_alerta')
+        pa.innerHTML = ''
         res.estoque_alerta.forEach(item => {
             const li = document.createElement('li')
             li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
@@ -2343,9 +2374,11 @@ async function get_relatorios(filter='mes'){
             span.textContent = item.quantidade
             li.appendChild(span)
 
-            document.getElementById('list_alerta').appendChild(li)
+            pa.appendChild(li)
         })
 
+        const pz = document.getElementById('list_negativo')
+        pz.innerHTML = ''
         res.produtos_zerados.forEach(item => {
             const li = document.createElement('li')
             li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
@@ -2356,7 +2389,7 @@ async function get_relatorios(filter='mes'){
             span.textContent = item.quantidade
             li.appendChild(span)
 
-            document.getElementById('list_negativo').appendChild(li)
+            pz.appendChild(li)
         })
     }
 }
