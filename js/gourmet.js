@@ -2329,6 +2329,7 @@ async function get_relatorios(filter='mes'){
         document.getElementById('debito').textContent = real(res.pagamentos.debito)
         const pd = res.pagamentos.debito*100 / res.faturamento || 0
         const pcD = document.getElementById('perc_debito')
+        pd.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         if(pd >= 50){pcD.classList.add("text-bg-success")}
         else if(pd >= 30 && pd < 50){pcD.classList.add("text-bg-primary")}
         else if(pd < 30){pcD.classList.add("text-bg-danger")}
@@ -2337,6 +2338,7 @@ async function get_relatorios(filter='mes'){
         document.getElementById('credito').textContent = real(res.pagamentos.credito)
         const pc = res.pagamentos.credito*100 / res.faturamento || 0
         const pcC = document.getElementById('perc_credito')
+        pcC.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         if(pc >= 50){pcC.classList.add("text-bg-success")} 
         else if(pc >= 30 && pc < 50){pcC.classList.add("text-bg-primary")}
         else if(pc < 30){pcC.classList.add("text-bg-danger")}
@@ -2345,6 +2347,7 @@ async function get_relatorios(filter='mes'){
         document.getElementById('pix').textContent = real(res.pagamentos.pix)
         const pp = res.pagamentos.pix*100 / res.faturamento || 0
         const pcP = document.getElementById('perc_pix')
+        pcP.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         if(pp >= 50){pcP.classList.add("text-bg-success")}
         else if(pp >= 30 && pp < 50){pcP.classList.add("text-bg-primary")}
         else if(pp < 30){pcP.classList.add("text-bg-danger")}
@@ -2352,6 +2355,7 @@ async function get_relatorios(filter='mes'){
 
         document.getElementById('dinheiro').textContent = real(res.pagamentos.dinheiro)
         const pdi = res.pagamentos.dinheiro*100 / res.faturamento || 0
+        pdi.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         const pcDi = document.getElementById('perc_dinheiro')
         if(pdi >= 50){pcDi.classList.add("text-bg-success")}
         else if(pdi >= 30 && pdi < 50){pcDi.classList.add("text-bg-primary")}
