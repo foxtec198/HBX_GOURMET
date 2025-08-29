@@ -2355,8 +2355,8 @@ async function get_relatorios(filter='mes'){
 
         document.getElementById('dinheiro').textContent = real(res.pagamentos.dinheiro)
         const pdi = res.pagamentos.dinheiro*100 / res.faturamento || 0
-        pdi.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         const pcDi = document.getElementById('perc_dinheiro')
+        pcDi.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         if(pdi >= 50){pcDi.classList.add("text-bg-success")}
         else if(pdi >= 30 && pdi < 50){pcDi.classList.add("text-bg-primary")}
         else if(pdi < 30){pcDi.classList.add("text-bg-danger")}
