@@ -2329,7 +2329,7 @@ async function get_relatorios(filter='mes'){
         document.getElementById('debito').textContent = real(res.pagamentos.debito)
         const pd = res.pagamentos.debito*100 / res.faturamento || 0
         const pcD = document.getElementById('perc_debito')
-        pd.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
+        pcD.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-primary')
         if(pd >= 50){pcD.classList.add("text-bg-success")}
         else if(pd >= 30 && pd < 50){pcD.classList.add("text-bg-primary")}
         else if(pd < 30){pcD.classList.add("text-bg-danger")}
