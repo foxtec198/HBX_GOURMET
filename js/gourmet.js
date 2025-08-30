@@ -826,7 +826,7 @@ async function only_rmv_prod(id){
 
 //  Nova Comanda/Pedido =================================================================================
 async function enviar_prods(t=null){
-    const cmd = document.getElementById('cmdIn').value
+    const cmd = document.getElementById('cmdIn').value.trim()
     const cli = document.getElementById('cliIn').value
     const objs = document.querySelectorAll(".prods")
     const btnb = document.getElementById('btn_balcao')
@@ -2302,7 +2302,7 @@ async function get_relatorios(filter='mes'){
         chartSell = new Chart(ctx, {
             type: 'bar', // tipo de gráfico
             data: {
-                labels: Object.keys(res.st_vendas), // meses
+                labels: Object.keys(res.st_vendas), // meses/dias/anos
                 datasets: [{
                     data: Object.values(res.st_vendas), // valores
                     backgroundColor: ['#606c38', '#283618'], // cores das barras

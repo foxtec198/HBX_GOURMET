@@ -1,0 +1,63 @@
+body {
+    --green: #5E8B60;
+    --green2: #3a5a40;
+}
+
+#container {
+  position: relative; /* referência para o absolute */
+  margin-bottom: 50px;
+}
+
+#banner {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+#logo {
+  position: absolute;
+  bottom: -50px; /* desce um pouco pra sair da borda */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  color: white;
+  max-width: 250px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#logo_mobile{
+    width: 15vh;
+    padding: 10px;
+    height: 15vh;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 20px;
+    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.accordion-button{
+    background-color: #fff;
+    color: #000;
+}
+
+.accordion-button:not(.collapsed){
+    background-color: #fff;
+    color: #333;
+}
+
+@media only screen and (max-width: 500px) {
+    .mobile-hide{ display: none !important; }
+}
+
+@media only screen and (max-width: 500px) {
+    .mobile{ display: inline !important; }
+}
+
+@media only screen and (min-width: 500px) {
+    .mobile{ display: none !important; }
+}
