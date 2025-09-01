@@ -2102,7 +2102,7 @@ async function get_config(){ // Pega a configuração do usuer e dp CR
         sessionStorage.setItem('config_imprimir', res.imprimir)
     }
 
-    data = server + '/gourmet/cardapio.html?cr=' + cr
+    data = window.location + '/cardapio.html?cr=' + cr
     const req2 = await fetch(server + '/qr', {
         method: 'POST', 
         headers:{
