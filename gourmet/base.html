@@ -17,7 +17,7 @@
 <body data-bs-theme='dark'>
     <div class="d-flex h-100 flex-row">
         <div class="d-flex flex-column flex-shrink-0 p-3 text-dark mobile-hide" style="width: 250px; background: #202020;">
-            <img src="https://hubbix.com.br/img/logo.svg" class="img-fluid object-fit-contain" alt="logo loja" style="width: 100px; height: 50px;">
+            <img src="https://hubbix.com.br/img/logo.svg" class="img-fluid object-fit-contain logoLoja align-self-center" alt="logo loja" style="width: 15vh; height: 15vh;">
             <hr style="color: white;">
             <ul class="nav nav-pills flex-column mb-auto menu_desktop">
               <li class="nav-item" id="link_caixa">
@@ -132,6 +132,18 @@
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.9/dist/jquery.inputmask.min.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/js/gourmet.js"></script>
-    <script>restore_screen()</script>
+    <script>
+        restore_screen()
+        async function get_dados(){
+          const req = await request('get_loja/' + cr)
+          const res = await req.json()
+          if(req.ok){
+            document.querySelectorAll('.logoLoja').forEach(item => {
+              item.src = server + 'img/gourmet/' + res.logo
+            })
+          }else{toast(res, 'erro')}
+        }
+        get_dados()
+    </script>
 </body>
 </html>

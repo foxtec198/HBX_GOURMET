@@ -2102,6 +2102,22 @@ async function get_config(){ // Pega a configuração do usuer e dp CR
         sessionStorage.setItem('config_imprimir', res.imprimir)
     }
 
+    data = server + '/gourmet/cardapio.html?cr=' + cr
+    const req2 = await fetch(server + '/qr', {
+        method: 'POST', 
+        headers:{
+            'Content-Type':'application/json'
+        }, 
+        body: JSON.stringify({data: data, cr: cr})
+    })
+    const res2 = await req2.json()
+
+    if(req2.ok){
+        const imgg = document.getElementById('qr_cardapio')
+        if(imgg){imgg.src = server + res2}
+        const link = document.getElementById('link_cardapio')
+        if(link){link.href = '/gourmet/cardapio.html?cr=' + cr}
+    }
 }
 
 async function config(){
@@ -2287,6 +2303,8 @@ function hide_menus(menu){
     mb.classList.remove('d-flex')
     mb.style.display = 'none'
 }
+
+
 // Relatorios =================================================================================
 let chartSell;
 async function get_relatorios(filter='mes'){

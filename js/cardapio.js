@@ -5,10 +5,6 @@ server = 'https://api.hubbix.com.br/'
 let api = server + '/gourmet/api/v1/'
 let categorias;
 
-document.querySelectorAll('.logo').forEach(item =>{
-    item.src = server + 'img/logo.png'
-})
-
 function request(url, method='GET', data){
     if(!data){
         var options = {
@@ -140,6 +136,7 @@ async function get_prods(){
                 const img = document.createElement('img')
                 img.classList.add('img-fluid', 'img-thumbnail')
                 img.style.objectFit = 'cover'
+                img.style.objectPosition = 'center'
                 img.style.width = '200px'
                 img.style.height = '200px'
                 if(item.img !== 'blank.png'){img.src = server + 'img/gourmet/' + item.img}
@@ -170,4 +167,20 @@ async function get_prods(){
 
 }
 
+async function get_loja(){
+    const req = await request('get_loja/' + cr)
+    const res = await req.json()
+
+    document.querySelectorAll('.logo').forEach(item =>{
+        item.src = server + 'img/gourmet/' + res.logo
+    })
+
+    document.querySelectorAll('#nome_loja').forEach(item => {
+        item.textContent = res.nome
+        item.classList.remove('placeholder')
+    })
+
+}
+
+get_loja()
 get_prods()

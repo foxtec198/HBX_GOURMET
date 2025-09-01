@@ -1,6 +1,7 @@
 body {
     --green: #5E8B60;
     --green2: #3a5a40;
+    zoom: 95%;
 }
 
 #container {
@@ -22,11 +23,12 @@ body {
   transform: translateX(-50%);
   
   color: white;
-  max-width: 250px;
+  max-width: 200px;
   background: #fff;
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  object-fit: contain;
 }
 
 #logo_mobile{
